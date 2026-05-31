@@ -1,0 +1,530 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Reserva - Ciskotattoo</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600&family=Montserrat:wght@400;600;700;900&display=swap" rel="stylesheet">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        'brand-bg': '#FFFFFF',
+                        'brand-text': '#000000',
+                        'brand-dark': '#282828', 
+                        'brand-accent': '#A0A0A0',
+                        'brand-light': '#F5F5F5',
+                        'brand-border': '#E0E0E0'
+                    },
+                    fontFamily: {
+                        'heading': ['Montserrat', 'sans-serif'],
+                        'body': ['Inter', 'sans-serif']
+                    },
+                    boxShadow: {
+                        'minimal': '0 2px 5px rgba(0, 0, 0, 0.05)',
+                        'hover': '0 4px 12px rgba(0, 0, 0, 0.1)'
+                    }
+                }
+            }
+        }
+    </script>
+    <style> 
+        body { margin: 0; padding: 0; background-color: #FFFFFF; color: #000000; }
+        * { border-radius: 2px !important; }
+        
+        input[type="date"]::-webkit-calendar-picker-indicator { 
+            cursor: pointer; 
+        }
+        
+        input:-webkit-autofill,
+        input:-webkit-autofill:hover, 
+        input:-webkit-autofill:focus, 
+        input:-webkit-autofill:active{
+            -webkit-box-shadow: 0 0 0 30px #FFFFFF inset !important;
+            -webkit-text-fill-color: #000000 !important;
+            transition: background-color 5000s ease-in-out 0s;
+        }
+
+        .text-blue-500 { color: #A0A0A0 !important; } 
+        .text-green-500 { color: #282828 !important; } 
+    </style>
+</head>
+<body class="bg-brand-bg text-brand-text font-body relative">
+
+    <header class="bg-brand-bg text-brand-text py-10 px-4 text-center border-b border-brand-border flex flex-col items-center shadow-minimal">
+        <div class="text-brand-dark opacity-80 text-5xl mb-3 font-heading font-bold">CT</div>
+        <h1 class="text-4xl md:text-5xl font-heading uppercase tracking-widest text-brand-dark">Ciskotattoo</h1>
+        <p class="mt-3 font-body font-light uppercase text-sm md:text-base text-brand-accent tracking-[0.2em]">Reserva tu estudio/calco al instante</p>
+    </header>
+
+    <main class="max-w-xl mx-auto pt-10 px-4 pb-12">
+        <div class="bg-brand-bg p-8 md:p-10 border border-brand-border shadow-minimal">
+            
+            <div class="flex flex-col md:flex-row justify-between md:items-center border-b border-brand-border pb-6 mb-8 gap-6 md:gap-0">
+                <h2 id="titulo-principal" class="text-2xl font-heading uppercase text-brand-dark text-center md:text-left tracking-widest font-semibold">Reservar Cita</h2>
+                <button id="btn-cambiar-vista" onclick="cambiarVista()" class="text-xs font-body font-semibold bg-white text-brand-dark border border-brand-dark px-6 py-3 uppercase transition-all duration-300 w-full md:w-auto hover:bg-brand-dark hover:text-white tracking-[0.15em]">
+                    Modificar Cita
+                </button>
+            </div>
+
+            <div id="vista-suspendida" class="hidden text-center py-10 space-y-4">
+                <div class="text-6xl mb-4 opacity-70">⏳</div>
+                <h3 class="text-2xl font-heading uppercase text-brand-dark">Servicio No Disponible</h3>
+                <p class="text-brand-text font-light">El sistema de reservas online se encuentra temporalmente desactivado.</p>
+            </div>
+
+            <div id="vista-reservar" class="space-y-6 text-sm md:text-base">
+                
+                <div>
+                    <label class="block mb-2 text-brand-accent uppercase tracking-[0.15em] text-xs font-bold">¿Con qué tatuador quieres tu sesión?</label>
+                    <select id="input-tatuador" onchange="actualizarHoras('input-fecha', 'input-hora')" required class="w-full bg-white border border-brand-border p-3 h-12 text-brand-text focus:outline-none focus:border-brand-dark focus:ring-1 focus:ring-brand-dark transition-colors font-body font-semibold">
+                        <option value="">Cargando tatuadores...</option>
+                    </select>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div>
+                        <label class="block mb-2 text-brand-accent uppercase tracking-[0.15em] text-xs font-bold">Día de la cita</label>
+                        <input type="date" id="input-fecha" onchange="actualizarHoras('input-fecha', 'input-hora')" required class="w-full bg-white border border-brand-border p-3 h-12 text-brand-text focus:outline-none focus:border-brand-dark focus:ring-1 focus:ring-brand-dark transition-colors font-body">
+                    </div>
+                    <div>
+                        <label class="block mb-2 text-brand-accent uppercase tracking-[0.15em] text-xs font-bold">Hora</label>
+                        <select id="input-hora" required class="w-full bg-brand-light border border-brand-border p-3 h-12 text-brand-text focus:outline-none focus:border-brand-dark focus:ring-1 focus:ring-brand-dark transition-colors font-body">
+                            <option value="">Selecciona fecha primero</option>
+                        </select>
+                        <p class="text-[10px] text-brand-accent mt-1 italic">*Las horas mostradas son las que este tatuador tiene libres.</p>
+                    </div>
+                </div>
+
+                <div>
+                    <label class="block mb-2 text-brand-accent uppercase tracking-[0.15em] text-xs font-bold">Nombre Completo <span class="text-brand-dark">*</span></label>
+                    <input type="text" id="input-nombre" placeholder="Ej: Pablo Gómez" oninput="this.value = this.value.replace(/[0-9]/g, '')" required class="w-full bg-white border border-brand-border p-4 text-brand-text placeholder-[#A0A0A0] focus:outline-none focus:border-brand-dark focus:ring-1 focus:ring-brand-dark transition-colors font-body">
+                </div>
+                <div>
+                    <label class="block mb-2 text-brand-accent uppercase tracking-[0.15em] text-xs font-bold">Teléfono <span class="text-brand-dark">*</span></label>
+                    <input type="tel" id="input-telefono" placeholder="Ej: 600123456" oninput="this.value = this.value.replace(/[^0-9]/g, '')" required class="w-full bg-white border border-brand-border p-4 text-brand-text placeholder-[#A0A0A0] focus:outline-none focus:border-brand-dark focus:ring-1 focus:ring-brand-dark transition-colors font-body">
+                </div>
+
+                <button onclick="procesarReserva()" id="btn-reservar" class="mt-8 w-full bg-brand-dark text-white border border-brand-dark font-heading font-bold text-lg py-5 shadow-minimal uppercase active:scale-[0.98] transition-all duration-300 tracking-widest hover:shadow-hover hover:bg-white hover:text-brand-dark">
+                    Confirmar Cita
+                </button>
+            </div>
+
+            <!-- VISTA MODIFICAR -->
+            <div id="vista-modificar" class="hidden space-y-6">
+                <p class="text-sm text-brand-text font-light mb-4 text-center md:text-left leading-relaxed">Introduce tu identificador de cita <b>todo junto</b> (sin espacios ni tildes):</p>
+                <div>
+                    <input type="text" id="mod-identificador" oninput="colorearTexto(this.value)" placeholder="PABLOGOMEZ600123456ABC" class="w-full bg-white border border-brand-border p-4 text-brand-text focus:outline-none font-body uppercase text-center tracking-[0.3em] focus:border-brand-dark focus:ring-1 focus:ring-brand-dark text-lg transition-colors">
+                </div>
+                <div class="bg-brand-light p-4 border border-brand-border text-center text-xl md:text-2xl font-body tracking-[0.2em] break-words min-h-[70px] flex items-center justify-center">
+                    <span id="preview-colores" class="text-brand-accent text-sm font-body font-light tracking-normal">Tu código se pintará aquí...</span>
+                </div>
+                <button id="btn-buscar" onclick="buscarReserva()" class="mt-6 w-full bg-brand-dark text-white border border-brand-dark font-heading font-bold text-lg py-5 shadow-minimal uppercase active:scale-[0.98] transition-all tracking-widest hover:bg-white hover:text-brand-dark">
+                    Buscar mi cita
+                </button>
+            </div>
+
+            <!-- VISTA GESTION -->
+            <div id="vista-gestion" class="hidden space-y-6">
+                <div class="bg-brand-bg p-6 border border-brand-dark text-center mb-6">
+                    <p class="text-xs text-brand-accent font-light uppercase tracking-[0.2em] mb-2">Cita Actual</p>
+                    <p class="text-2xl font-heading text-brand-dark tracking-widest uppercase">Hola <span id="gest-nombre"></span></p>
+                    <p class="text-sm text-brand-text font-light mt-2 tracking-widest">CON: <span id="gest-tatuador" class="uppercase text-brand-dark font-semibold"></span></p>
+                </div>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div>
+                        <label class="block mb-2 text-brand-accent uppercase tracking-[0.15em] text-xs font-bold">Cambiar Día</label>
+                        <input type="date" id="gest-fecha" onchange="actualizarHoras('gest-fecha', 'gest-hora')" class="w-full bg-white border border-brand-border p-3 h-12 text-brand-text focus:outline-none focus:border-brand-dark focus:ring-1 focus:ring-brand-dark font-body">
+                    </div>
+                    <div>
+                        <label class="block mb-2 text-brand-accent uppercase tracking-[0.15em] text-xs font-bold">Cambiar Hora</label>
+                        <select id="gest-hora" class="w-full bg-white border border-brand-border p-3 h-12 text-brand-text focus:outline-none focus:border-brand-dark focus:ring-1 focus:ring-brand-dark font-body"></select>
+                    </div>
+                </div>
+                <div class="flex flex-col gap-4 mt-8">
+                    <button id="btn-actualizar" onclick="actualizarReserva()" class="w-full bg-brand-dark text-white border border-brand-dark font-heading font-bold text-lg py-4 shadow-minimal uppercase active:scale-[0.98] transition-all tracking-widest hover:bg-white hover:text-brand-dark">
+                        Guardar Cambios
+                    </button>
+                    <button id="btn-cancelar" onclick="cancelarReserva()" class="w-full bg-white text-brand-dark border border-brand-dark font-body font-semibold text-sm py-4 uppercase active:scale-[0.98] transition-all tracking-[0.15em] hover:border-red-500 hover:text-red-500">
+                        Cancelar Cita
+                    </button>
+                </div>
+            </div>
+
+        </div>
+    </main>
+
+    <!-- MODAL RESERVA HECHA -->
+    <div id="modal-identificador" class="hidden fixed inset-0 bg-[#FFFFFF]/95 flex items-center justify-center p-4 z-50 backdrop-blur-sm">
+        <div class="bg-white border border-brand-dark p-8 md:p-10 max-w-md w-full text-center shadow-hover relative">
+            <div class="absolute -top-6 left-1/2 transform -translate-x-1/2 bg-brand-dark text-white w-12 h-12 flex items-center justify-center rotate-45 border border-brand-dark">
+                <span class="-rotate-45 font-heading font-bold text-xl">✓</span>
+            </div>
+            <h3 class="text-2xl md:text-3xl font-heading text-brand-dark uppercase mb-4 tracking-widest mt-4">Confirmada</h3>
+            <p class="font-body font-light text-brand-text text-sm md:text-base mb-8 leading-relaxed">Guarda este identificador, hazle una captura de pantalla para poder modificar o cancelar tu cita:</p>
+            <div class="text-xl md:text-2xl font-body bg-brand-light p-6 border border-brand-border tracking-[0.2em] break-words mb-8 flex justify-center flex-wrap">
+                <span id="id-nombre" class="text-brand-dark font-semibold"></span><span id="id-tel" class="text-[#666]"></span><span id="id-letras" class="text-brand-text"></span>
+            </div>
+            <button onclick="copiarAlPortapapeles()" id="btn-copiar" class="md:hidden w-full bg-brand-light border border-brand-dark text-brand-dark font-body font-semibold text-lg py-4 mb-4 uppercase active:scale-[0.98] transition-all tracking-[0.15em]">
+                Copiar ID
+            </button>
+            <button onclick="window.location.reload()" class="w-full bg-white text-brand-dark border border-brand-dark font-heading text-lg py-4 uppercase active:scale-[0.98] transition-all tracking-widest hover:bg-brand-dark hover:text-white">
+                Cerrar y Volver
+            </button>
+        </div>
+    </div>
+
+    <!-- LÓGICA DE JAVASCRIPT (ADAPTADA A TATUADORES Y TIEMPO REAL) -->
+    <script>
+        const SUPABASE_URL = 'https://fqydtjwqkmdatfsauomh.supabase.co'; 
+        const SUPABASE_ANON_KEY = 'sb_publishable_-FdijJSiBiKFSY4I4F-LJw_fB89m4Cj';
+        const TELEGRAM_BOT_TOKEN = '8789184996:AAFV2JsCWBcXo-IhC0YYzQuEhuhWPUgHK6k';
+        const TELEGRAM_CHAT_ID = '6519651464';
+
+        let bloqueosGlobales = [];
+        let diasCerradosGlobales = [];
+        let horariosGlobales = [];      
+        let bloqueosHorasGlobales = []; 
+        let tatuadoresGlobales = [];
+        
+        let miReservaActual = null;
+        let miTatuadorActual = null;
+
+        function getSupabase() {
+            if(!window.supabase) throw new Error("Librería de red no lista.");
+            return window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+        }
+
+        function copiarAlPortapapeles() {
+            const nombre = document.getElementById('id-nombre').innerText;
+            const tel = document.getElementById('id-tel').innerText;
+            const letras = document.getElementById('id-letras').innerText;
+            navigator.clipboard.writeText(nombre + tel + letras).then(() => {
+                const btn = document.getElementById('btn-copiar');
+                btn.innerText = "¡COPIADO!";
+                btn.classList.add('bg-brand-dark', 'text-white');
+                setTimeout(() => { btn.innerText = "Copiar ID"; btn.classList.remove('bg-brand-dark', 'text-white'); }, 2000);
+            }).catch(err => { alert("❌ No se pudo copiar."); });
+        }
+
+        function normalizarTexto(str) {
+            if(!str) return '';
+            return str.normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/[^a-zA-Z0-9]/g, '').toUpperCase();
+        }
+
+        function colorearTexto(val) {
+            val = normalizarTexto(val);
+            const preview = document.getElementById('preview-colores');
+            if(val === "") { preview.innerHTML = '<span class="text-brand-accent font-body font-light text-sm tracking-normal">Tu código se pintará aquí...</span>'; return; }
+            const regex = /^([A-Z]*)([0-9]*)([A-Z]*)$/;
+            const match = val.match(regex);
+            if (match) { preview.innerHTML = `<span class="text-brand-dark font-semibold">${match[1]||''}</span><span class="text-blue-500">${match[2]||''}</span><span class="text-green-500">${match[3]||''}</span>`; } else { preview.innerHTML = val; }
+        }
+
+        function cambiarVista() {
+            const vRes = document.getElementById('vista-reservar');
+            const vMod = document.getElementById('vista-modificar');
+            const vGest = document.getElementById('vista-gestion');
+            const titulo = document.getElementById('titulo-principal');
+            const btn = document.getElementById('btn-cambiar-vista');
+
+            if (!vRes.classList.contains('hidden')) {
+                vRes.classList.add('hidden'); vMod.classList.remove('hidden'); titulo.innerText = "Tu Cita"; btn.innerText = "Volver a Reservar";
+            } else {
+                vRes.classList.remove('hidden'); vMod.classList.add('hidden'); vGest.classList.add('hidden'); titulo.innerText = "Reservar Cita"; btn.innerText = "Modificar Cita";
+            }
+        }
+
+        // ==========================================
+        // CÁLCULO DE HORAS (TIEMPO REAL)
+        // ==========================================
+        async function actualizarHoras(idFecha = 'input-fecha', idHora = 'input-hora') {
+            const fechaInput = document.getElementById(idFecha);
+            const selectHora = document.getElementById(idHora);
+            
+            // Detectamos qué select de tatuador usar (si es reserva nueva o gestión)
+            const idTat = idFecha === 'gest-fecha' ? miReservaActual.tatuador_id : document.getElementById('input-tatuador').value;
+            
+            if (!fechaInput || !selectHora) return;
+            if (!idTat) {
+                selectHora.innerHTML = '<option value="">Selecciona un tatuador primero</option>';
+                return;
+            }
+
+            // Encontrar el nombre del tatuador elegido (para los bloqueos)
+            const tatElegido = tatuadoresGlobales.find(t => t.id === idTat);
+            const tatNombre = tatElegido ? tatElegido.nombre : '';
+
+            selectHora.innerHTML = '<option value="">Calculando disponibilidad...</option>';
+
+            let ahora = new Date();
+            if (ahora.getHours() >= 23) { ahora.setDate(ahora.getDate() + 1); ahora.setHours(0, 0, 0, 0); }
+
+            const year = ahora.getFullYear();
+            const month = String(ahora.getMonth() + 1).padStart(2, '0');
+            const day = String(ahora.getDate()).padStart(2, '0');
+            const fechaMinima = `${year}-${month}-${day}`;
+            
+            fechaInput.min = fechaMinima;
+            if (!fechaInput.value || fechaInput.value < fechaMinima) { fechaInput.value = fechaMinima; }
+
+            const fechaSeleccionada = fechaInput.value;
+            const fechaDate = new Date(fechaSeleccionada + 'T00:00:00'); 
+            const diaSemana = fechaDate.getDay().toString();
+
+            // Bloqueos de Descanso Semanal y Bloqueos de Día Completo (Estudio entero o este tatuador)
+            let estaCerradoSemanal = diasCerradosGlobales.includes(diaSemana);
+            let estaBloqueado = bloqueosGlobales.some(b => b.fecha === fechaSeleccionada && (b.zona === 'Ambas' || b.zona === tatNombre));
+
+            if (estaCerradoSemanal || estaBloqueado) {
+                selectHora.innerHTML = '<option value="">⛔ DÍA NO DISPONIBLE</option>';
+                return;
+            }
+
+            const horaReal = new Date(); 
+            const hoyRealIso = `${horaReal.getFullYear()}-${String(horaReal.getMonth() + 1).padStart(2, '0')}-${String(horaReal.getDate()).padStart(2, '0')}`;
+            let esHoyReal = (fechaSeleccionada === hoyRealIso);
+            
+            // CONSULTA EN TIEMPO REAL A SUPABASE DE LAS CITAS DEL TATUADOR ESE DÍA
+            const sp = getSupabase();
+            const { data: reservasTat } = await sp.from('reservas').select('hora_inicio, id').eq('fecha', fechaSeleccionada).eq('tatuador_id', idTat);
+
+            let opcionesHTML = "";
+            const horarioDia = horariosGlobales.find(h => h.dia_semana.toString() === diaSemana);
+
+            function timeToMins(t) {
+                if(!t) return null; let p = t.split(':'); return parseInt(p[0]) * 60 + parseInt(p[1]);
+            }
+
+            for(let h = 0; h <= 23; h++) {
+                let minutosPosibles = ['00', '15', '30', '45'];
+                for(let m of minutosPosibles) {
+                    let timeEnMins = (h * 60) + parseInt(m);
+                    let minutosAhora = (horaReal.getHours() * 60) + horaReal.getMinutes();
+                    
+                    if (esHoyReal && timeEnMins <= minutosAhora) continue; // Pasado
+
+                    // Filtro de horario comercial
+                    if (horariosGlobales.length > 0) {
+                        if (!horarioDia) continue; 
+                        let inT1 = false; let inT2 = false;
+                        let a1M = timeToMins(horarioDia.apertura_1); let c1M = timeToMins(horarioDia.cierre_1);
+                        if (a1M !== null && c1M !== null && timeEnMins >= a1M && timeEnMins <= c1M) inT1 = true;
+                        let a2M = timeToMins(horarioDia.apertura_2); let c2M = timeToMins(horarioDia.cierre_2);
+                        if (a2M !== null && c2M !== null && timeEnMins >= a2M && timeEnMins <= c2M) inT2 = true;
+                        if (!inT1 && !inT2) continue;
+                    } else {
+                        if(h < 8 || (h === 23 && m !== '00')) continue;
+                    }
+
+                    // Filtro de horas sueltas bloqueadas
+                    let bloqueadoHora = bloqueosHorasGlobales.some(b => {
+                        if (b.fecha !== fechaSeleccionada) return false;
+                        let bIni = timeToMins(b.hora_inicio);
+                        let bFin = timeToMins(b.hora_fin);
+                        return (timeEnMins >= bIni && timeEnMins <= bFin);
+                    });
+                    if (bloqueadoHora) continue; 
+
+                    // FILTRO DINÁMICO: Si el tatuador ya tiene una cita, quitamos el hueco (150 mins de margen)
+                    let chocaConCita = (reservasTat || []).some(r => {
+                        // Si estamos en la vista 'gestión' (modificando), ignoramos la propia cita que estamos moviendo
+                        if (miReservaActual && r.id === miReservaActual.id) return false; 
+                        let rMins = timeToMins(r.hora_inicio);
+                        return Math.abs(timeEnMins - rMins) < 150; 
+                    });
+                    if (chocaConCita) continue; // ❌ ESTA LÍNEA ES MAGIA: BORRA LA HORA SI ESTÁ OCUPADO
+
+                    let horaFormateada = h < 10 ? '0' + h : h; 
+                    opcionesHTML += `<option value="${horaFormateada}:${m}">${horaFormateada}:${m}</option>`;
+                }
+            }
+            
+            if (opcionesHTML === "") opcionesHTML = `<option value="">Agenda llena / Sin horas</option>`;
+            selectHora.innerHTML = opcionesHTML;
+            selectHora.disabled = false;
+        }
+
+        async function prepararEntorno() {
+            try {
+                const sp = getSupabase();
+
+                const { data: config } = await sp.from('configuracion_saas').select('estado_suscripcion').eq('id', 1).single();
+                if (config && config.estado_suscripcion === 'suspendido') {
+                    document.getElementById('vista-reservar').classList.add('hidden');
+                    document.getElementById('vista-modificar').classList.add('hidden');
+                    document.getElementById('btn-cambiar-vista').classList.add('hidden');
+                    document.getElementById('vista-suspendida').classList.remove('hidden');
+                    return; 
+                }
+
+                // Cargamos también los Tatuadores
+                const [respBloqueos, respDias, respHorarios, respBloqueosHoras, respTatuadores] = await Promise.all([
+                    sp.from('bloqueos').select('*'),
+                    sp.from('dias_cerrados').select('dias').eq('id', 1).single(),
+                    sp.from('horarios_semana').select('*'),
+                    sp.from('bloqueos_horas').select('*'),
+                    sp.from('tatuadores').select('*').order('nombre')
+                ]);
+
+                if (respBloqueos.data) bloqueosGlobales = respBloqueos.data;
+                if (respDias.data && respDias.data.dias) diasCerradosGlobales = respDias.data.dias.split(',');
+                if (respHorarios.data) horariosGlobales = respHorarios.data;
+                if (respBloqueosHoras.data) bloqueosHorasGlobales = respBloqueosHoras.data;
+
+                // Llenamos el select de tatuadores
+                tatuadoresGlobales = respTatuadores.data || [];
+                const selTat = document.getElementById('input-tatuador');
+                selTat.innerHTML = '<option value="">Selecciona tu tatuador...</option>';
+                tatuadoresGlobales.forEach(t => {
+                    selTat.innerHTML += `<option value="${t.id}">${t.nombre}</option>`;
+                });
+
+            } catch (err) {
+                console.warn("Fallo de red.");
+            }
+        }
+
+        async function procesarReserva() {
+            const idTat = document.getElementById('input-tatuador').value;
+            const fecha = document.getElementById('input-fecha').value;
+            const hora = document.getElementById('input-hora').value;
+            const nombre = document.getElementById('input-nombre').value.trim();
+            const telefono = document.getElementById('input-telefono').value.trim();
+
+            if(!idTat) return alert("⚠️ Por favor, selecciona a un tatuador.");
+            if(!fecha || !hora || !nombre || !telefono) return alert("⚠️ Rellena todos los campos.");
+
+            const tatElegido = tatuadoresGlobales.find(t => t.id === idTat);
+            const tatNombre = tatElegido ? tatElegido.nombre : '';
+
+            const btn = document.getElementById('btn-reservar');
+            btn.innerHTML = 'Enviando...'; btn.disabled = true;
+
+            const letrasAleatorias = Math.random().toString(36).substring(2, 5).toUpperCase();
+            const nombreLimpio = normalizarTexto(nombre);
+            const identificadorCompleto = `${nombreLimpio}${telefono}${letrasAleatorias}`;
+
+            try {
+                const sp = getSupabase();
+                
+                // Aunque ya filtramos en el frontend, hacemos una última validación doble por seguridad.
+                const { data: reservasMismoTatuador } = await sp.from('reservas').select('hora_inicio').eq('fecha', fecha).eq('tatuador_id', idTat);
+                const horaSol = new Date(`${fecha}T${hora}:00`);
+                let choqueReal = (reservasMismoTatuador || []).some(r => {
+                    return Math.abs((horaSol - new Date(`${fecha}T${r.hora_inicio}`)) / 60000) < 150;
+                });
+
+                if (choqueReal) {
+                    alert(`❌ Lo sentimos, alguien acaba de reservar esa hora con ${tatNombre}.`);
+                    actualizarHoras('input-fecha', 'input-hora'); // Refresca horas
+                    btn.innerHTML = 'Confirmar Cita'; btn.disabled = false; return;
+                }
+
+                // Guardar la cita
+                const { error: insertError } = await sp.from('reservas').insert([{ 
+                    tatuador_id: idTat, 
+                    nombre_cliente: nombre, 
+                    telefono_cliente: telefono, 
+                    fecha: fecha, 
+                    hora_inicio: hora + ':00', 
+                    codigo_secreto: letrasAleatorias 
+                }]);
+
+                if (insertError) { alert("❌ Fallo en la BD al guardar."); btn.innerHTML = 'Confirmar Cita'; btn.disabled = false; return; }
+
+                // Enviar a Telegram
+                const msg = `👑 *NUEVA CITA CISKOTATTOO* 👑\n👤 *Nombre:* ${nombre}\n📞 *Tlf:* ${telefono}\n📅 *Día:* ${fecha}\n⏰ *Hora:* ${hora}\n💉 *Tatuador:* ${tatNombre}\n🔑 *ID:* ${identificadorCompleto}`;
+                fetch(`https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/sendMessage`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ chat_id: TELEGRAM_CHAT_ID, text: msg, parse_mode: 'Markdown' }) });
+
+                document.getElementById('id-nombre').innerText = nombreLimpio;
+                document.getElementById('id-tel').innerText = telefono;
+                document.getElementById('id-letras').innerText = letrasAleatorias;
+                document.body.style.overflow = 'hidden';
+                document.getElementById('modal-identificador').classList.remove('hidden');
+
+            } catch (err) { alert("❌ Error de conexión al hacer la reserva."); btn.innerHTML = 'Confirmar Cita'; btn.disabled = false; }
+        }
+
+        async function buscarReserva() {
+            const inputVal = normalizarTexto(document.getElementById('mod-identificador').value);
+            if(!inputVal) return alert("⚠️ Introduce tu identificador.");
+            const btn = document.getElementById('btn-buscar'); btn.innerHTML = 'Buscando...'; btn.disabled = true;
+
+            try {
+                const sp = getSupabase();
+                // Traemos la reserva con el nombre del tatuador incrustado
+                const { data: reservas, error: errorBD } = await sp.from('reservas').select('*, tatuadores(nombre)');
+                if(errorBD) throw errorBD; 
+
+                const reservaEncontrada = (reservas || []).find(r => normalizarTexto(r.nombre_cliente) + normalizarTexto(r.telefono_cliente) + normalizarTexto(r.codigo_secreto) === inputVal);
+
+                if(!reservaEncontrada) { alert("❌ No hemos encontrado tu cita. Comprueba el código."); btn.innerHTML = 'Buscar mi cita'; btn.disabled = false; return; }
+
+                miReservaActual = reservaEncontrada;
+                miTatuadorActual = reservaEncontrada.tatuadores ? reservaEncontrada.tatuadores.nombre : 'Desconocido';
+
+                document.getElementById('gest-nombre').innerText = miReservaActual.nombre_cliente;
+                document.getElementById('gest-tatuador').innerText = miTatuadorActual;
+                document.getElementById('vista-modificar').classList.add('hidden');
+                document.getElementById('vista-gestion').classList.remove('hidden');
+                document.getElementById('gest-fecha').value = miReservaActual.fecha;
+                
+                // Refrescamos las horas con su tatuador
+                await actualizarHoras('gest-fecha', 'gest-hora');
+                setTimeout(() => { document.getElementById('gest-hora').value = miReservaActual.hora_inicio.substring(0,5); }, 100);
+
+            } catch (error) { alert("❌ Fallo conectando a Supabase."); }
+            btn.innerHTML = 'Buscar mi cita'; btn.disabled = false;
+        }
+
+        async function actualizarReserva() {
+            const nuevaFecha = document.getElementById('gest-fecha').value;
+            const nuevaHora = document.getElementById('gest-hora').value;
+            if(!nuevaFecha || !nuevaHora) return;
+
+            const btn = document.getElementById('btn-actualizar'); btn.innerHTML = 'Guardando...'; btn.disabled = true;
+
+            try {
+                const sp = getSupabase();
+                // Verificamos de nuevo que nadie haya pillado el hueco
+                const { data: reservasMismoTatuador } = await sp.from('reservas').select('id, hora_inicio').eq('fecha', nuevaFecha).eq('tatuador_id', miReservaActual.tatuador_id);
+                const horaSol = new Date(`${nuevaFecha}T${nuevaHora}:00`);
+                let choqueReal = (reservasMismoTatuador || []).some(r => {
+                    if (r.id === miReservaActual.id) return false;
+                    return Math.abs((horaSol - new Date(`${nuevaFecha}T${r.hora_inicio}`)) / 60000) < 150;
+                });
+
+                if (choqueReal) { alert(`❌ Lo sentimos, ese hueco acaba de ser reservado.`); btn.innerHTML = 'Guardar Cambios'; btn.disabled = false; return; }
+
+                await sp.from('reservas').update({ fecha: nuevaFecha, hora_inicio: nuevaHora + ':00' }).eq('id', miReservaActual.id);
+
+                const msg = `✏️ *CITA MODIFICADA* ✏️\n👤 ${miReservaActual.nombre_cliente}\n🔄 *NUEVA FECHA:* ${nuevaFecha} a las ${nuevaHora}`;
+                fetch(`https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/sendMessage`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ chat_id: TELEGRAM_CHAT_ID, text: msg, parse_mode: 'Markdown' }) });
+
+                alert("✅ Tu cita se ha actualizado."); window.location.reload();
+            } catch (e) { alert("❌ Fallo al actualizar."); btn.innerHTML = 'Guardar Cambios'; btn.disabled = false; }
+        }
+
+        async function cancelarReserva() {
+            if(!confirm("⚠️ ¿Estás seguro de que quieres cancelar tu cita?")) return;
+            const btn = document.getElementById('btn-cancelar'); btn.innerHTML = 'Cancelando...'; btn.disabled = true;
+
+            try {
+                const sp = getSupabase();
+                await sp.from('reservas').delete().eq('id', miReservaActual.id);
+                const msg = `❌ *CITA CANCELADA* ❌\n👤 ${miReservaActual.nombre_cliente}\n📅 Iba a ser el ${miReservaActual.fecha}`;
+                fetch(`https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/sendMessage`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ chat_id: TELEGRAM_CHAT_ID, text: msg, parse_mode: 'Markdown' }) });
+                alert("🗑️ Tu cita ha sido cancelada."); window.location.reload();
+            } catch (e) { alert("❌ Error al cancelar."); btn.innerHTML = 'Cancelar Cita'; btn.disabled = false; }
+        }
+
+        setTimeout(prepararEntorno, 500);
+    </script>
+</body>
+</html>
