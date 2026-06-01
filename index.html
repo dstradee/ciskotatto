@@ -57,15 +57,15 @@
 <body class="bg-brand-bg text-brand-text font-body relative">
 
     <header class="bg-brand-bg text-brand-text py-10 px-4 text-center border-b border-brand-border flex flex-col items-center shadow-minimal">
-        <h1 class="text-4xl md:text-5xl font-heading uppercase tracking-widest text-brand-dark">Ciskotattoo</h1>
-        <p class="mt-3 font-body font-light uppercase text-sm md:text-base text-brand-accent tracking-[0.2em]">Reserva tu estudio/calco al instante</p>
+        <h1 class="text-4xl md:text-5xl font-heading uppercase tracking-widest text-brand-dark font-bold">Ciskotattoo</h1>
+        <p class="mt-3 font-body font-semibold uppercase text-sm md:text-base text-brand-accent tracking-[0.2em]">Reserva tu estudio/calco al instante</p>
     </header>
 
     <main class="max-w-xl mx-auto pt-10 px-4 pb-12">
         <div class="bg-brand-bg p-8 md:p-10 border border-brand-border shadow-minimal">
             
             <div class="flex flex-col md:flex-row justify-between md:items-center border-b border-brand-border pb-6 mb-8 gap-6 md:gap-0">
-                <h2 id="titulo-principal" class="text-2xl font-heading uppercase text-brand-dark text-center md:text-left tracking-widest font-semibold">Reservar Cita</h2>
+                <h2 id="titulo-principal" class="text-2xl font-heading uppercase text-brand-dark text-center md:text-left tracking-widest font-bold">Reservar Cita</h2>
                 <button id="btn-cambiar-vista" onclick="cambiarVista()" class="text-xs font-body font-semibold bg-white text-brand-dark border border-brand-dark px-6 py-3 uppercase transition-all duration-300 w-full md:w-auto hover:bg-brand-dark hover:text-white tracking-[0.15em]">
                     Modificar Cita
                 </button>
@@ -73,7 +73,7 @@
 
             <div id="vista-suspendida" class="hidden text-center py-10 space-y-4">
                 <div class="text-6xl mb-4 opacity-70">⏳</div>
-                <h3 class="text-2xl font-heading uppercase text-brand-dark">Servicio No Disponible</h3>
+                <h3 class="text-2xl font-heading uppercase text-brand-dark font-bold">Servicio No Disponible</h3>
                 <p class="text-brand-text font-light">El sistema de reservas online se encuentra temporalmente desactivado.</p>
             </div>
 
@@ -93,7 +93,7 @@
                     </div>
                     <div>
                         <label class="block mb-2 text-brand-accent uppercase tracking-[0.15em] text-xs font-bold">Hora</label>
-                        <select id="input-hora" required class="w-full bg-brand-light border border-brand-border p-3 h-12 text-brand-text focus:outline-none focus:border-brand-dark focus:ring-1 focus:ring-brand-dark transition-colors font-body">
+                        <select id="input-hora" required class="w-full bg-brand-light border border-brand-border p-3 h-12 text-brand-text focus:outline-none focus:border-brand-dark focus:ring-1 focus:ring-brand-dark transition-colors font-body font-semibold">
                             <option value="">Selecciona fecha primero</option>
                         </select>
                         <p class="text-[10px] text-brand-accent mt-1 italic">*Las horas mostradas son las que este tatuador tiene libres.</p>
@@ -132,7 +132,7 @@
             <div id="vista-gestion" class="hidden space-y-6">
                 <div class="bg-brand-bg p-6 border border-brand-dark text-center mb-6">
                     <p class="text-xs text-brand-accent font-light uppercase tracking-[0.2em] mb-2">Cita Actual</p>
-                    <p class="text-2xl font-heading text-brand-dark tracking-widest uppercase">Hola <span id="gest-nombre"></span></p>
+                    <p class="text-2xl font-heading text-brand-dark tracking-widest uppercase font-bold">Hola <span id="gest-nombre"></span></p>
                     <p class="text-sm text-brand-text font-light mt-2 tracking-widest">CON: <span id="gest-tatuador" class="uppercase text-brand-dark font-semibold"></span></p>
                 </div>
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -142,14 +142,14 @@
                     </div>
                     <div>
                         <label class="block mb-2 text-brand-accent uppercase tracking-[0.15em] text-xs font-bold">Cambiar Hora</label>
-                        <select id="gest-hora" class="w-full bg-white border border-brand-border p-3 h-12 text-brand-text focus:outline-none focus:border-brand-dark focus:ring-1 focus:ring-brand-dark font-body"></select>
+                        <select id="gest-hora" class="w-full bg-white border border-brand-border p-3 h-12 text-brand-text focus:outline-none focus:border-brand-dark focus:ring-1 focus:ring-brand-dark font-body font-semibold"></select>
                     </div>
                 </div>
                 <div class="flex flex-col gap-4 mt-8">
                     <button id="btn-actualizar" onclick="actualizarReserva()" class="w-full bg-brand-dark text-white border border-brand-dark font-heading font-bold text-lg py-4 shadow-minimal uppercase active:scale-[0.98] transition-all tracking-widest hover:bg-white hover:text-brand-dark">
                         Guardar Cambios
                     </button>
-                    <button id="btn-cancelar" onclick="cancelarReserva()" class="w-full bg-white text-brand-dark border border-brand-dark font-body font-semibold text-sm py-4 uppercase active:scale-[0.98] transition-all tracking-[0.15em] hover:border-red-500 hover:text-red-500">
+                    <button id="btn-cancelar" onclick="cancelarReserva()" class="w-full bg-white text-brand-dark border border-brand-dark font-body font-bold text-sm py-4 uppercase active:scale-[0.98] transition-all tracking-[0.15em] hover:border-red-500 hover:text-red-500">
                         Cancelar Cita
                     </button>
                 </div>
@@ -164,21 +164,21 @@
             <div class="absolute -top-6 left-1/2 transform -translate-x-1/2 bg-brand-dark text-white w-12 h-12 flex items-center justify-center rotate-45 border border-brand-dark">
                 <span class="-rotate-45 font-heading font-bold text-xl">✓</span>
             </div>
-            <h3 class="text-2xl md:text-3xl font-heading text-brand-dark uppercase mb-4 tracking-widest mt-4">Confirmada</h3>
+            <h3 class="text-2xl md:text-3xl font-heading text-brand-dark uppercase mb-4 tracking-widest mt-4 font-bold">Confirmada</h3>
             <p class="font-body font-light text-brand-text text-sm md:text-base mb-8 leading-relaxed">Guarda este identificador, hazle una captura de pantalla para poder modificar o cancelar tu cita:</p>
             <div class="text-xl md:text-2xl font-body bg-brand-light p-6 border border-brand-border tracking-[0.2em] break-words mb-8 flex justify-center flex-wrap">
-                <span id="id-nombre" class="text-brand-dark font-semibold"></span><span id="id-tel" class="text-[#666]"></span><span id="id-letras" class="text-brand-text"></span>
+                <span id="id-nombre" class="text-brand-dark font-semibold"></span><span id="id-tel" class="text-[#666]"></span><span id="id-letras" class="text-brand-text font-bold"></span>
             </div>
-            <button onclick="copiarAlPortapapeles()" id="btn-copiar" class="md:hidden w-full bg-brand-light border border-brand-dark text-brand-dark font-body font-semibold text-lg py-4 mb-4 uppercase active:scale-[0.98] transition-all tracking-[0.15em]">
+            <button onclick="copiarAlPortapapeles()" id="btn-copiar" class="md:hidden w-full bg-brand-light border border-brand-dark text-brand-dark font-body font-bold text-lg py-4 mb-4 uppercase active:scale-[0.98] transition-all tracking-[0.15em]">
                 Copiar ID
             </button>
-            <button onclick="window.location.reload()" class="w-full bg-white text-brand-dark border border-brand-dark font-heading text-lg py-4 uppercase active:scale-[0.98] transition-all tracking-widest hover:bg-brand-dark hover:text-white">
+            <button onclick="window.location.reload()" class="w-full bg-white text-brand-dark border border-brand-dark font-heading text-lg py-4 uppercase active:scale-[0.98] transition-all tracking-widest hover:bg-brand-dark hover:text-white font-bold">
                 Cerrar y Volver
             </button>
         </div>
     </div>
 
-    <!-- LÓGICA DE JAVASCRIPT -->
+    <!-- LÓGICA DE JAVASCRIPT: MOTOR TIEMPO REAL Y HORARIOS -->
     <script>
         const SUPABASE_URL = 'https://fqydtjwqkmdatfsauomh.supabase.co'; 
         const SUPABASE_ANON_KEY = 'sb_publishable_-FdijJSiBiKFSY4I4F-LJw_fB89m4Cj';
@@ -190,6 +190,7 @@
         let horariosGlobales = [];      
         let bloqueosHorasGlobales = []; 
         let tatuadoresGlobales = [];
+        let horariosTatuadoresGlobales = []; // Nuevo cerebro de horarios
         
         let miReservaActual = null;
         let miTatuadorActual = null;
@@ -197,6 +198,23 @@
         function getSupabase() {
             if(!window.supabase) throw new Error("Librería de red no lista.");
             return window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+        }
+
+        // --- SISTEMA DE TIEMPO REAL (NUEVO) ---
+        function iniciarTiempoReal() {
+            const sp = getSupabase();
+            sp.channel('ct-realtime')
+              .on('postgres_changes', { event: '*', schema: 'public', table: 'tatuadores' }, payload => { prepararEntorno(); })
+              .on('postgres_changes', { event: '*', schema: 'public', table: 'horarios_tatuadores' }, payload => { prepararEntorno(); })
+              .on('postgres_changes', { event: '*', schema: 'public', table: 'horarios_semana' }, payload => { prepararEntorno(); })
+              .on('postgres_changes', { event: '*', schema: 'public', table: 'bloqueos' }, payload => { prepararEntorno(); })
+              .on('postgres_changes', { event: '*', schema: 'public', table: 'reservas' }, payload => { 
+                  // Si alguien reserva, refrescamos el desplegable de horas inmediatamente
+                  if (document.getElementById('input-fecha').value) {
+                      actualizarHoras('input-fecha', 'input-hora');
+                  }
+              })
+              .subscribe();
         }
 
         function copiarAlPortapapeles() {
@@ -222,7 +240,7 @@
             if(val === "") { preview.innerHTML = '<span class="text-brand-accent font-body font-light text-sm tracking-normal">Tu código se pintará aquí...</span>'; return; }
             const regex = /^([A-Z]*)([0-9]*)([A-Z]*)$/;
             const match = val.match(regex);
-            if (match) { preview.innerHTML = `<span class="text-brand-dark font-semibold">${match[1]||''}</span><span class="text-blue-500">${match[2]||''}</span><span class="text-green-500">${match[3]||''}</span>`; } else { preview.innerHTML = val; }
+            if (match) { preview.innerHTML = `<span class="text-brand-dark font-bold">${match[1]||''}</span><span class="text-blue-500">${match[2]||''}</span><span class="text-green-500">${match[3]||''}</span>`; } else { preview.innerHTML = val; }
         }
 
         function cambiarVista() {
@@ -275,10 +293,34 @@
             const fechaDate = new Date(fechaSeleccionada + 'T00:00:00'); 
             const diaSemana = fechaDate.getDay().toString();
 
+            // ===============================================
+            // CEREBRO DE HORARIOS PERSONALIZADOS
+            // ===============================================
+            // Miramos si el tatuador tiene una fila creada para ESTE día de la semana
+            let horarioPersonalizado = horariosTatuadoresGlobales.find(h => h.tatuador_id === idTat && h.dia_semana.toString() === diaSemana);
+            let horarioGeneralEstudio = horariosGlobales.find(h => h.dia_semana.toString() === diaSemana);
+            
+            let horarioAEvaluar = null;
+
+            if (horarioPersonalizado) {
+                // Si el horario existe, pero TODAS las horas son nulas, es su Día de Descanso (lo configuraste así en el Manager)
+                if (!horarioPersonalizado.apertura_1 && !horarioPersonalizado.cierre_1 && !horarioPersonalizado.apertura_2 && !horarioPersonalizado.cierre_2) {
+                    selectHora.innerHTML = '<option value="">⛔ DESCANSO DE ESTE TATUADOR</option>';
+                    return;
+                }
+                horarioAEvaluar = horarioPersonalizado;
+            } else {
+                // Si no hay horario personalizado, hereda el del estudio
+                horarioAEvaluar = horarioGeneralEstudio;
+            }
+
+            // Descansos y bloqueos
             let estaCerradoSemanal = diasCerradosGlobales.includes(diaSemana);
             let estaBloqueado = bloqueosGlobales.some(b => b.fecha === fechaSeleccionada && (b.zona === 'Ambas' || b.zona === tatNombre));
 
-            if (estaCerradoSemanal || estaBloqueado) {
+            // Si hereda el horario del estudio, le aplicamos el cierre semanal del estudio. 
+            // Si tiene horario personalizado, manda su horario, ignorando si el estudio cierra o no ese día por defecto.
+            if ((!horarioPersonalizado && estaCerradoSemanal) || estaBloqueado) {
                 selectHora.innerHTML = '<option value="">⛔ DÍA NO DISPONIBLE</option>';
                 return;
             }
@@ -291,7 +333,6 @@
             const { data: reservasTat } = await sp.from('reservas').select('hora_inicio, id, duracion').eq('fecha', fechaSeleccionada).eq('tatuador_id', idTat);
 
             let opcionesHTML = "";
-            const horarioDia = horariosGlobales.find(h => h.dia_semana.toString() === diaSemana);
 
             for(let h = 0; h <= 23; h++) {
                 let minutosPosibles = ['00', '15', '30', '45'];
@@ -301,12 +342,12 @@
                     
                     if (esHoyReal && timeEnMins <= minutosAhora) continue; 
 
-                    if (horariosGlobales.length > 0) {
-                        if (!horarioDia) continue; 
+                    if (horariosGlobales.length > 0 || horarioPersonalizado) {
+                        if (!horarioAEvaluar) continue; 
                         let inT1 = false; let inT2 = false;
-                        let a1M = timeToMins(horarioDia.apertura_1); let c1M = timeToMins(horarioDia.cierre_1);
+                        let a1M = timeToMins(horarioAEvaluar.apertura_1); let c1M = timeToMins(horarioAEvaluar.cierre_1);
                         if (a1M !== null && c1M !== null && timeEnMins >= a1M && timeEnMins <= c1M) inT1 = true;
-                        let a2M = timeToMins(horarioDia.apertura_2); let c2M = timeToMins(horarioDia.cierre_2);
+                        let a2M = timeToMins(horarioAEvaluar.apertura_2); let c2M = timeToMins(horarioAEvaluar.cierre_2);
                         if (a2M !== null && c2M !== null && timeEnMins >= a2M && timeEnMins <= c2M) inT2 = true;
                         if (!inT1 && !inT2) continue;
                     } else {
@@ -337,7 +378,7 @@
                 }
             }
             
-            if (opcionesHTML === "") opcionesHTML = `<option value="">Agenda llena / Sin horas</option>`;
+            if (opcionesHTML === "") opcionesHTML = `<option value="">Agenda llena / Sin horas libres</option>`;
             selectHora.innerHTML = opcionesHTML;
             selectHora.disabled = false;
         }
@@ -355,25 +396,39 @@
                     return; 
                 }
 
-                const [respBloqueos, respDias, respHorarios, respBloqueosHoras, respTatuadores] = await Promise.all([
+                // Guardamos el tatuador que el cliente tuviera seleccionado para no borrárselo
+                const selTat = document.getElementById('input-tatuador');
+                const idTatSeleccionado = selTat.value;
+
+                const [respBloqueos, respDias, respHorarios, respBloqueosHoras, respTatuadores, respHorariosTat] = await Promise.all([
                     sp.from('bloqueos').select('*'),
                     sp.from('dias_cerrados').select('dias').eq('id', 1).single(),
                     sp.from('horarios_semana').select('*'),
                     sp.from('bloqueos_horas').select('*'),
-                    sp.from('tatuadores').select('*').order('nombre')
+                    sp.from('tatuadores').select('*').order('nombre'),
+                    sp.from('horarios_tatuadores').select('*') // Traemos el cerebro
                 ]);
 
                 if (respBloqueos.data) bloqueosGlobales = respBloqueos.data;
                 if (respDias.data && respDias.data.dias) diasCerradosGlobales = respDias.data.dias.split(',');
                 if (respHorarios.data) horariosGlobales = respHorarios.data;
                 if (respBloqueosHoras.data) bloqueosHorasGlobales = respBloqueosHoras.data;
-
+                
+                horariosTatuadoresGlobales = respHorariosTat.data || [];
                 tatuadoresGlobales = respTatuadores.data || [];
-                const selTat = document.getElementById('input-tatuador');
+                
                 selTat.innerHTML = '<option value="">Selecciona tu tatuador...</option>';
                 tatuadoresGlobales.forEach(t => {
                     selTat.innerHTML += `<option value="${t.id}">${t.nombre}</option>`;
                 });
+
+                // Si tenía uno seleccionado y todavía existe, se lo volvemos a poner y refrescamos horas
+                if (idTatSeleccionado && tatuadoresGlobales.some(t => t.id === idTatSeleccionado)) {
+                    selTat.value = idTatSeleccionado;
+                    if(document.getElementById('input-fecha').value) {
+                        actualizarHoras();
+                    }
+                }
 
             } catch (err) {
                 console.warn("Fallo de red.");
@@ -519,7 +574,11 @@
             } catch (e) { alert("❌ Error al cancelar."); btn.innerHTML = 'Cancelar Cita'; btn.disabled = false; }
         }
 
-        setTimeout(prepararEntorno, 500);
+        // Arrancamos todo
+        setTimeout(() => {
+            prepararEntorno();
+            iniciarTiempoReal(); // Activamos la magia del realtime
+        }, 500);
     </script>
 </body>
 </html>
