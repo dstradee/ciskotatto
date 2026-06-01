@@ -163,29 +163,11 @@
                         </div>
                     </div>
 
-                    <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mt-6">
-                        <div>
-                            <label class="block mb-2 font-body font-semibold text-brand-accent text-xs uppercase tracking-[0.15em]">Intensidad (1 al 5)</label>
-                            <select id="m-int" class="w-full bg-white border border-brand-border p-4 text-brand-text"><option>1</option><option>2</option><option selected>3</option><option>4</option><option>5</option></select>
-                        </div>
-                        <div>
-                            <label class="block mb-2 font-body font-semibold text-brand-accent text-xs uppercase tracking-[0.15em]">Tiempo (1 al 5)</label>
-                            <select id="m-fre" class="w-full bg-white border border-brand-border p-4 text-brand-text"><option>1</option><option>2</option><option selected>3</option><option>4</option><option>5</option></select>
-                        </div>
-                        <div>
-                            <label class="block mb-2 font-body font-semibold text-brand-accent text-xs uppercase tracking-[0.15em]">Detalle (1 al 5)</label>
-                            <select id="m-hum" class="w-full bg-white border border-brand-border p-4 text-brand-text"><option>1</option><option>2</option><option>3</option><option>4</option><option selected>5</option></select>
-                        </div>
-                    </div>
-
                     <div class="mt-6">
-                        <label class="block mb-2 font-body font-semibold text-brand-accent text-xs uppercase tracking-[0.15em]">Elementos Clave</label>
-                        <input type="text" id="m-ing" placeholder="Líneas finas, puntillismo..." class="w-full bg-white border border-brand-border p-4 text-brand-text focus:outline-none focus:border-brand-dark">
+                        <button onclick="crearSabor()" id="btn-crear-sabor" class="mt-8 w-full bg-brand-dark text-white border border-brand-dark font-heading font-bold text-lg py-5 shadow-minimal uppercase tracking-widest hover:bg-white hover:text-brand-dark transition-all">
+                            Añadir Estilo a la Lista
+                        </button>
                     </div>
-
-                    <button onclick="crearSabor()" id="btn-crear-sabor" class="mt-8 w-full bg-brand-dark text-white border border-brand-dark font-heading font-bold text-lg py-5 shadow-minimal uppercase tracking-widest hover:bg-white hover:text-brand-dark transition-all">
-                        Añadir Estilo a la Lista
-                    </button>
                 </div>
 
                 <div class="bg-brand-light p-8 border border-brand-border shadow-minimal">
@@ -225,21 +207,6 @@
                                 <div>
                                     <label class="block text-xs text-brand-accent font-body font-semibold uppercase tracking-[0.15em] mb-2">Cierre</label>
                                     <input type="time" id="h-ci1" class="w-full bg-brand-light border border-brand-border p-4 text-brand-text font-body focus:outline-none focus:border-brand-dark transition-colors">
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="p-6 border border-brand-border bg-white shadow-sm">
-                            <h4 class="text-lg font-heading font-bold text-brand-accent uppercase tracking-widest mb-2">Turno Partido</h4>
-                            <p class="text-xs text-brand-accent font-light mb-6">(Opcional - Úsalo si cerráis al mediodía)</p>
-                            <div class="grid grid-cols-2 gap-6">
-                                <div>
-                                    <label class="block text-xs text-brand-accent font-body font-semibold uppercase tracking-[0.15em] mb-2">Apertura</label>
-                                    <input type="time" id="h-ap2" class="w-full bg-brand-light border border-brand-border p-4 text-brand-text font-body focus:outline-none focus:border-brand-dark transition-colors">
-                                </div>
-                                <div>
-                                    <label class="block text-xs text-brand-accent font-body font-semibold uppercase tracking-[0.15em] mb-2">Cierre</label>
-                                    <input type="time" id="h-ci2" class="w-full bg-brand-light border border-brand-border p-4 text-brand-text font-body focus:outline-none focus:border-brand-dark transition-colors">
                                 </div>
                             </div>
                         </div>
@@ -333,28 +300,16 @@
 
             <div class="grid grid-cols-2 gap-4 mb-4">
                 <div>
-                    <label class="block text-xs text-brand-accent font-body font-semibold uppercase tracking-[0.15em] mb-2">Apertura Mañana</label>
+                    <label class="block text-xs text-brand-accent font-body font-semibold uppercase tracking-[0.15em] mb-2">Apertura</label>
                     <input type="time" id="tat-ap1" class="w-full bg-white border border-brand-border p-3 text-brand-text font-body focus:outline-none focus:border-brand-dark">
                 </div>
                 <div>
-                    <label class="block text-xs text-brand-accent font-body font-semibold uppercase tracking-[0.15em] mb-2">Cierre Mañana</label>
+                    <label class="block text-xs text-brand-accent font-body font-semibold uppercase tracking-[0.15em] mb-2">Cierre</label>
                     <input type="time" id="tat-ci1" class="w-full bg-white border border-brand-border p-3 text-brand-text font-body focus:outline-none focus:border-brand-dark">
                 </div>
             </div>
 
-            <p class="text-xs font-body font-light text-brand-accent mb-2 mt-4">Turno tarde (Opcional si descansa a comer)</p>
-            <div class="grid grid-cols-2 gap-4 mb-8">
-                <div>
-                    <label class="block text-xs text-brand-accent font-body font-semibold uppercase tracking-[0.15em] mb-2">Apertura Tarde</label>
-                    <input type="time" id="tat-ap2" class="w-full bg-white border border-brand-border p-3 text-brand-text font-body focus:outline-none focus:border-brand-dark">
-                </div>
-                <div>
-                    <label class="block text-xs text-brand-accent font-body font-semibold uppercase tracking-[0.15em] mb-2">Cierre Tarde</label>
-                    <input type="time" id="tat-ci2" class="w-full bg-white border border-brand-border p-3 text-brand-text font-body focus:outline-none focus:border-brand-dark">
-                </div>
-            </div>
-
-            <div class="flex flex-col gap-3">
+            <div class="flex flex-col gap-3 mt-8">
                 <button onclick="guardarHorarioDiaTat()" id="btn-guardar-htat" class="w-full bg-brand-dark text-white font-heading font-bold py-4 uppercase tracking-widest hover:bg-white hover:text-brand-dark border border-brand-dark transition-all">Guardar Día</button>
                 <button onclick="borrarHorarioDiaTat()" id="btn-borrar-htat" class="w-full bg-white text-brand-red font-heading font-bold py-4 uppercase tracking-widest hover:bg-brand-red hover:text-white border border-brand-red transition-all">Este Tatuador NO Trabaja Este Día</button>
             </div>
@@ -440,14 +395,19 @@
         }
 
         // ==========================================
-        // GESTIÓN DE TATUADORES
+        // GESTIÓN DE TATUADORES (CON CONTROL DE ERRORES MEJORADO)
         // ==========================================
         async function cargarTatuadores() {
             const lista = document.getElementById('lista-tatuadores');
             try {
                 const sp = getSupabase();
                 const { data, error } = await sp.from('tatuadores').select('*').order('nombre');
-                if (error) throw error;
+                
+                if (error) {
+                    console.error("Error SQL:", error);
+                    throw error;
+                }
+                
                 listaTatuadoresGlobal = data || [];
                 
                 if (listaTatuadoresGlobal.length === 0) { 
@@ -472,7 +432,7 @@
                 });
                 lista.innerHTML = html;
             } catch (e) {
-                lista.innerHTML = '<p class="text-brand-red col-span-2">❌ Error al cargar. Asegúrate de ejecutar el SQL.</p>';
+                lista.innerHTML = `<p class="text-brand-red col-span-2">❌ Error al cargar: ${e.message || 'Sin permisos'}</p>`;
             }
         }
 
@@ -485,10 +445,19 @@
             btn.innerText = "⏳...";
             try {
                 const sp = getSupabase();
-                await sp.from('tatuadores').insert([{ nombre: nombre }]);
+                const { error } = await sp.from('tatuadores').insert([{ nombre: nombre, estado_actual: 'libre' }]);
+                
+                if (error) {
+                    alert("❌ Error en la base de datos: " + error.message);
+                    btn.innerText = "Registrar";
+                    return;
+                }
+                
                 input.value = "";
                 await cargarTatuadores();
-            } catch (e) { alert("❌ Error al añadir tatuador."); }
+            } catch (e) { 
+                alert("❌ Error de red al añadir tatuador."); 
+            }
             btn.innerText = "Registrar";
         }
 
@@ -497,10 +466,12 @@
             if(!nuevoNombre) return alert("El nombre no puede estar vacío.");
             try {
                 const sp = getSupabase();
-                await sp.from('tatuadores').update({ nombre: nuevoNombre }).eq('id', id);
+                const { error } = await sp.from('tatuadores').update({ nombre: nuevoNombre }).eq('id', id);
+                if (error) throw error;
+                
                 alert("✅ Nombre guardado con éxito.");
                 cargarTatuadores();
-            } catch (e) { alert("❌ Error al actualizar."); }
+            } catch (e) { alert("❌ Error al actualizar: " + e.message); }
         }
 
         async function borrarTatuador(id, btn) {
@@ -508,9 +479,14 @@
             btn.innerText = "⏳";
             try {
                 const sp = getSupabase();
-                await sp.from('tatuadores').delete().eq('id', id);
+                const { error } = await sp.from('tatuadores').delete().eq('id', id);
+                if (error) throw error;
+                
                 await cargarTatuadores();
-            } catch (e) { alert("❌ No se pudo borrar."); btn.innerText = "🗑️ Borrar"; }
+            } catch (e) { 
+                alert("❌ No se pudo borrar: " + e.message); 
+                btn.innerText = "🗑️ Borrar"; 
+            }
         }
 
         // ==========================================
@@ -520,7 +496,6 @@
             idTatuadorActivoParaHorario = id;
             document.getElementById('modal-tat-nombre').innerText = nombre;
             document.getElementById('modal-horario-tat').classList.remove('hidden');
-            // Cargar el horario del día seleccionado por defecto (Lunes)
             document.getElementById('sel-dia-tat').value = "1";
             cargarHorarioDiaTat();
         }
@@ -532,74 +507,69 @@
 
         async function cargarHorarioDiaTat() {
             const dia = document.getElementById('sel-dia-tat').value;
-            // Limpiar inputs
-            ['tat-ap1', 'tat-ci1', 'tat-ap2', 'tat-ci2'].forEach(id => document.getElementById(id).value = "");
+            ['tat-ap1', 'tat-ci1'].forEach(id => document.getElementById(id).value = "");
 
             try {
                 const sp = getSupabase();
-                const { data } = await sp.from('horarios_tatuadores').select('*')
+                const { data, error } = await sp.from('horarios_tatuadores').select('*')
                                         .eq('tatuador_id', idTatuadorActivoParaHorario)
                                         .eq('dia_semana', dia).single();
                 if (data) {
                     if(data.apertura_1) document.getElementById('tat-ap1').value = data.apertura_1.substring(0,5);
                     if(data.cierre_1) document.getElementById('tat-ci1').value = data.cierre_1.substring(0,5);
-                    if(data.apertura_2) document.getElementById('tat-ap2').value = data.apertura_2.substring(0,5);
-                    if(data.cierre_2) document.getElementById('tat-ci2').value = data.cierre_2.substring(0,5);
                 }
-            } catch (e) { /* Si no hay datos, se queda en blanco, es normal */ }
+            } catch (e) { /* Normal si no existe */ }
         }
 
         async function guardarHorarioDiaTat() {
             const dia = document.getElementById('sel-dia-tat').value;
             const a1 = document.getElementById('tat-ap1').value || null;
             const c1 = document.getElementById('tat-ci1').value || null;
-            const a2 = document.getElementById('tat-ap2').value || null;
-            const c2 = document.getElementById('tat-ci2').value || null;
             
             const btn = document.getElementById('btn-guardar-htat');
             btn.innerText = "⏳...";
 
             try {
                 const sp = getSupabase();
-                // Ver si ya existe para hacer update, si no insert
                 const { data: existe } = await sp.from('horarios_tatuadores').select('id').eq('tatuador_id', idTatuadorActivoParaHorario).eq('dia_semana', dia).single();
                 
                 if (existe) {
-                    await sp.from('horarios_tatuadores').update({ apertura_1: a1, cierre_1: c1, apertura_2: a2, cierre_2: c2 }).eq('id', existe.id);
+                    const { error } = await sp.from('horarios_tatuadores').update({ apertura_1: a1, cierre_1: c1 }).eq('id', existe.id);
+                    if (error) throw error;
                 } else {
-                    await sp.from('horarios_tatuadores').insert([{ tatuador_id: idTatuadorActivoParaHorario, dia_semana: dia, apertura_1: a1, cierre_1: c1, apertura_2: a2, cierre_2: c2 }]);
+                    const { error } = await sp.from('horarios_tatuadores').insert([{ tatuador_id: idTatuadorActivoParaHorario, dia_semana: dia, apertura_1: a1, cierre_1: c1 }]);
+                    if (error) throw error;
                 }
                 alert("✅ Horario asignado.");
-            } catch (e) { alert("❌ Fallo al guardar."); }
+            } catch (e) { alert("❌ Fallo al guardar: " + e.message); }
             btn.innerText = "Guardar Día";
         }
 
         async function borrarHorarioDiaTat() {
             const dia = document.getElementById('sel-dia-tat').value;
-            if(!confirm("¿Confirmas que el tatuador NO trabajará este día (borrará las horas configuradas y saldrá como no disponible)?")) return;
+            if(!confirm("¿Confirmas que el tatuador NO trabajará este día?")) return;
             
             const btn = document.getElementById('btn-borrar-htat');
             btn.innerText = "⏳...";
             try {
                 const sp = getSupabase();
-                // Para que no trabaje, insertamos 00:00 o lo borramos para que herede si el estudio abre? 
-                // Si el tatuador no trabaja y el estudio sí, lo mejor es guardar una entrada sin horas.
                 const { data: existe } = await sp.from('horarios_tatuadores').select('id').eq('tatuador_id', idTatuadorActivoParaHorario).eq('dia_semana', dia).single();
                 
+                // Guardamos nulo para indicar explícitamente que este día no se trabaja (anulando el horario base del estudio)
                 if (existe) {
-                    await sp.from('horarios_tatuadores').update({ apertura_1: null, cierre_1: null, apertura_2: null, cierre_2: null }).eq('id', existe.id);
+                    await sp.from('horarios_tatuadores').update({ apertura_1: null, cierre_1: null }).eq('id', existe.id);
                 } else {
                     await sp.from('horarios_tatuadores').insert([{ tatuador_id: idTatuadorActivoParaHorario, dia_semana: dia }]);
                 }
                 
-                ['tat-ap1', 'tat-ci1', 'tat-ap2', 'tat-ci2'].forEach(id => document.getElementById(id).value = "");
-                alert("✅ Día marcado como Descanso para el tatuador.");
-            } catch (e) { alert("❌ Error."); }
+                ['tat-ap1', 'tat-ci1'].forEach(id => document.getElementById(id).value = "");
+                alert("✅ Día marcado como Descanso para este tatuador.");
+            } catch (e) { alert("❌ Error: " + e.message); }
             btn.innerText = "Este Tatuador NO Trabaja Este Día";
         }
 
         // ==========================================
-        // CARTA Y DEMÁS (Ya existente)
+        // CARTA Y DEMÁS
         // ==========================================
         async function cargarMenu() {
             const lista = document.getElementById('lista-menu');
@@ -673,16 +643,13 @@
         async function cargarHorarioDia() {
             const diaSel = document.getElementById('sel-dia-horario').value;
             document.getElementById('h-ap1').value = ""; document.getElementById('h-ci1').value = "";
-            document.getElementById('h-ap2').value = ""; document.getElementById('h-ci2').value = "";
-
+            
             try {
                 const sp = getSupabase();
                 const { data } = await sp.from('horarios_semana').select('*').eq('dia_semana', diaSel).single();
                 if (data) {
                     if(data.apertura_1) document.getElementById('h-ap1').value = data.apertura_1.substring(0,5);
                     if(data.cierre_1) document.getElementById('h-ci1').value = data.cierre_1.substring(0,5);
-                    if(data.apertura_2) document.getElementById('h-ap2').value = data.apertura_2.substring(0,5);
-                    if(data.cierre_2) document.getElementById('h-ci2').value = data.cierre_2.substring(0,5);
                 }
             } catch (error) {}
         }
@@ -696,9 +663,7 @@
                 await sp.from('horarios_semana').upsert({
                     dia_semana: diaSel,
                     apertura_1: document.getElementById('h-ap1').value || null,
-                    cierre_1: document.getElementById('h-ci1').value || null,
-                    apertura_2: document.getElementById('h-ap2').value || null,
-                    cierre_2: document.getElementById('h-ci2').value || null
+                    cierre_1: document.getElementById('h-ci1').value || null
                 });
                 alert("✅ Horario Base guardado.");
             } catch(e) { alert("❌ Fallo al guardar."); }
