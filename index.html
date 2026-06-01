@@ -57,7 +57,6 @@
 <body class="bg-brand-bg text-brand-text font-body relative">
 
     <header class="bg-brand-bg text-brand-text py-10 px-4 text-center border-b border-brand-border flex flex-col items-center shadow-minimal">
-        <div class="text-brand-dark opacity-80 text-5xl mb-3 font-heading font-bold">CT</div>
         <h1 class="text-4xl md:text-5xl font-heading uppercase tracking-widest text-brand-dark">Ciskotattoo</h1>
         <p class="mt-3 font-body font-light uppercase text-sm md:text-base text-brand-accent tracking-[0.2em]">Reserva tu estudio/calco al instante</p>
     </header>
@@ -179,7 +178,7 @@
         </div>
     </div>
 
-    <!-- LÓGICA DE JAVASCRIPT (ADAPTADA A TATUADORES Y TIEMPO REAL) -->
+    <!-- LÓGICA DE JAVASCRIPT -->
     <script>
         const SUPABASE_URL = 'https://fqydtjwqkmdatfsauomh.supabase.co'; 
         const SUPABASE_ANON_KEY = 'sb_publishable_-FdijJSiBiKFSY4I4F-LJw_fB89m4Cj';
@@ -240,14 +239,14 @@
             }
         }
 
-        // ==========================================
-        // CÁLCULO DE HORAS (TIEMPO REAL)
-        // ==========================================
+        function timeToMins(t) {
+            if(!t) return null; let p = t.split(':'); return parseInt(p[0]) * 60 + parseInt(p[1]);
+        }
+
         async function actualizarHoras(idFecha = 'input-fecha', idHora = 'input-hora') {
             const fechaInput = document.getElementById(idFecha);
             const selectHora = document.getElementById(idHora);
             
-            // Detectamos qué select de tatuador usar (si es reserva nueva o gestión)
             const idTat = idFecha === 'gest-fecha' ? miReservaActual.tatuador_id : document.getElementById('input-tatuador').value;
             
             if (!fechaInput || !selectHora) return;
@@ -256,7 +255,6 @@
                 return;
             }
 
-            // Encontrar el nombre del tatuador elegido (para los bloqueos)
             const tatElegido = tatuadoresGlobales.find(t => t.id === idTat);
             const tatNombre = tatElegido ? tatElegido.nombre : '';
 
@@ -277,7 +275,6 @@
             const fechaDate = new Date(fechaSeleccionada + 'T00:00:00'); 
             const diaSemana = fechaDate.getDay().toString();
 
-            // Bloqueos de Descanso Semanal y Bloqueos de Día Completo (Estudio entero o este tatuador)
             let estaCerradoSemanal = diasCerradosGlobales.includes(diaSemana);
             let estaBloqueado = bloqueosGlobales.some(b => b.fecha === fechaSeleccionada && (b.zona === 'Ambas' || b.zona === tatNombre));
 
@@ -290,16 +287,11 @@
             const hoyRealIso = `${horaReal.getFullYear()}-${String(horaReal.getMonth() + 1).padStart(2, '0')}-${String(horaReal.getDate()).padStart(2, '0')}`;
             let esHoyReal = (fechaSeleccionada === hoyRealIso);
             
-            // CONSULTA EN TIEMPO REAL A SUPABASE DE LAS CITAS DEL TATUADOR ESE DÍA
             const sp = getSupabase();
-            const { data: reservasTat } = await sp.from('reservas').select('hora_inicio, id').eq('fecha', fechaSeleccionada).eq('tatuador_id', idTat);
+            const { data: reservasTat } = await sp.from('reservas').select('hora_inicio, id, duracion').eq('fecha', fechaSeleccionada).eq('tatuador_id', idTat);
 
             let opcionesHTML = "";
             const horarioDia = horariosGlobales.find(h => h.dia_semana.toString() === diaSemana);
-
-            function timeToMins(t) {
-                if(!t) return null; let p = t.split(':'); return parseInt(p[0]) * 60 + parseInt(p[1]);
-            }
 
             for(let h = 0; h <= 23; h++) {
                 let minutosPosibles = ['00', '15', '30', '45'];
@@ -307,9 +299,8 @@
                     let timeEnMins = (h * 60) + parseInt(m);
                     let minutosAhora = (horaReal.getHours() * 60) + horaReal.getMinutes();
                     
-                    if (esHoyReal && timeEnMins <= minutosAhora) continue; // Pasado
+                    if (esHoyReal && timeEnMins <= minutosAhora) continue; 
 
-                    // Filtro de horario comercial
                     if (horariosGlobales.length > 0) {
                         if (!horarioDia) continue; 
                         let inT1 = false; let inT2 = false;
@@ -322,7 +313,6 @@
                         if(h < 8 || (h === 23 && m !== '00')) continue;
                     }
 
-                    // Filtro de horas sueltas bloqueadas
                     let bloqueadoHora = bloqueosHorasGlobales.some(b => {
                         if (b.fecha !== fechaSeleccionada) return false;
                         let bIni = timeToMins(b.hora_inicio);
@@ -331,14 +321,16 @@
                     });
                     if (bloqueadoHora) continue; 
 
-                    // FILTRO DINÁMICO: Si el tatuador ya tiene una cita, quitamos el hueco (150 mins de margen)
                     let chocaConCita = (reservasTat || []).some(r => {
-                        // Si estamos en la vista 'gestión' (modificando), ignoramos la propia cita que estamos moviendo
                         if (miReservaActual && r.id === miReservaActual.id) return false; 
-                        let rMins = timeToMins(r.hora_inicio);
-                        return Math.abs(timeEnMins - rMins) < 150; 
+                        let rInicio = timeToMins(r.hora_inicio);
+                        let rDur = r.duracion || 60; 
+                        let rFin = rInicio + rDur; 
+                        let miFin = timeEnMins + 60; 
+                        return (timeEnMins < rFin) && (miFin > rInicio); 
                     });
-                    if (chocaConCita) continue; // ❌ ESTA LÍNEA ES MAGIA: BORRA LA HORA SI ESTÁ OCUPADO
+
+                    if (chocaConCita) continue; 
 
                     let horaFormateada = h < 10 ? '0' + h : h; 
                     opcionesHTML += `<option value="${horaFormateada}:${m}">${horaFormateada}:${m}</option>`;
@@ -363,7 +355,6 @@
                     return; 
                 }
 
-                // Cargamos también los Tatuadores
                 const [respBloqueos, respDias, respHorarios, respBloqueosHoras, respTatuadores] = await Promise.all([
                     sp.from('bloqueos').select('*'),
                     sp.from('dias_cerrados').select('dias').eq('id', 1).single(),
@@ -377,7 +368,6 @@
                 if (respHorarios.data) horariosGlobales = respHorarios.data;
                 if (respBloqueosHoras.data) bloqueosHorasGlobales = respBloqueosHoras.data;
 
-                // Llenamos el select de tatuadores
                 tatuadoresGlobales = respTatuadores.data || [];
                 const selTat = document.getElementById('input-tatuador');
                 selTat.innerHTML = '<option value="">Selecciona tu tatuador...</option>';
@@ -413,33 +403,36 @@
             try {
                 const sp = getSupabase();
                 
-                // Aunque ya filtramos en el frontend, hacemos una última validación doble por seguridad.
-                const { data: reservasMismoTatuador } = await sp.from('reservas').select('hora_inicio').eq('fecha', fecha).eq('tatuador_id', idTat);
-                const horaSol = new Date(`${fecha}T${hora}:00`);
+                const { data: reservasMismoTatuador } = await sp.from('reservas').select('hora_inicio, duracion').eq('fecha', fecha).eq('tatuador_id', idTat);
+                
+                let minNuevo = timeToMins(hora);
+                let finNuevo = minNuevo + 60; 
+
                 let choqueReal = (reservasMismoTatuador || []).some(r => {
-                    return Math.abs((horaSol - new Date(`${fecha}T${r.hora_inicio}`)) / 60000) < 150;
+                    let rInicio = timeToMins(r.hora_inicio);
+                    let rFin = rInicio + (r.duracion || 60);
+                    return (minNuevo < rFin) && (finNuevo > rInicio);
                 });
 
                 if (choqueReal) {
                     alert(`❌ Lo sentimos, alguien acaba de reservar esa hora con ${tatNombre}.`);
-                    actualizarHoras('input-fecha', 'input-hora'); // Refresca horas
+                    actualizarHoras('input-fecha', 'input-hora'); 
                     btn.innerHTML = 'Confirmar Cita'; btn.disabled = false; return;
                 }
 
-                // Guardar la cita
                 const { error: insertError } = await sp.from('reservas').insert([{ 
                     tatuador_id: idTat, 
                     nombre_cliente: nombre, 
                     telefono_cliente: telefono, 
                     fecha: fecha, 
                     hora_inicio: hora + ':00', 
+                    duracion: 60, 
                     codigo_secreto: letrasAleatorias 
                 }]);
 
                 if (insertError) { alert("❌ Fallo en la BD al guardar."); btn.innerHTML = 'Confirmar Cita'; btn.disabled = false; return; }
 
-                // Enviar a Telegram
-                const msg = `👑 *NUEVA CITA CISKOTATTOO* 👑\n👤 *Nombre:* ${nombre}\n📞 *Tlf:* ${telefono}\n📅 *Día:* ${fecha}\n⏰ *Hora:* ${hora}\n💉 *Tatuador:* ${tatNombre}\n🔑 *ID:* ${identificadorCompleto}`;
+                const msg = `👑 *NUEVA CONSULTA/CALCO CISKOTATTOO* 👑\n👤 *Nombre:* ${nombre}\n📞 *Tlf:* ${telefono}\n📅 *Día:* ${fecha}\n⏰ *Hora:* ${hora}\n💉 *Tatuador:* ${tatNombre}\n🔑 *ID:* ${identificadorCompleto}`;
                 fetch(`https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/sendMessage`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ chat_id: TELEGRAM_CHAT_ID, text: msg, parse_mode: 'Markdown' }) });
 
                 document.getElementById('id-nombre').innerText = nombreLimpio;
@@ -458,7 +451,6 @@
 
             try {
                 const sp = getSupabase();
-                // Traemos la reserva con el nombre del tatuador incrustado
                 const { data: reservas, error: errorBD } = await sp.from('reservas').select('*, tatuadores(nombre)');
                 if(errorBD) throw errorBD; 
 
@@ -475,7 +467,6 @@
                 document.getElementById('vista-gestion').classList.remove('hidden');
                 document.getElementById('gest-fecha').value = miReservaActual.fecha;
                 
-                // Refrescamos las horas con su tatuador
                 await actualizarHoras('gest-fecha', 'gest-hora');
                 setTimeout(() => { document.getElementById('gest-hora').value = miReservaActual.hora_inicio.substring(0,5); }, 100);
 
@@ -492,12 +483,16 @@
 
             try {
                 const sp = getSupabase();
-                // Verificamos de nuevo que nadie haya pillado el hueco
-                const { data: reservasMismoTatuador } = await sp.from('reservas').select('id, hora_inicio').eq('fecha', nuevaFecha).eq('tatuador_id', miReservaActual.tatuador_id);
-                const horaSol = new Date(`${nuevaFecha}T${nuevaHora}:00`);
+                const { data: reservasMismoTatuador } = await sp.from('reservas').select('id, hora_inicio, duracion').eq('fecha', nuevaFecha).eq('tatuador_id', miReservaActual.tatuador_id);
+                
+                let minNuevo = timeToMins(nuevaHora);
+                let finNuevo = minNuevo + (miReservaActual.duracion || 60); 
+
                 let choqueReal = (reservasMismoTatuador || []).some(r => {
                     if (r.id === miReservaActual.id) return false;
-                    return Math.abs((horaSol - new Date(`${nuevaFecha}T${r.hora_inicio}`)) / 60000) < 150;
+                    let rInicio = timeToMins(r.hora_inicio);
+                    let rFin = rInicio + (r.duracion || 60);
+                    return (minNuevo < rFin) && (finNuevo > rInicio);
                 });
 
                 if (choqueReal) { alert(`❌ Lo sentimos, ese hueco acaba de ser reservado.`); btn.innerHTML = 'Guardar Cambios'; btn.disabled = false; return; }
