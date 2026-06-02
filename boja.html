@@ -33,17 +33,13 @@
         }
     </script>
 
-    <!-- Librerías (Supabase, pdf-lib, signature_pad) -->
+    <!-- Librerías (Supabase y pdf-lib) Ya NO cargamos signature_pad -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="https://unpkg.com/pdf-lib/dist/pdf-lib.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/signature_pad@4.1.7/dist/signature_pad.umd.min.js"></script>
 
     <style>
         body { background-color: #FFFFFF; color: #000000; }
         * { border-radius: 2px !important; }
-        /* touch-action: none es VITAL para poder firmar en el móvil sin que la pantalla se mueva */
-        .canvas-container { position: relative; width: 100%; height: 250px; border: 2px dashed #A0A0A0; background-color: #FFFFFF; cursor: crosshair; touch-action: none; }
-        canvas { display: block; width: 100%; height: 100%; }
         ::-webkit-scrollbar { width: 6px; }
         ::-webkit-scrollbar-track { background: #F5F5F5; }
         ::-webkit-scrollbar-thumb { background: #282828; }
@@ -58,13 +54,6 @@
     <header class="bg-brand-bg py-8 px-4 text-center border-b border-brand-border shadow-sm mb-8 relative">
         <h1 class="text-3xl font-heading uppercase tracking-widest text-brand-dark font-bold">Ciskotattoo</h1>
         <p class="mt-2 font-body font-semibold uppercase text-xs text-brand-accent tracking-[0.2em]">Consentimiento Informado (BOJA)</p>
-        
-        <!-- BOTÓN DE PRUEBAS -->
-        <div class="mt-6 flex justify-center">
-            <button type="button" id="btn-rellenar-pruebas" class="bg-[#F5F5F5] border border-[#282828] text-[#282828] text-xs font-bold px-4 py-2 uppercase tracking-widest hover:bg-[#282828] hover:text-white transition-colors">
-                🧪 Autocompletar Datos de Tatuador
-            </button>
-        </div>
     </header>
 
     <main class="max-w-4xl mx-auto px-4">
@@ -163,18 +152,19 @@
                 <div class="md:col-span-2"><label>Otra Información</label><textarea id="otra_info" rows="2"></textarea></div>
             </div>
 
-            <!-- LUGAR, FECHA Y FIRMA -->
-            <h2 class="section-title">5. Consentimiento y Firma</h2>
+            <!-- LUGAR, FECHA Y FIRMA DIGITAL -->
+            <h2 class="section-title">5. Consentimiento y Firma Digital</h2>
             <div class="space-y-4">
                 <div><label>Ciudad de la firma</label><input type="text" id="fecha_ciudad" required placeholder="Ej: Sevilla"></div>
                 
-                <label>Firma del Cliente</label>
-                <div class="canvas-container">
-                    <!-- Aquí es donde dibuja el cliente -->
-                    <canvas id="signature-pad"></canvas>
-                </div>
-                <div class="text-right mt-2">
-                    <button type="button" id="btn-limpiar-firma" class="text-brand-accent hover:text-brand-dark text-xs font-bold uppercase tracking-widest">Limpiar Firma</button>
+                <div class="bg-[#F5F5F5] p-5 border border-[#282828] mt-4">
+                    <label class="flex items-start gap-4 cursor-pointer normal-case text-brand-dark font-normal">
+                        <input type="checkbox" id="check_firma_digital" required class="mt-1 w-6 h-6 accent-brand-dark flex-shrink-0">
+                        <span class="text-sm font-semibold leading-relaxed">
+                            Acepto todas las condiciones descritas y <b class="uppercase">firmo digitalmente</b> este documento. 
+                            Entiendo que mi Nombre, DNI y la marca de tiempo actual (Fecha y Hora exacta) quedarán estampados en el PDF y registrados en la Base de Datos como prueba legal de mi consentimiento expreso, libre y voluntario.
+                        </span>
+                    </label>
                 </div>
             </div>
 
@@ -186,7 +176,7 @@
         </form>
     </main>
 
-    <!-- El script SIEMPRE al final del body para que encuentre el Canvas -->
+    <!-- El script -->
     <script src="app.js"></script>
 </body>
 </html>
