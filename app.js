@@ -1,18 +1,19 @@
 // =========================================================
 // 1. CONFIGURACIÓN CONSTANTE (Ajusta la firma aquí)
 // =========================================================
-// Nota de pdf-lib: El eje Y empieza desde ABAJO de la hoja.
 const FIRMA_CONFIG = {
     paginaIndex: 2,  // 0 = Pág 1, 1 = Pág 2, 2 = Pág 3
     x: 80,           // Ajusta hacia la derecha
-    y: 120,          // Ajusta hacia arriba (ej: 100 está cerca del pie de página)
+    y: 120,          // Ajusta hacia arriba (0 es el borde inferior de la hoja)
     width: 140,      
     height: 50       
 };
 
 const SUPABASE_URL = 'https://fqydtjwqkmdatfsauomh.supabase.co'; 
 const SUPABASE_ANON_KEY = 'sb_publishable_-FdijJSiBiKFSY4I4F-LJw_fB89m4Cj';
-const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+// ARREGLO: Cambiamos el nombre a supabaseClient para no chocar con la librería
+const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
 // =========================================================
 // 2. INICIALIZAR EL CANVAS DE FIRMA
@@ -23,7 +24,7 @@ const signaturePad = new SignaturePad(canvas, {
     backgroundColor: "rgba(0,0,0,0)" // Transparente
 });
 
-// Arregla resolución en pantallas retina
+// Arregla resolución en pantallas retina y móviles
 function resizeCanvas() {
     const ratio = Math.max(window.devicePixelRatio || 1, 1);
     canvas.width = canvas.offsetWidth * ratio;
@@ -31,8 +32,9 @@ function resizeCanvas() {
     canvas.getContext("2d").scale(ratio, ratio);
     signaturePad.clear();
 }
-window.onresize = resizeCanvas;
-resizeCanvas();
+window.addEventListener("resize", resizeCanvas);
+// Retardo mínimo para asegurar que el CSS ha cargado el tamaño antes de encenderlo
+setTimeout(resizeCanvas, 100);
 
 // =========================================================
 // 3. HELPERS PARA RELLENAR PDF SIN CRASHEAR
@@ -42,7 +44,7 @@ const fillText = (form, fieldName, value) => {
         const field = form.getTextField(fieldName);
         if (field && value) field.setText(value.toString());
     } catch (e) {
-        console.warn(`[PDF-LIB] Campo de texto '${fieldName}' no encontrado.`);
+        console.warn(`[PDF-LIB] Campo '${fieldName}' no encontrado.`);
     }
 };
 
@@ -67,7 +69,7 @@ document.getElementById('consent-form').addEventListener('submit', async functio
 
     const btn = document.getElementById('btn-submit');
     const textoBtnOriginal = btn.innerText;
-    btn.innerText = "⏳ Procesando documento (no cierres)...";
+    btn.innerText = "⏳ Procesando documento legal (no cierres)...";
     btn.disabled = true;
 
     try {
@@ -76,9 +78,9 @@ document.getElementById('consent-form').addEventListener('submit', async functio
         const firmaBytes = await fetch(firmaDataUrl).then(res => res.arrayBuffer());
 
         // B. Descargar la plantilla vacía
-        const urlPlantilla = 'plantilla_boja.pdf'; // Asegúrate de que esté en la raíz del proyecto
+        const urlPlantilla = 'plantilla_boja.pdf';
         const plantillaBytes = await fetch(urlPlantilla).then(res => {
-            if(!res.ok) throw new Error("No se encontró plantilla_boja.pdf");
+            if(!res.ok) throw new Error("No se encontró el archivo plantilla_boja.pdf en la misma carpeta.");
             return res.arrayBuffer();
         });
 
@@ -90,7 +92,7 @@ document.getElementById('consent-form').addEventListener('submit', async functio
         // D. Extraer datos del HTML y rellenar textos
         const ahora = new Date();
         
-        // --- 1. Datos Centro y Tatuador ---
+        // 1. Datos Centro y Tatuador
         fillText(form, 'centro_nombre', document.getElementById('centro_nombre').value);
         fillText(form, 'centro_nif', document.getElementById('centro_nif').value);
         fillText(form, 'centro_dir_linea1', document.getElementById('centro_dir_linea1').value);
@@ -107,7 +109,7 @@ document.getElementById('consent-form').addEventListener('submit', async functio
         fillText(form, 'tatuador_dir_linea3', document.getElementById('tatuador_dir_linea3').value);
         fillText(form, 'tatuador_contacto', document.getElementById('tatuador_contacto').value);
 
-        // --- 2. Datos Cliente ---
+        // 2. Datos Cliente
         const dniCliente = document.getElementById('cliente_dni').value.toUpperCase();
         const nombreCliente = document.getElementById('cliente_nombre').value;
         const tlfCliente = document.getElementById('cliente_telefono').value;
@@ -122,8 +124,7 @@ document.getElementById('consent-form').addEventListener('submit', async functio
         fillText(form, 'cliente_telefono', tlfCliente);
         fillText(form, 'cliente_email', document.getElementById('cliente_email').value);
         
-        // --- 3. Detalles de Servicio ---
-        // (Nota: el prompt indica zona_anatomica en los inputs, pero lo mapearé por si acaso a 'zona_anatomica' y a 'como_se_realiza' si hace falta en el BOJA)
+        // 3. Detalles de Servicio
         fillText(form, 'zona_anatomica', document.getElementById('zona_anatomica').value); 
         fillText(form, 'como_se_realiza', document.getElementById('como_se_realiza').value);
         fillText(form, 'materiales', document.getElementById('materiales').value);
@@ -133,17 +134,16 @@ document.getElementById('consent-form').addEventListener('submit', async functio
         fillText(form, 'presupuesto', document.getElementById('presupuesto').value);
         fillText(form, 'otra_info', document.getElementById('otra_info').value);
 
-        // --- 4. Final del documento ---
+        // 4. Final del documento
         fillText(form, 'nombre_final', nombreCliente);
         
-        // Averiguar técnica seleccionada para la parte final (Tatuaje, Micro, Piercing)
         const tecnicaSeleccionada = document.querySelector('input[name="tecnica"]:checked');
         const txtTecnicaFinal = tecnicaSeleccionada ? tecnicaSeleccionada.parentElement.innerText.trim() : 'Tatuaje';
         fillText(form, 'tecnica_final', txtTecnicaFinal);
 
         fillText(form, 'fecha_ciudad', document.getElementById('fecha_ciudad').value);
         fillText(form, 'fecha_dia', ahora.getDate().toString());
-        fillText(form, 'fecha_mes', (ahora.getMonth() + 1).toString()); // Mes de 1 a 12
+        fillText(form, 'fecha_mes', (ahora.getMonth() + 1).toString());
         fillText(form, 'fecha_anio', ahora.getFullYear().toString());
 
         // E. RELLENAR CHECKBOXES
@@ -170,10 +170,10 @@ document.getElementById('consent-form').addEventListener('submit', async functio
         fillCheck(form, 'retoques_si', ret === 'SI');
         fillCheck(form, 'retoques_no', ret === 'NO');
 
-        // F. APLANAR FORMULARIO (Evita ediciones posteriores)
+        // F. APLANAR FORMULARIO
         form.flatten();
 
-        // G. INCRUSTAR FIRMA EN LA PÁGINA 3
+        // G. INCRUSTAR FIRMA EN LA PÁGINA ESPECIFICADA
         const imagenPdfFirma = await pdfDoc.embedPng(firmaBytes);
         const paginas = pdfDoc.getPages();
         const paginaFirma = paginas[FIRMA_CONFIG.paginaIndex];
@@ -192,9 +192,10 @@ document.getElementById('consent-form').addEventListener('submit', async functio
         const nombreArchivoPdf = `${dniCliente}_${Date.now()}.pdf`;
 
         // I. SUBIR A SUPABASE STORAGE
-        btn.innerText = "☁️ Guardando en la nube...";
+        btn.innerText = "☁️ Guardando en la base de datos...";
         
-        const { data: uploadData, error: uploadError } = await supabase.storage
+        // USAMOS supabaseClient EN VEZ DE supabase
+        const { data: uploadData, error: uploadError } = await supabaseClient.storage
             .from('consentimientos')
             .upload(nombreArchivoPdf, pdfBlob, {
                 contentType: 'application/pdf',
@@ -205,20 +206,20 @@ document.getElementById('consent-form').addEventListener('submit', async functio
         if (uploadError) throw new Error("Error subiendo PDF: " + uploadError.message);
 
         // Obtener URL Pública
-        const { data: publicUrlData } = supabase.storage.from('consentimientos').getPublicUrl(nombreArchivoPdf);
+        const { data: publicUrlData } = supabaseClient.storage.from('consentimientos').getPublicUrl(nombreArchivoPdf);
         const pdfUrl = publicUrlData.publicUrl;
 
         // J. INSERTAR EN LA BASE DE DATOS
-        const { error: dbError } = await supabase.from('clientes_tatuaje').insert([{
+        const { error: dbError } = await supabaseClient.from('clientes_tatuaje').insert([{
             dni: dniCliente,
             nombre: nombreCliente,
             telefono: tlfCliente,
             pdf_url: pdfUrl
         }]);
 
-        if (dbError) throw new Error("Error en BD: " + dbError.message);
+        if (dbError) throw new Error("Error guardando cliente: " + dbError.message);
 
-        // K. FORZAR DESCARGA LOCAL (Para tenerlo físicamente o imprimirlo)
+        // K. FORZAR DESCARGA LOCAL
         const objectUrl = URL.createObjectURL(pdfBlob);
         const a = document.createElement('a');
         a.href = objectUrl;
@@ -228,14 +229,14 @@ document.getElementById('consent-form').addEventListener('submit', async functio
         a.remove();
         URL.revokeObjectURL(objectUrl);
 
-        alert("✅ Consentimiento generado, guardado y descargado con éxito.");
+        alert("✅ Documento generado y guardado legalmente.");
         
         // Limpiar para el siguiente cliente
         document.getElementById('consent-form').reset();
         signaturePad.clear();
 
     } catch (error) {
-        console.error(error);
+        console.error("Error completo:", error);
         alert("❌ Ocurrió un error: " + error.message);
     } finally {
         btn.disabled = false;
