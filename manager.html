@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Manager - Ciskotattoo</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600&family=Montserrat:wght@400;600;700;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
@@ -16,6 +17,8 @@
         ::-webkit-scrollbar { width: 6px; }
         ::-webkit-scrollbar-track { background: #F5F5F5; }
         ::-webkit-scrollbar-thumb { background: #282828; border-radius: 0px; }
+        .fade-in { animation: fadeIn 0.5s ease-in-out; }
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
         * { border-radius: 2px !important; }
         input[type="time"]::-webkit-calendar-picker-indicator, input[type="date"]::-webkit-calendar-picker-indicator { cursor: pointer; }
     </style>
@@ -24,19 +27,21 @@
 
     <!-- LOGIN -->
     <div id="pantalla-login" class="min-h-screen flex items-center justify-center bg-brand-bg px-4 fixed inset-0 z-[100]">
-        <div class="bg-white p-8 md:p-12 border border-brand-border shadow-md w-full max-w-md text-center">
-            <h1 class="text-4xl font-heading uppercase tracking-widest mb-2 font-bold">Ciskotattoo</h1>
+        <div class="bg-white p-8 md:p-12 border border-brand-border shadow-md w-full max-w-md text-center relative">
+            <h1 class="text-4xl font-heading uppercase text-brand-text tracking-widest mb-2 font-bold">Ciskotattoo</h1>
             <p class="text-brand-accent font-body font-semibold mb-10 uppercase tracking-[0.2em] text-xs">Manager Access</p>
             <div class="space-y-6">
-                <input type="email" id="login-user" placeholder="Correo Electrónico" class="w-full bg-brand-light border border-brand-border p-4 text-center focus:outline-none focus:border-brand-dark">
-                <input type="password" id="login-pass" placeholder="Contraseña" class="w-full bg-brand-light border border-brand-border p-4 text-center tracking-[0.3em] focus:outline-none focus:border-brand-dark">
-                <button onclick="intentarLogin()" id="btn-login" class="w-full bg-brand-dark text-white font-heading font-bold text-lg py-5 uppercase hover:bg-brand-light hover:text-brand-dark border border-brand-dark transition-all">Entrar al Panel</button>
+                <input type="email" id="login-user" placeholder="Correo Electrónico" class="w-full bg-brand-light border border-brand-border p-4 text-center font-body focus:outline-none focus:border-brand-dark">
+                <input type="password" id="login-pass" placeholder="Contraseña" class="w-full bg-brand-light border border-brand-border p-4 text-center tracking-[0.3em] font-body focus:outline-none focus:border-brand-dark">
+                <button onclick="intentarLogin()" id="btn-login" class="w-full bg-brand-dark text-white font-heading font-bold text-lg py-5 uppercase hover:bg-brand-light hover:text-brand-dark transition-all border border-brand-dark tracking-[0.15em] active:scale-[0.98]">
+                    Entrar al Panel
+                </button>
             </div>
         </div>
     </div>
 
     <!-- PANEL PRINCIPAL -->
-    <div id="pantalla-dashboard" class="hidden">
+    <div id="pantalla-dashboard" class="hidden fade-in">
         <header class="bg-white py-6 px-6 border-b border-brand-border sticky top-0 z-50 flex flex-col md:flex-row justify-between md:items-center gap-6">
             <div>
                 <h1 class="text-3xl font-heading uppercase tracking-widest font-bold">Ciskotattoo</h1>
@@ -82,11 +87,14 @@
                     </div>
                 </div>
 
+                <div class="bg-brand-light p-8 border border-brand-border">
+                    <label class="block mb-2 font-body font-semibold text-brand-accent text-xs uppercase tracking-[0.15em]">Selecciona al Tatuador</label>
+                    <select id="boja-select-tat" onchange="cargarDatosLegalesTatuador()" class="w-full bg-white border border-brand-border p-4 text-brand-text font-heading text-lg font-bold uppercase focus:outline-none focus:border-brand-dark transition-colors mb-4"><option value="">Cargando equipo...</option></select>
+                </div>
+
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    <!-- Config Legal Tatuador -->
                     <div class="bg-brand-light p-8 border border-brand-border shadow-sm">
                         <h3 class="text-xl font-heading font-bold text-brand-dark uppercase mb-4 tracking-widest border-b border-brand-border pb-2">Perfil Legal del Tatuador</h3>
-                        <select id="boja-select-tat" onchange="cargarDatosLegalesTatuador()" class="w-full bg-white border border-brand-border p-3 font-bold uppercase mb-4 outline-none"><option value="">-- Selecciona Tatuador --</option></select>
                         <div class="grid grid-cols-1 gap-4 text-sm font-body">
                             <div><label class="font-bold text-xs text-brand-accent uppercase mb-1">DNI / NIE</label><input type="text" id="b_dni" class="w-full p-3 border border-brand-border outline-none"></div>
                             <div><label class="font-bold text-xs text-brand-accent uppercase mb-1">Titulación</label><input type="text" id="b_titulo" class="w-full p-3 border border-brand-border outline-none"></div>
@@ -96,20 +104,28 @@
                             <div class="grid grid-cols-2 gap-2"><div><label class="font-bold text-xs text-brand-accent uppercase mb-1">Población</label><input type="text" id="b_pob" class="w-full p-3 border border-brand-border outline-none"></div><div><label class="font-bold text-xs text-brand-accent uppercase mb-1">Provincia</label><input type="text" id="b_prov" class="w-full p-3 border border-brand-border outline-none"></div></div>
                             <div><label class="font-bold text-xs text-brand-accent uppercase mb-1">Teléfono</label><input type="text" id="b_tel" class="w-full p-3 border border-brand-border outline-none"></div>
                         </div>
-                        <button onclick="guardarDatosLegalesTatuador()" id="btn-save-legal" class="mt-6 w-full bg-brand-dark text-white font-bold py-4 uppercase tracking-widest hover:bg-white hover:text-brand-dark border border-brand-dark transition-all">Guardar Perfil</button>
+                        <button onclick="guardarDatosLegalesTatuador()" id="btn-save-legal" class="mt-6 w-full bg-brand-dark text-white font-heading font-bold py-4 uppercase tracking-widest hover:bg-white hover:text-brand-dark border border-brand-dark transition-all">Guardar Perfil Legal</button>
                     </div>
 
-                    <!-- Generador Link -->
                     <div class="bg-brand-light p-8 border border-brand-border shadow-sm">
                         <h3 class="text-xl font-heading font-bold text-brand-dark uppercase mb-4 tracking-widest border-b border-brand-border pb-2">Generar BOJA</h3>
+                        <p class="text-xs text-brand-accent mb-4">Ajusta los detalles de la sesión.</p>
                         <div class="space-y-4 text-sm font-body">
                             <div><label class="font-bold text-xs text-brand-accent uppercase mb-1">Zona Anatómica</label><input type="text" id="draft_zona" class="w-full p-3 border border-brand-border outline-none"></div>
                             <div><label class="font-bold text-xs text-brand-accent uppercase mb-1">Técnica</label>
                                 <select id="draft_tecnica" class="w-full p-3 border border-brand-border outline-none bg-white"><option value="TATUAJE">Tatuaje</option><option value="MICRO">Micropigmentación</option><option value="PIERCING">Piercing</option></select>
                             </div>
-                            <div><label class="font-bold text-xs text-brand-accent uppercase mb-1">Materiales</label><textarea id="draft_materiales" rows="3" class="w-full p-3 border border-brand-border outline-none"></textarea></div>
+                            <div><label class="font-bold text-xs text-brand-accent uppercase mb-1">Materiales</label><textarea id="draft_materiales" rows="2" class="w-full p-3 border border-brand-border outline-none"></textarea></div>
+                            
+                            <div class="grid grid-cols-2 gap-4 mt-2 border-t border-brand-border pt-4">
+                                <div><label class="font-bold text-[10px] text-brand-accent uppercase mb-1">¿Permanente?</label><select id="draft_perm" class="w-full p-2 border bg-white font-bold"><option value="SI">SÍ</option><option value="NO">NO</option></select></div>
+                                <div><label class="font-bold text-[10px] text-brand-accent uppercase mb-1">¿Toda la vida?</label><select id="draft_toda" class="w-full p-2 border bg-white font-bold"><option value="SI">SÍ</option><option value="NO">NO</option></select></div>
+                                <div><label class="font-bold text-[10px] text-brand-accent uppercase mb-1">¿Alteración?</label><select id="draft_alt" class="w-full p-2 border bg-white font-bold"><option value="SI">SÍ</option><option value="NO">NO</option></select></div>
+                                <div><label class="font-bold text-[10px] text-brand-accent uppercase mb-1">¿Retoques?</label><select id="draft_ret" class="w-full p-2 border bg-white font-bold"><option value="SI">SÍ</option><option value="NO">NO</option></select></div>
+                            </div>
                         </div>
                         <button onclick="generarEnlaceBoja()" id="btn-gen-link" class="mt-6 w-full bg-brand-dark text-white font-bold py-4 uppercase tracking-widest hover:bg-white hover:text-brand-dark border border-brand-dark transition-all">Crear Enlace Único</button>
+                        
                         <div id="link-box" class="hidden mt-6 bg-white p-4 border border-brand-dark">
                             <label class="text-brand-dark font-bold text-xs uppercase mb-1">Enlace para el Cliente:</label>
                             <input type="text" id="url-output" readonly class="w-full p-2 bg-brand-light text-xs mb-2 border border-brand-border outline-none">
@@ -118,7 +134,6 @@
                     </div>
                 </div>
 
-                <!-- Historial -->
                 <div class="bg-brand-light p-8 border border-brand-border mt-6">
                     <h3 class="text-xl font-heading font-bold text-brand-dark uppercase mb-4 tracking-widest border-b border-brand-border pb-2">🗄️ Historial de Consentimientos</h3>
                     <div class="flex flex-col gap-3" id="lista-historial-boja"><p class="text-sm text-brand-accent">Cargando...</p></div>
@@ -212,10 +227,46 @@
         function getSupabase() { return window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY); }
 
         async function intentarLogin() {
-            const u = document.getElementById('login-user').value.trim(); const p = document.getElementById('login-pass').value.trim();
-            if (u === 'pablomaster' && p === 'master1234') { sessionStorage.setItem('manager_logged_in', 'true'); desbloquearPanel(); return; }
-            try { const sp = getSupabase(); const { data } = await sp.auth.signInWithPassword({ email: u, password: p }); if (data.session) { sessionStorage.setItem('manager_logged_in', 'true'); desbloquearPanel(); } } catch (err) { alert("Error al entrar."); }
+            const u = document.getElementById('login-user').value.trim();
+            const p = document.getElementById('login-pass').value.trim();
+            const btn = document.getElementById('btn-login');
+
+            if(!u || !p) return alert("⚠️ Rellena tu correo y contraseña.");
+
+            const textoOriginal = btn.innerText;
+            btn.innerText = "⏳ Comprobando...";
+            btn.disabled = true;
+
+            if (u === 'pablomaster' && p === 'master1234') { 
+                sessionStorage.setItem('manager_logged_in', 'true'); 
+                desbloquearPanel(); 
+                btn.innerText = textoOriginal;
+                btn.disabled = false;
+                return; 
+            }
+
+            try { 
+                const sp = getSupabase(); 
+                const { data, error } = await sp.auth.signInWithPassword({ email: u, password: p }); 
+                
+                if (error) {
+                    alert("❌ Correo o Contraseña incorrectos.");
+                    btn.innerText = textoOriginal;
+                    btn.disabled = false;
+                    return;
+                }
+
+                if (data.session) { 
+                    sessionStorage.setItem('manager_logged_in', 'true'); 
+                    desbloquearPanel(); 
+                } 
+            } catch (err) { 
+                alert("❌ Error de red al entrar."); 
+                btn.innerText = textoOriginal;
+                btn.disabled = false;
+            }
         }
+
         if (sessionStorage.getItem('manager_logged_in') === 'true') desbloquearPanel();
 
         function desbloquearPanel() {
@@ -251,7 +302,7 @@
             try {
                 const sp = getSupabase();
                 await sp.from('configuracion_estudio').update({ nombre: document.getElementById('est_nombre').value, nif: document.getElementById('est_nif').value, tipo_via: document.getElementById('est_tvia').value, nombre_via: document.getElementById('est_nvia').value, numero: document.getElementById('est_num').value, poblacion: document.getElementById('est_pob').value, provincia: document.getElementById('est_prov').value, cp: document.getElementById('est_cp').value }).eq('id', 1);
-                alert("✅ Guardado.");
+                alert("✅ Datos del estudio guardados correctamente.");
             } catch (e) { alert("❌ Error."); }
             btn.innerText = "Guardar Datos del Estudio";
         }
@@ -281,13 +332,14 @@
 
         async function generarEnlaceBoja() {
             const idTat = document.getElementById('boja-select-tat').value; const zona = document.getElementById('draft_zona').value; const tec = document.getElementById('draft_tecnica').value; const mat = document.getElementById('draft_materiales').value;
+            const p = document.getElementById('draft_perm').value; const t = document.getElementById('draft_toda').value; const a = document.getElementById('draft_alt').value; const r = document.getElementById('draft_ret').value;
             if (!idTat || !zona || !mat) return alert("Rellena la zona y materiales.");
             const btn = document.getElementById('btn-gen-link'); btn.innerText = "⏳...";
             try {
-                const { data, error } = await getSupabase().from('borradores_boja').insert([{ id_tatuador: idTat, zona_anatomica: zona, tecnica: tec, materiales: mat }]).select('id').single();
+                const { data, error } = await getSupabase().from('borradores_boja').insert([{ id_tatuador: idTat, zona_anatomica: zona, tecnica: tec, materiales: mat, permanente: p, toda_vida: t, alteracion: a, retoques: r }]).select('id').single();
                 if (error) throw error;
                 const baseUrl = window.location.origin + window.location.pathname.replace('manager.html', '');
-                document.getElementById('url-output').value = `${baseUrl}boja.html?draft_id=${data.id}`;
+                document.getElementById('url-output').value = `${baseUrl}/boja.html?draft_id=${data.id}`;
                 document.getElementById('link-box').classList.remove('hidden');
                 document.getElementById('draft_zona').value = ""; document.getElementById('draft_materiales').value = "";
             } catch (e) { alert("❌ Error."); }
@@ -295,7 +347,7 @@
         }
 
         function copiarEnlaceBoja() {
-            const url = document.getElementById('url-output'); url.select(); document.execCommand('copy'); alert("🔗 Enlace copiado.");
+            const url = document.getElementById('url-output'); url.select(); document.execCommand('copy'); alert("🔗 Enlace copiado. ¡Mándaselo al cliente!");
         }
 
         async function cargarHistorialBoja() {
@@ -318,7 +370,7 @@
             try { await getSupabase().from('clientes_tatuaje').delete().eq('id', id); cargarHistorialBoja(); } catch (e) { alert("Error."); }
         }
 
-        /* --- TATUADORES, MENU, HORARIOS, BLOQUEOS --- */
+        /* --- RESTO --- */
         async function cargarTatuadores() {
             try {
                 const { data } = await getSupabase().from('tatuadores').select('*').order('nombre'); listaTatuadoresGlobal = data || []; refrescarSelectBoja();
@@ -326,12 +378,11 @@
                 if (listaTatuadoresGlobal.length === 0) { lista.innerHTML = '<p>No hay tatuadores.</p>'; return; }
                 let html = "";
                 listaTatuadoresGlobal.forEach(t => {
-                    html += `<div class="bg-white p-5 border shadow-sm"><div class="flex items-center gap-3"><span class="text-2xl">💉</span><input type="text" id="edit-tat-${t.id}" value="${t.nombre}" class="font-bold w-full outline-none"></div><div class="flex gap-2 text-xs mt-3"><button onclick="editarTatuador('${t.id}')" class="flex-1 border py-2 bg-brand-light font-bold">Guardar</button><button onclick="abrirModalHorario('${t.id}', '${t.nombre}')" class="flex-1 border bg-brand-dark text-white py-2 font-bold">Horario</button><button onclick="borrarTatuador('${t.id}')" class="flex-1 border border-brand-red text-brand-red py-2 font-bold hover:bg-brand-red hover:text-white">Borrar</button></div></div>`;
+                    html += `<div class="bg-white p-5 border shadow-sm"><div class="flex items-center gap-3"><span class="text-2xl">💉</span><input type="text" id="edit-tat-${t.id}" value="${t.nombre}" class="font-bold w-full outline-none"></div><div class="flex gap-2 text-xs mt-3"><button onclick="editarTatuador('${t.id}')" class="flex-1 border py-2 bg-brand-light font-bold hover:border-brand-dark">Guardar</button><button onclick="abrirModalHorario('${t.id}', '${t.nombre}')" class="flex-1 border bg-brand-dark text-white py-2 font-bold hover:bg-white hover:text-brand-dark">Horario</button><button onclick="borrarTatuador('${t.id}')" class="flex-1 border border-brand-red text-brand-red py-2 font-bold hover:bg-brand-red hover:text-white">Borrar</button></div></div>`;
                 });
                 lista.innerHTML = html;
             } catch (e) {}
         }
-
         async function añadirTatuador() {
             const n = document.getElementById('nuevo-tatuador-nombre').value.trim(); if (!n) return;
             try { await getSupabase().from('tatuadores').insert([{ nombre: n }]); document.getElementById('nuevo-tatuador-nombre').value = ""; cargarTatuadores(); } catch (e) { alert("Error."); }
@@ -377,9 +428,7 @@
             try {
                 const { data } = await getSupabase().from('menu_shishas').select('*').order('name', { ascending: true });
                 if(!data || data.length === 0) { lista.innerHTML = '<p>Vacío.</p>'; return; }
-                let html = "";
-                data.forEach(s => { html += `<div class="bg-white p-4 border flex justify-between items-center"><div class="flex items-center gap-3"><i class="${s.icon} text-xl"></i><div><p class="font-bold">${s.name}</p><p class="text-xs text-brand-accent">${s.etiquetas}</p></div></div><button onclick="borrarSabor('${s.id}')" class="text-brand-red text-xs font-bold border border-brand-red px-3 py-1">Borrar</button></div>`; });
-                lista.innerHTML = html;
+                let html = ""; data.forEach(s => { html += `<div class="bg-white p-4 border flex justify-between items-center"><div class="flex items-center gap-3"><i class="${s.icon} text-xl"></i><div><p class="font-bold">${s.name}</p><p class="text-xs text-brand-accent">${s.etiquetas}</p></div></div><button onclick="borrarSabor('${s.id}')" class="text-brand-red text-xs font-bold border border-brand-red px-3 py-1">Borrar</button></div>`; }); lista.innerHTML = html;
             } catch (e) {}
         }
         async function crearSabor() {
