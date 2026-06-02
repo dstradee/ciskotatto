@@ -70,7 +70,8 @@
 
             <!-- VISTA BOJA -->
             <div id="vista-boja" class="hidden space-y-6">
-                <!-- Config Estudio -->
+                
+                <!-- 1. Config Estudio (CORREGIDO PARA GUARDAR SIEMPRE) -->
                 <div class="bg-white border border-brand-dark p-8 shadow-sm">
                     <h3 class="text-xl font-heading font-bold text-brand-dark uppercase mb-4 tracking-widest border-b border-brand-border pb-2">🏢 Datos Legales del Estudio</h3>
                     <div class="grid grid-cols-1 md:grid-cols-3 gap-4 text-sm font-body">
@@ -82,7 +83,11 @@
                         <div><label class="font-bold text-xs text-brand-accent uppercase mb-1">Población</label><input type="text" id="est_pob" class="w-full p-3 border border-brand-border focus:border-brand-dark outline-none"></div>
                         <div><label class="font-bold text-xs text-brand-accent uppercase mb-1">Provincia</label><input type="text" id="est_prov" class="w-full p-3 border border-brand-border focus:border-brand-dark outline-none"></div>
                         <div><label class="font-bold text-xs text-brand-accent uppercase mb-1">CP</label><input type="text" id="est_cp" class="w-full p-3 border border-brand-border focus:border-brand-dark outline-none"></div>
-                        <div class="md:col-span-3"><button onclick="guardarDatosEstudio()" id="btn-save-estudio" class="w-full bg-brand-dark text-white font-bold py-4 uppercase tracking-widest border border-brand-dark hover:bg-white hover:text-brand-dark transition-all">Guardar Datos del Estudio</button></div>
+                        <div class="md:col-span-3">
+                            <button onclick="guardarDatosEstudio()" id="btn-save-estudio" class="w-full bg-brand-dark text-white font-bold py-4 uppercase tracking-widest border border-brand-dark hover:bg-white hover:text-brand-dark transition-all">
+                                Guardar Datos del Estudio
+                            </button>
+                        </div>
                     </div>
                 </div>
 
@@ -287,7 +292,9 @@
             if(cual === 'bloqueos') { cargarTatuadoresParaBloqueo(); cargarBloqueos(); cargarDiasCerrados(); }
         }
 
-        /* --- ESTUDIO Y BOJAS --- */
+        /* =========================================================
+           DATOS DEL ESTUDIO (AHORA SÍ GUARDAN SÍ O SÍ)
+        ========================================================= */
         async function cargarDatosEstudio() {
             try {
                 const sp = getSupabase(); 
@@ -311,11 +318,10 @@
             const btn = document.getElementById('btn-save-estudio'); 
             const originalText = btn.innerText;
             btn.innerText = "⏳ Guardando...";
+            
             try {
                 const sp = getSupabase();
-                // Usamos UPSERT para obligar a que se guarde existiera antes la fila o no.
-                const { error } = await sp.from('configuracion_estudio').upsert({ 
-                    id: 1,
+                const payload = {
                     nombre: document.getElementById('est_nombre').value, 
                     nif: document.getElementById('est_nif').value, 
                     tipo_via: document.getElementById('est_tvia').value, 
@@ -324,15 +330,21 @@
                     poblacion: document.getElementById('est_pob').value, 
                     provincia: document.getElementById('est_prov').value, 
                     cp: document.getElementById('est_cp').value 
-                });
+                };
+
+                // Usamos UPDATE directo a la fila 1 (que nos aseguramos que existe por SQL)
+                const { error } = await sp.from('configuracion_estudio').update(payload).eq('id', 1);
+                
                 if (error) throw error;
                 alert("✅ Datos del estudio guardados permanentemente.");
             } catch (e) { 
                 alert("❌ Error al guardar datos del estudio: " + e.message); 
             }
+            
             btn.innerText = originalText;
         }
 
+        /* --- RESTO DEL BOJA --- */
         function refrescarSelectBoja() {
             const sel = document.getElementById('boja-select-tat'); if(!sel) return;
             sel.innerHTML = '<option value="">-- Selecciona Tatuador --</option>';
@@ -396,7 +408,7 @@
             try { await getSupabase().from('clientes_tatuaje').delete().eq('id', id); cargarHistorialBoja(); } catch (e) { alert("Error."); }
         }
 
-        /* --- RESTO --- */
+        /* --- TATUADORES --- */
         async function cargarTatuadores() {
             try {
                 const { data } = await getSupabase().from('tatuadores').select('*').order('nombre'); listaTatuadoresGlobal = data || []; refrescarSelectBoja();
