@@ -33,7 +33,7 @@
         }
     </script>
 
-    <!-- Librerías (Supabase y pdf-lib) Ya NO cargamos signature_pad -->
+    <!-- Supabase & pdf-lib -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="https://unpkg.com/pdf-lib/dist/pdf-lib.min.js"></script>
 
@@ -43,140 +43,174 @@
         ::-webkit-scrollbar { width: 6px; }
         ::-webkit-scrollbar-track { background: #F5F5F5; }
         ::-webkit-scrollbar-thumb { background: #282828; }
-        input, select, textarea { width: 100%; background-color: #FFFFFF; border: 1px solid #E0E0E0; padding: 0.75rem; font-family: 'Inter', sans-serif; transition: border-color 0.2s; }
-        input:focus, select:focus, textarea:focus { outline: none; border-color: #282828; }
+        input[type="text"], input[type="date"], input[type="tel"], textarea { width: 100%; background-color: #FFFFFF; border: 1px solid #E0E0E0; padding: 0.75rem; font-family: 'Inter', sans-serif; transition: border-color 0.2s; }
+        input:focus, textarea:focus { outline: none; border-color: #282828; }
         label { display: block; margin-bottom: 0.25rem; color: #A0A0A0; text-transform: uppercase; letter-spacing: 0.1em; font-size: 0.75rem; font-weight: bold; }
-        .section-title { font-family: 'Montserrat', sans-serif; font-size: 1.25rem; font-weight: bold; color: #282828; text-transform: uppercase; letter-spacing: 0.1em; border-bottom: 1px solid #E0E0E0; padding-bottom: 0.5rem; margin-bottom: 1.5rem; margin-top: 2rem; }
+        .section-title { font-family: 'Montserrat', sans-serif; font-size: 1.1rem; font-weight: bold; color: #282828; text-transform: uppercase; letter-spacing: 0.1em; border-bottom: 1px solid #E0E0E0; padding-bottom: 0.5rem; margin-bottom: 1.5rem; margin-top: 2rem; }
     </style>
 </head>
-<body class="font-body pb-10">
+<body class="font-body pb-10 bg-brand-light">
 
-    <header class="bg-brand-bg py-8 px-4 text-center border-b border-brand-border shadow-sm mb-8 relative">
+    <header class="bg-brand-bg py-8 px-4 text-center border-b border-brand-border shadow-sm mb-8">
         <h1 class="text-3xl font-heading uppercase tracking-widest text-brand-dark font-bold">Ciskotattoo</h1>
-        <p class="mt-2 font-body font-semibold uppercase text-xs text-brand-accent tracking-[0.2em]">Consentimiento Informado (BOJA)</p>
+        <p class="mt-2 font-body font-semibold uppercase text-xs text-brand-accent tracking-[0.2em]">Consentimiento Informado Oficial (BOJA)</p>
     </header>
 
     <main class="max-w-4xl mx-auto px-4">
-        <form id="consent-form" class="bg-brand-light p-6 md:p-10 border border-brand-border shadow-sm">
+        <form id="consent-form" class="bg-white p-6 md:p-10 border border-brand-border shadow-sm">
             
-            <!-- DATOS DEL ESTUDIO Y TATUADOR -->
-            <h2 class="section-title mt-0">1. Datos del Centro y Tatuador</h2>
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div class="md:col-span-2 grid grid-cols-2 gap-4">
-                    <div><label>Nombre del Centro</label><input type="text" id="centro_nombre"></div>
-                    <div><label>NIF del Centro</label><input type="text" id="centro_nif"></div>
-                </div>
-                <div><label>Dirección (Vía)</label><input type="text" id="centro_dir_linea1"></div>
-                <div><label>Número/Detalles</label><input type="text" id="centro_dir_linea2"></div>
-                <div><label>Localidad</label><input type="text" id="centro_dir_linea3"></div>
-                <div><label>Provincia / CP</label><input type="text" id="centro_dir_linea4"></div>
-                
-                <div class="md:col-span-2 border-t border-brand-border my-2"></div>
-                
-                <div><label>Nombre Tatuador</label><input type="text" id="tatuador_nombre"></div>
-                <div><label>DNI Tatuador</label><input type="text" id="tatuador_dni"></div>
-                <div><label>Titulación / Curso</label><input type="text" id="tatuador_titulo"></div>
-                <div><label>Categoría Profesional</label><input type="text" id="tatuador_categoria"></div>
-                <div><label>Dirección Tatuador (Vía)</label><input type="text" id="tatuador_dir_linea1"></div>
-                <div><label>Localidad Tatuador</label><input type="text" id="tatuador_dir_linea2"></div>
-                <div><label>Provincia / CP</label><input type="text" id="tatuador_dir_linea3"></div>
-                <div><label>Teléfono / Email Contacto</label><input type="text" id="tatuador_contacto"></div>
+            <!-- DATOS DEL CENTRO -->
+            <h2 class="section-title mt-0">1. Datos del Centro</h2>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <div><label>Nombre del Centro</label><input type="text" id="centro_nombre" value="Ciskotattoo"></div>
+                <div><label>NIF</label><input type="text" id="centro_nif"></div>
+                <div><label>Tipo Vía</label><input type="text" id="centro_tipo_via" placeholder="Ej: Calle"></div>
+                <div class="md:col-span-2"><label>Nombre Vía</label><input type="text" id="centro_nombre_via"></div>
+                <div><label>Número/Detalles</label><input type="text" id="centro_numero"></div>
+                <div><label>Población</label><input type="text" id="centro_poblacion"></div>
+                <div><label>Provincia</label><input type="text" id="centro_provincia"></div>
+                <div><label>Código Postal</label><input type="text" id="centro_cp"></div>
+            </div>
+
+            <!-- DATOS DEL TATUADOR -->
+            <h2 class="section-title">2. Datos del Profesional</h2>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <div class="md:col-span-2"><label>Nombre Completo</label><input type="text" id="tatuador_nombre"></div>
+                <div><label>DNI / NIE</label><input type="text" id="tatuador_dni"></div>
+                <div class="md:col-span-2"><label>Titulación / Curso</label><input type="text" id="tatuador_titulo"></div>
+                <div><label>Nº Colegiado / Categoría</label><input type="text" id="tatuador_numero" id="tatuador_categoria" placeholder="(Si procede)"></div>
+                <div><label>Población</label><input type="text" id="tatuador_poblacion"></div>
+                <div><label>Provincia</label><input type="text" id="tatuador_provincia"></div>
+                <div><label>Código Postal</label><input type="text" id="tatuador_cp"></div>
+                <div><label>Teléfono</label><input type="tel" id="tatuador_telefono"></div>
             </div>
 
             <!-- DATOS DEL CLIENTE -->
-            <h2 class="section-title">2. Datos de la Persona Usuaria (Cliente)</h2>
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <h2 class="section-title">3. Datos de la Persona Usuaria (Cliente)</h2>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
                 <div class="md:col-span-2"><label>Nombre y Apellidos</label><input type="text" id="cliente_nombre" required></div>
                 <div><label>DNI / NIE / Pasaporte</label><input type="text" id="cliente_dni" required class="uppercase"></div>
                 <div><label>Fecha de Nacimiento</label><input type="date" id="cliente_nacimiento" required></div>
-                
                 <div class="md:col-span-2">
                     <label>Sexo</label>
-                    <div class="flex gap-4">
-                        <label class="flex items-center gap-2 cursor-pointer normal-case text-brand-dark font-normal"><input type="radio" name="sexo" id="cliente_sexo_h" value="H" class="w-auto"> Hombre</label>
-                        <label class="flex items-center gap-2 cursor-pointer normal-case text-brand-dark font-normal"><input type="radio" name="sexo" id="cliente_sexo_m" value="M" class="w-auto"> Mujer</label>
+                    <div class="flex gap-4 mt-2">
+                        <label class="flex items-center gap-2 cursor-pointer normal-case text-brand-dark font-normal"><input type="radio" name="c_sexo" id="cliente_sexo_h" class="w-auto accent-brand-dark"> Hombre</label>
+                        <label class="flex items-center gap-2 cursor-pointer normal-case text-brand-dark font-normal"><input type="radio" name="c_sexo" id="cliente_sexo_m" class="w-auto accent-brand-dark"> Mujer</label>
                     </div>
                 </div>
-
-                <div><label>Dirección (Vía)</label><input type="text" id="cliente_dir_linea1" required></div>
-                <div><label>Número/Detalles</label><input type="text" id="cliente_dir_linea2" required></div>
-                <div><label>Localidad</label><input type="text" id="cliente_dir_linea3" required></div>
-                <div><label>Provincia / CP</label><input type="text" id="cliente_dir_linea4" required></div>
+                <div><label>Tipo Vía</label><input type="text" id="cliente_tipo_via" required placeholder="Ej: Avenida"></div>
+                <div class="md:col-span-2"><label>Nombre Vía</label><input type="text" id="cliente_nombre_via" required></div>
+                <div><label>Número/Detalles</label><input type="text" id="cliente_numero" required></div>
+                <div><label>Población</label><input type="text" id="cliente_poblacion" required></div>
+                <div><label>Provincia</label><input type="text" id="cliente_provincia" required></div>
+                <div><label>Código Postal</label><input type="text" id="cliente_cp" required></div>
                 <div><label>Teléfono</label><input type="tel" id="cliente_telefono" required></div>
-                <div><label>Correo Electrónico</label><input type="email" id="cliente_email"></div>
+            </div>
+
+            <!-- BLOQUE REPRESENTANTE LEGAL (Oculto por defecto) -->
+            <div id="bloque_representante" class="hidden bg-[#FFF9F9] p-4 border border-[#E0D0D0] mt-6">
+                <h2 class="section-title mt-0 text-brand-red">⚠️ Datos del Representante Legal (Menor de Edad)</h2>
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    <div class="md:col-span-2"><label>Nombre y Apellidos</label><input type="text" id="rep_nombre"></div>
+                    <div><label>DNI / NIE / Pasaporte</label><input type="text" id="rep_dni" class="uppercase"></div>
+                    <div class="md:col-span-3">
+                        <label>Sexo</label>
+                        <div class="flex gap-4 mt-2">
+                            <label class="flex items-center gap-2 cursor-pointer normal-case font-normal"><input type="radio" name="r_sexo" id="rep_sexo_h" class="w-auto accent-brand-dark"> Hombre</label>
+                            <label class="flex items-center gap-2 cursor-pointer normal-case font-normal"><input type="radio" name="r_sexo" id="rep_sexo_m" class="w-auto accent-brand-dark"> Mujer</label>
+                        </div>
+                    </div>
+                    <div><label>Tipo Vía</label><input type="text" id="rep_tipo_via"></div>
+                    <div class="md:col-span-2"><label>Nombre Vía</label><input type="text" id="rep_nombre_via"></div>
+                    <div><label>Número/Detalles</label><input type="text" id="rep_numero"></div>
+                    <div><label>Población</label><input type="text" id="rep_poblacion"></div>
+                    <div><label>Provincia</label><input type="text" id="rep_provincia"></div>
+                    <div><label>Código Postal</label><input type="text" id="rep_cp"></div>
+                    <div><label>Teléfono</label><input type="tel" id="rep_telefono"></div>
+                </div>
             </div>
 
             <!-- TÉCNICA Y CUESTIONARIO -->
-            <h2 class="section-title">3. Técnica y Cuestionario</h2>
+            <h2 class="section-title">4. Técnica y Cuestionario</h2>
             <div class="space-y-6">
                 <div>
                     <label>Técnica a Aplicar</label>
-                    <div class="flex gap-4">
-                        <label class="flex items-center gap-2 cursor-pointer normal-case font-normal text-brand-dark"><input type="radio" name="tecnica" id="check_tatuaje" value="TATUAJE" checked class="w-auto"> Tatuaje</label>
-                        <label class="flex items-center gap-2 cursor-pointer normal-case font-normal text-brand-dark"><input type="radio" name="tecnica" id="check_micro" value="MICRO" class="w-auto"> Micropigmentación</label>
-                        <label class="flex items-center gap-2 cursor-pointer normal-case font-normal text-brand-dark"><input type="radio" name="tecnica" id="check_piercing" value="PIERCING" class="w-auto"> Piercing</label>
+                    <div class="flex flex-wrap gap-4 mt-2">
+                        <label class="flex items-center gap-2 cursor-pointer normal-case font-normal text-brand-dark"><input type="radio" name="tecnica" id="check_tatuaje" checked class="w-auto accent-brand-dark"> Tatuaje</label>
+                        <label class="flex items-center gap-2 cursor-pointer normal-case font-normal text-brand-dark"><input type="radio" name="tecnica" id="check_micro" class="w-auto accent-brand-dark"> Micropigmentación</label>
+                        <label class="flex items-center gap-2 cursor-pointer normal-case font-normal text-brand-dark"><input type="radio" name="tecnica" id="check_piercing" class="w-auto accent-brand-dark"> Piercing</label>
                     </div>
                 </div>
                 
                 <div><label>Localización Anatómica</label><input type="text" id="zona_anatomica" required placeholder="Ej: Antebrazo derecho"></div>
                 
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-4 bg-white p-4 border border-brand-border">
-                    <div>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4 bg-brand-light p-4 border border-brand-border">
+                    <div class="mb-2">
                         <label>¿Es permanente?</label>
-                        <select id="permanente"><option value="SI">SÍ</option><option value="NO">NO</option></select>
+                        <div class="flex gap-4 mt-1">
+                            <label class="font-normal normal-case"><input type="radio" name="perm" id="permanente_si" checked class="accent-brand-dark"> Sí</label>
+                            <label class="font-normal normal-case"><input type="radio" name="perm" id="permanente_no" class="accent-brand-dark"> No</label>
+                        </div>
                     </div>
-                    <div>
+                    <div class="mb-2">
                         <label>¿Es para toda la vida?</label>
-                        <select id="toda_vida"><option value="SI">SÍ</option><option value="NO">NO</option></select>
+                        <div class="flex gap-4 mt-1">
+                            <label class="font-normal normal-case"><input type="radio" name="toda" id="toda_vida_si" checked class="accent-brand-dark"> Sí</label>
+                            <label class="font-normal normal-case"><input type="radio" name="toda" id="toda_vida_no" class="accent-brand-dark"> No</label>
+                        </div>
                     </div>
-                    <div>
-                        <label>¿Puede suponer alteración/decoloración?</label>
-                        <select id="alteracion"><option value="SI">SÍ</option><option value="NO">NO</option></select>
+                    <div class="mb-2">
+                        <label>¿Puede suponer alteración?</label>
+                        <div class="flex gap-4 mt-1">
+                            <label class="font-normal normal-case"><input type="radio" name="alt" id="alteracion_si" checked class="accent-brand-dark"> Sí</label>
+                            <label class="font-normal normal-case"><input type="radio" name="alt" id="alteracion_no" class="accent-brand-dark"> No</label>
+                        </div>
                     </div>
-                    <div>
+                    <div class="mb-2">
                         <label>¿Requiere retoques?</label>
-                        <select id="retoques"><option value="SI">SÍ</option><option value="NO">NO</option></select>
+                        <div class="flex gap-4 mt-1">
+                            <label class="font-normal normal-case"><input type="radio" name="ret" id="retoques_si" checked class="accent-brand-dark"> Sí</label>
+                            <label class="font-normal normal-case"><input type="radio" name="ret" id="retoques_no" class="accent-brand-dark"> No</label>
+                        </div>
                     </div>
                 </div>
             </div>
 
             <!-- DETALLES DEL SERVICIO -->
-            <h2 class="section-title">4. Detalles del Servicio</h2>
+            <h2 class="section-title">5. Detalles del Servicio</h2>
             <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div class="md:col-span-2"><label>Cómo se realiza</label><textarea id="como_se_realiza" rows="2" placeholder="Técnica empleada..."></textarea></div>
+                <div class="md:col-span-2"><label>Cómo se realiza</label><textarea id="como_se_realiza" rows="2"></textarea></div>
                 <div class="md:col-span-2"><label>Materiales Empleados (Tintas/Lotes)</label><textarea id="materiales" rows="2" required></textarea></div>
                 <div><label>Efectos de la Aplicación</label><textarea id="efectos" rows="2"></textarea></div>
                 <div><label>Riesgos</label><textarea id="riesgos" rows="2"></textarea></div>
-                <div><label>Medidas Higiénico-Sanitarias a adoptar</label><textarea id="medidas" rows="2"></textarea></div>
-                <div><label>Presupuesto Total</label><input type="text" id="presupuesto" placeholder="Ej: 150€"></div>
-                <div class="md:col-span-2"><label>Otra Información</label><textarea id="otra_info" rows="2"></textarea></div>
+                <div><label>Medidas Higiénico-Sanitarias</label><textarea id="medidas" rows="2"></textarea></div>
+                <div><label>Presupuesto Total</label><textarea id="presupuesto" rows="2"></textarea></div>
             </div>
 
             <!-- LUGAR, FECHA Y FIRMA DIGITAL -->
-            <h2 class="section-title">5. Consentimiento y Firma Digital</h2>
+            <h2 class="section-title">6. Consentimiento y Firma Electrónica</h2>
             <div class="space-y-4">
                 <div><label>Ciudad de la firma</label><input type="text" id="fecha_ciudad" required placeholder="Ej: Sevilla"></div>
                 
-                <div class="bg-[#F5F5F5] p-5 border border-[#282828] mt-4">
+                <div class="bg-brand-light p-5 border border-brand-dark mt-4">
                     <label class="flex items-start gap-4 cursor-pointer normal-case text-brand-dark font-normal">
                         <input type="checkbox" id="check_firma_digital" required class="mt-1 w-6 h-6 accent-brand-dark flex-shrink-0">
                         <span class="text-sm font-semibold leading-relaxed">
-                            Acepto todas las condiciones descritas y <b class="uppercase">firmo digitalmente</b> este documento. 
-                            Entiendo que mi Nombre, DNI y la marca de tiempo actual (Fecha y Hora exacta) quedarán estampados en el PDF y registrados en la Base de Datos como prueba legal de mi consentimiento expreso, libre y voluntario.
+                            He leído, comprendo y <b>acepto</b> las condiciones médico-legales descritas en este documento. 
+                            <b>Firmo electrónicamente</b> este consentimiento, dando validez a la marca de tiempo (Fecha y Hora) y al DNI registrado como comprobante legal de mi autorización.
                         </span>
                     </label>
                 </div>
             </div>
 
             <!-- BOTÓN SUBMIT -->
-            <button type="submit" id="btn-submit" class="w-full bg-brand-dark text-white border border-brand-dark font-heading font-bold text-lg py-5 mt-8 uppercase transition-all tracking-widest hover:bg-white hover:text-brand-dark">
-                Generar Documento y Firmar
+            <button type="submit" id="btn-submit" class="w-full bg-brand-dark text-white border border-brand-dark font-heading font-bold text-lg py-5 mt-8 uppercase transition-all tracking-widest hover:bg-brand-light hover:text-brand-dark">
+                Aceptar y Generar Documento Legal
             </button>
             
         </form>
     </main>
 
-    <!-- El script -->
     <script src="app.js"></script>
 </body>
 </html>
