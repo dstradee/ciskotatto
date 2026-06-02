@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Consentimiento - Ciskotattoo</title>
+    <title>Firma de Consentimiento - Ciskotattoo</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600&family=Montserrat:wght@400;600;700;900&display=swap" rel="stylesheet">
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
@@ -12,34 +12,57 @@
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="https://unpkg.com/pdf-lib/dist/pdf-lib.min.js"></script>
     <style>
-        body { background-color: #FFFFFF; color: #000000; }
+        body { background-color: #F5F5F5; color: #000000; }
         * { border-radius: 2px !important; }
-        input[type="text"], input[type="date"], input[type="tel"], textarea, select { width: 100%; border: 1px solid #E0E0E0; padding: 0.75rem; font-family: 'Inter', sans-serif; }
+        input[type="text"], input[type="date"], input[type="tel"], textarea, select { width: 100%; border: 1px solid #E0E0E0; padding: 0.75rem; font-family: 'Inter', sans-serif; background-color: #FFFFFF;}
         input:focus, select:focus { outline: none; border-color: #282828; }
         label { display: block; margin-bottom: 0.25rem; color: #A0A0A0; text-transform: uppercase; font-size: 0.75rem; font-weight: bold; }
-        .section-title { font-family: 'Montserrat', sans-serif; font-size: 1.1rem; font-weight: bold; text-transform: uppercase; border-bottom: 1px solid #E0E0E0; padding-bottom: 0.5rem; margin-bottom: 1.5rem; margin-top: 2rem; }
+        .section-title { font-family: 'Montserrat', sans-serif; font-size: 1.1rem; font-weight: bold; text-transform: uppercase; border-bottom: 1px solid #E0E0E0; padding-bottom: 0.5rem; margin-bottom: 1.5rem; margin-top: 2rem; color: #282828;}
     </style>
 </head>
-<body class="font-body pb-10 bg-brand-light">
+<body class="font-body pb-10">
 
     <header class="bg-white py-8 px-4 text-center border-b border-brand-border shadow-sm mb-8">
         <h1 class="text-3xl font-heading uppercase tracking-widest text-brand-dark font-bold">Ciskotattoo</h1>
-        <p class="mt-2 font-body font-semibold uppercase text-xs text-brand-accent tracking-[0.2em]">Firma de Consentimiento Oficial</p>
+        <p class="mt-2 font-body font-semibold uppercase text-xs text-brand-accent tracking-[0.2em]">Firma de Consentimiento Oficial (BOJA)</p>
     </header>
 
     <main class="max-w-3xl mx-auto px-4">
         
+        <!-- PANTALLA DE CARGA -->
         <div id="loading-screen" class="text-center py-20">
             <h2 class="text-xl font-heading font-bold text-brand-dark">Conectando con el estudio...</h2>
             <p class="text-brand-accent mt-2 text-sm">Cargando los detalles de tu sesión.</p>
         </div>
 
-        <form id="consent-form" class="hidden bg-white p-6 md:p-10 border border-brand-border shadow-sm">
-            <div class="bg-brand-dark text-white p-4 mb-6 text-sm text-center font-semibold">
-                Sesión asignada a: <span id="ui-tat-nombre" class="text-brand-accent"></span>
+        <form id="consent-form" class="hidden bg-white p-6 md:p-10 border border-brand-border shadow-md">
+            
+            <!-- SECCIÓN 1: DATOS TÉCNICOS (SOLO LECTURA PARA EL CLIENTE) -->
+            <div class="bg-[#F9F9F9] p-6 border border-brand-border mb-8 pointer-events-none opacity-90">
+                <h2 class="text-brand-dark font-heading font-bold uppercase tracking-widest mb-4">ℹ️ Detalles de la Sesión</h2>
+                <p class="text-xs text-brand-accent font-semibold mb-6">Esta información legal ha sido establecida por el estudio y no puede modificarse.</p>
+                
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+                    <div><label>Estudio / Centro</label><input type="text" id="ro_estudio" readonly disabled class="bg-transparent border-b border-brand-border shadow-none font-bold text-brand-dark"></div>
+                    <div><label>Profesional Asignado</label><input type="text" id="ro_tatuador" readonly disabled class="bg-transparent border-b border-brand-border shadow-none font-bold text-brand-dark"></div>
+                </div>
+                
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+                    <div><label>Técnica</label><input type="text" id="ro_tecnica" readonly disabled class="bg-transparent border-b border-brand-border shadow-none text-brand-dark"></div>
+                    <div><label>Zona Anatómica</label><input type="text" id="ro_zona" readonly disabled class="bg-transparent border-b border-brand-border shadow-none text-brand-dark"></div>
+                    <div class="md:col-span-2"><label>Materiales y Lotes</label><textarea id="ro_materiales" rows="2" readonly disabled class="bg-transparent border border-brand-border shadow-none text-brand-dark text-sm"></textarea></div>
+                </div>
+
+                <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mt-4 pt-4 border-t border-brand-border">
+                    <div><label>¿Permanente?</label><input type="text" id="ro_perm" readonly disabled class="bg-transparent font-bold text-brand-dark text-center w-full"></div>
+                    <div><label>¿Toda la vida?</label><input type="text" id="ro_toda" readonly disabled class="bg-transparent font-bold text-brand-dark text-center w-full"></div>
+                    <div><label>¿Alteraciones?</label><input type="text" id="ro_alt" readonly disabled class="bg-transparent font-bold text-brand-dark text-center w-full"></div>
+                    <div><label>¿Retoques?</label><input type="text" id="ro_ret" readonly disabled class="bg-transparent font-bold text-brand-dark text-center w-full"></div>
+                </div>
             </div>
 
-            <h2 class="section-title mt-0">1. Tus Datos Personales</h2>
+            <!-- SECCIÓN 2: DATOS DEL CLIENTE (EDITABLES) -->
+            <h2 class="section-title mt-0">Tus Datos Personales</h2>
             <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div class="md:col-span-2"><label>Nombre y Apellidos</label><input type="text" id="cliente_nombre" required></div>
                 <div><label>Fecha Nacimiento</label><input type="date" id="cliente_nacimiento" required></div>
@@ -50,17 +73,17 @@
                         <label class="flex items-center gap-2 cursor-pointer text-sm font-bold"><input type="radio" name="c_sexo" id="cliente_sexo_m" class="accent-brand-dark"> Mujer</label>
                     </div>
                 </div>
-                <div><label>Tipo Vía</label><input type="text" id="cliente_tipo_via" required></div>
+                <div><label>Tipo Vía (Ej: Calle)</label><input type="text" id="cliente_tipo_via" required></div>
                 <div><label>Nombre Vía</label><input type="text" id="cliente_nombre_via" required></div>
                 <div><label>Número/Piso</label><input type="text" id="cliente_numero" required></div>
                 <div><label>Población</label><input type="text" id="cliente_poblacion" required></div>
                 <div><label>Provincia</label><input type="text" id="cliente_provincia" required></div>
-                <div><label>CP</label><input type="text" id="cliente_cp" required></div>
+                <div><label>Código Postal</label><input type="text" id="cliente_cp" required></div>
                 <div><label>Teléfono</label><input type="tel" id="cliente_telefono" required></div>
             </div>
 
-            <!-- REPRESENTANTE -->
-            <div id="bloque_representante" class="hidden bg-gray-50 p-4 border border-brand-border mt-6">
+            <!-- REPRESENTANTE LEGAL (SI ES MENOR) -->
+            <div id="bloque_representante" class="hidden bg-[#FFF5F5] p-5 border border-[#FFD0D0] mt-6">
                 <h2 class="text-brand-red font-bold text-sm uppercase mb-4 tracking-widest">⚠️ Autorización Menor (Representante Legal)</h2>
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div class="md:col-span-2"><label>Nombre Tutor</label><input type="text" id="rep_nombre"></div>
@@ -78,36 +101,33 @@
                     <div><label>Población</label><input type="text" id="rep_poblacion"></div>
                     <div><label>Provincia</label><input type="text" id="rep_provincia"></div>
                     <div><label>CP</label><input type="text" id="rep_cp"></div>
-                    <div><label>Teléfono</label><input type="tel" id="rep_telefono"></div>
+                    <div><label>Teléfono Tutor</label><input type="tel" id="rep_telefono"></div>
                 </div>
             </div>
 
-            <h2 class="section-title">2. Cuestionario y Conformidad</h2>
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-4 bg-brand-light p-4 border border-brand-border">
-                <div class="mb-2"><label>¿Es permanente?</label><select id="permanente"><option value="SI">SÍ</option><option value="NO">NO</option></select></div>
-                <div class="mb-2"><label>¿Es para toda la vida?</label><select id="toda_vida"><option value="SI">SÍ</option><option value="NO">NO</option></select></div>
-                <div class="mb-2"><label>¿Posible decoloración?</label><select id="alteracion"><option value="SI">SÍ</option><option value="NO">NO</option></select></div>
-                <div class="mb-2"><label>¿Requiere retoques?</label><select id="retoques"><option value="SI">SÍ</option><option value="NO">NO</option></select></div>
-            </div>
-
-            <h2 class="section-title">3. Firma Electrónica</h2>
+            <!-- FIRMA DIGITAL -->
+            <h2 class="section-title">Firma Electrónica</h2>
             <div class="space-y-4">
                 <div><label>Localidad actual (Ej: Sevilla)</label><input type="text" id="fecha_ciudad" required></div>
+                
                 <div class="bg-brand-light p-5 border border-brand-dark mt-4">
                     <label class="flex items-start gap-4 cursor-pointer normal-case text-brand-dark font-normal">
                         <input type="checkbox" id="check_firma_digital" required class="mt-1 w-6 h-6 accent-brand-dark flex-shrink-0">
-                        <span class="text-sm font-semibold leading-relaxed">Declaro la veracidad de mis datos. <b>Firmo electrónicamente</b> este consentimiento, dando validez legal a mi DNI y a la marca de tiempo exacta del servidor.</span>
+                        <span class="text-sm font-semibold leading-relaxed">
+                            Declaro la veracidad de mis datos. <b>Firmo electrónicamente</b> este consentimiento, dando validez legal a mi DNI y a la marca de tiempo exacta del servidor.
+                        </span>
                     </label>
                 </div>
             </div>
 
-            <button type="submit" id="btn-submit" class="w-full bg-brand-dark text-white border border-brand-dark font-heading font-bold text-lg py-5 mt-8 uppercase transition-all tracking-widest hover:bg-white hover:text-brand-dark">
+            <button type="submit" id="btn-submit" class="w-full bg-brand-dark text-white font-heading font-bold text-lg py-5 mt-8 uppercase transition-all tracking-widest hover:bg-brand-light hover:text-brand-dark border border-brand-dark">
                 Aceptar y Finalizar
             </button>
+            
         </form>
     </main>
 
-    <!-- EL CÓDIGO JAVASCRIPT DIRECTAMENTE AQUÍ -->
+    <!-- LOGICA JAVASCRIPT -->
     <script>
         const SUPABASE_URL = 'https://fqydtjwqkmdatfsauomh.supabase.co'; 
         const SUPABASE_ANON_KEY = 'sb_publishable_-FdijJSiBiKFSY4I4F-LJw_fB89m4Cj';
@@ -122,15 +142,28 @@
             if (!draftId) { document.getElementById('loading-screen').innerHTML = `<h2 class="text-xl font-heading text-red-600 font-bold">Enlace Inválido</h2><p class="text-sm mt-2">Falta el identificador de la sesión.</p>`; return; }
 
             try {
+                // Descargamos todo
                 const { data: draft, error } = await supabaseBoja.from('borradores_boja').select('*, tatuadores(*)').eq('id', draftId).single();
                 if (error || !draft) throw new Error("Borrador no encontrado.");
-                if (draft.estado === 'Completado') throw new Error("Este consentimiento ya fue firmado.");
+                if (draft.estado === 'Completado') throw new Error("Este consentimiento ya fue firmado y cerrado.");
 
                 const { data: est } = await supabaseBoja.from('configuracion_estudio').select('*').eq('id', 1).single();
 
-                borradorActual = draft; tatuadorActual = draft.tatuadores; estudioActual = est || {};
-                document.getElementById('ui-tat-nombre').innerText = tatuadorActual.nombre.toUpperCase();
-                document.getElementById('loading-screen').classList.add('hidden'); document.getElementById('consent-form').classList.remove('hidden');
+                borradorActual = draft; tatuadorActual = draft.tatuadores; estudioActual = est || { nombre: 'Ciskotattoo' };
+                
+                // Rellenamos el bloque visual (Solo lectura) para el cliente
+                document.getElementById('ro_estudio').value = estudioActual.nombre;
+                document.getElementById('ro_tatuador').value = tatuadorActual.nombre;
+                document.getElementById('ro_tecnica').value = borradorActual.tecnica;
+                document.getElementById('ro_zona').value = borradorActual.zona_anatomica;
+                document.getElementById('ro_materiales').value = borradorActual.materiales;
+                document.getElementById('ro_perm').value = borradorActual.permanente || 'SI';
+                document.getElementById('ro_toda').value = borradorActual.toda_vida || 'SI';
+                document.getElementById('ro_alt').value = borradorActual.alteracion || 'SI';
+                document.getElementById('ro_ret').value = borradorActual.retoques || 'SI';
+
+                document.getElementById('loading-screen').classList.add('hidden'); 
+                document.getElementById('consent-form').classList.remove('hidden');
             } catch (err) { document.getElementById('loading-screen').innerHTML = `<h2 class="text-xl font-heading text-red-600 font-bold">Error</h2><p class="text-sm mt-2">${err.message}</p>`; }
         });
 
@@ -149,32 +182,39 @@
             e.preventDefault();
             if (!document.getElementById('check_firma_digital').checked) return alert("⚠️ Debes marcar la casilla de firma.");
             
-            const btn = document.getElementById('btn-submit'); const tb = btn.innerText; btn.innerText = "⏳ Generando documento..."; btn.disabled = true;
+            const btn = document.getElementById('btn-submit'); const tb = btn.innerText; btn.innerText = "⏳ Generando documento legal..."; btn.disabled = true;
 
             try {
-                const pB = await fetch('plantilla_boja.pdf').then(res => { if(!res.ok) throw new Error("Falta plantilla_boja.pdf"); return res.arrayBuffer(); });
+                const pB = await fetch('plantilla_boja.pdf').then(res => { if(!res.ok) throw new Error("Falta plantilla_boja.pdf en el servidor."); return res.arrayBuffer(); });
                 const { PDFDocument } = PDFLib; const pdfDoc = await PDFDocument.load(pB); const form = pdfDoc.getForm();
 
                 const ah = new Date(); const fS = ah.toLocaleDateString('es-ES'); const hS = ah.toLocaleTimeString('es-ES', {hour: '2-digit', minute:'2-digit'});
 
+                // 1. INYECTAR DATOS DEL CENTRO (DE LA BD)
                 fillText(form, 'centro_nombre', estudioActual.nombre || ''); fillText(form, 'centro_nif', estudioActual.nif || ''); fillText(form, 'centro_tipo_via', estudioActual.tipo_via || ''); fillText(form, 'centro_nombre_via', estudioActual.nombre_via || ''); fillText(form, 'centro_numero', estudioActual.numero || ''); fillText(form, 'centro_poblacion', estudioActual.poblacion || ''); fillText(form, 'centro_provincia', estudioActual.provincia || ''); fillText(form, 'centro_cp', estudioActual.cp || '');
+                
+                // 2. INYECTAR DATOS DEL TATUADOR (DE LA BD)
                 fillText(form, 'tatuador_nombre', tatuadorActual.nombre); fillText(form, 'tatuador_dni', tatuadorActual.boja_dni); fillText(form, 'tatuador_titulo', tatuadorActual.boja_titulo); fillText(form, 'tatuador_numero', tatuadorActual.boja_categoria); fillText(form, 'tatuador_poblacion', tatuadorActual.boja_poblacion); fillText(form, 'tatuador_provincia', tatuadorActual.boja_provincia); fillText(form, 'tatuador_cp', tatuadorActual.boja_cp); fillText(form, 'tatuador_telefono', tatuadorActual.boja_telefono);
 
+                // 3. INYECTAR DATOS TÉCNICOS (DEL BORRADOR)
                 fillText(form, 'zona_anatomica', borradorActual.zona_anatomica); fillText(form, 'materiales', borradorActual.materiales);
                 fillMark(form, 'check_tatuaje', borradorActual.tecnica === 'TATUAJE'); fillMark(form, 'check_micro', borradorActual.tecnica === 'MICRO'); fillMark(form, 'check_piercing', borradorActual.tecnica === 'PIERCING');
+                
+                // Estos 4 vienen del borrador (Sí/No)
+                const pm = borradorActual.permanente || 'SI'; fillMark(form, 'permanente_si', pm === 'SI'); fillMark(form, 'permanente_no', pm === 'NO');
+                const tv = borradorActual.toda_vida || 'SI'; fillMark(form, 'toda_vida_si', tv === 'SI'); fillMark(form, 'toda_vida_no', tv === 'NO');
+                const al = borradorActual.alteracion || 'SI'; fillMark(form, 'alteracion_si', al === 'SI'); fillMark(form, 'alteracion_no', al === 'NO');
+                const rt = borradorActual.retoques || 'SI'; fillMark(form, 'retoques_si', rt === 'SI'); fillMark(form, 'retoques_no', rt === 'NO');
+
                 fillText(form, 'como_se_realiza', "Procedimiento higiénico-sanitario estándar."); fillText(form, 'efectos', "Enrojecimiento e inflamación temporal."); fillText(form, 'riesgos', "Alergias o infección por falta de cuidados."); fillText(form, 'medidas', "Lavar con jabón neutro, secar con papel, aplicar crema."); fillText(form, 'presupuesto', "Según lo acordado.");
 
+                // 4. DATOS DEL CLIENTE (Inputs HTML)
                 const cNom = document.getElementById('cliente_nombre').value.toUpperCase(); const cDni = document.getElementById('cliente_dni').value.toUpperCase();
                 fillText(form, 'cliente_nombre', cNom); fillText(form, 'cliente_nacimiento', document.getElementById('cliente_nacimiento').value); fillText(form, 'cliente_dni', cDni); fillText(form, 'cliente_tipo_via', document.getElementById('cliente_tipo_via').value); fillText(form, 'cliente_nombre_via', document.getElementById('cliente_nombre_via').value); fillText(form, 'cliente_numero', document.getElementById('cliente_numero').value); fillText(form, 'cliente_poblacion', document.getElementById('cliente_poblacion').value); fillText(form, 'cliente_provincia', document.getElementById('cliente_provincia').value); fillText(form, 'cliente_cp', document.getElementById('cliente_cp').value); fillText(form, 'cliente_telefono', document.getElementById('cliente_telefono').value);
                 fillMark(form, 'cliente_sexo_h', document.getElementById('cliente_sexo_h').checked); fillMark(form, 'cliente_sexo_m', document.getElementById('cliente_sexo_m').checked);
 
                 let rNom = ''; let rDni = '';
                 if (esMenorBoolean) { rNom = document.getElementById('rep_nombre').value.toUpperCase(); rDni = document.getElementById('rep_dni').value.toUpperCase(); fillText(form, 'rep_nombre', rNom); fillText(form, 'rep_dni', rDni); fillText(form, 'rep_tipo_via', document.getElementById('rep_tipo_via').value); fillText(form, 'rep_nombre_via', document.getElementById('rep_nombre_via').value); fillText(form, 'rep_numero', document.getElementById('rep_numero').value); fillText(form, 'rep_poblacion', document.getElementById('rep_poblacion').value); fillText(form, 'rep_provincia', document.getElementById('rep_provincia').value); fillText(form, 'rep_cp', document.getElementById('rep_cp').value); fillText(form, 'rep_telefono', document.getElementById('rep_telefono').value); fillMark(form, 'rep_sexo_h', document.getElementById('rep_sexo_h').checked); fillMark(form, 'rep_sexo_m', document.getElementById('rep_sexo_m').checked); }
-
-                const pm = document.getElementById('permanente').value; fillMark(form, 'permanente_si', pm === 'SI'); fillMark(form, 'permanente_no', pm === 'NO');
-                const tv = document.getElementById('toda_vida').value; fillMark(form, 'toda_vida_si', tv === 'SI'); fillMark(form, 'toda_vida_no', tv === 'NO');
-                const al = document.getElementById('alteracion').value; fillMark(form, 'alteracion_si', al === 'SI'); fillMark(form, 'alteracion_no', al === 'NO');
-                const rt = document.getElementById('retoques').value; fillMark(form, 'retoques_si', rt === 'SI'); fillMark(form, 'retoques_no', rt === 'NO');
 
                 const fNom = esMenorBoolean ? rNom : cNom; const fDni = esMenorBoolean ? rDni : cDni;
                 fillText(form, 'nombre_final', fNom); fillText(form, 'tecnica_final', borradorActual.tecnica); fillText(form, 'fecha_ciudad', document.getElementById('fecha_ciudad').value); fillText(form, 'fecha_dia', ah.getDate().toString()); fillText(form, 'fecha_mes', (ah.getMonth()+1).toString()); fillText(form, 'fecha_anio', ah.getFullYear().toString());
@@ -183,9 +223,10 @@
                 form.getFields().forEach(c => c.enableReadOnly()); form.updateFieldAppearances();
 
                 const pMB = await pdfDoc.save(); const pBl = new Blob([pMB], { type: 'application/pdf' }); const nAr = `${fDni}_${borradorActual.id.substring(0,8)}.pdf`;
-                btn.innerText = "☁️ Subiendo...";
+                btn.innerText = "☁️ Subiendo a la nube...";
                 const { error: upErr } = await supabaseBoja.storage.from('consentimientos').upload(nAr, pBl, { contentType: 'application/pdf', cacheControl: '3600' });
-                if (upErr) throw new Error("Error subiendo PDF");
+                if (upErr) throw new Error("Error subiendo PDF a Supabase.");
+                
                 const { data: pUrl } = supabaseBoja.storage.from('consentimientos').getPublicUrl(nAr);
 
                 await Promise.all([ supabaseBoja.from('clientes_tatuaje').insert([{ dni: cDni, nombre: cNom, telefono: document.getElementById('cliente_telefono').value, es_menor: esMenorBoolean, dni_representante: esMenorBoolean ? rDni : null, pdf_url: pUrl.publicUrl }]), supabaseBoja.from('borradores_boja').update({ estado: 'Completado' }).eq('id', borradorActual.id) ]);
