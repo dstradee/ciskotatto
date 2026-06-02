@@ -29,7 +29,6 @@ document.getElementById('cliente_nacimiento').addEventListener('change', functio
     const edad = calcularEdad(e.target.value);
     const bloqueRep = document.getElementById('bloque_representante');
     
-    // IDs del representante que serán obligatorios si es menor
     const repCamposReq = ['rep_nombre', 'rep_dni', 'rep_tipo_via', 'rep_nombre_via', 'rep_numero', 'rep_poblacion', 'rep_provincia', 'rep_cp', 'rep_telefono'];
 
     if (edad < 18) {
@@ -44,7 +43,7 @@ document.getElementById('cliente_nacimiento').addEventListener('change', functio
 });
 
 // =========================================================
-// 3. HELPERS PARA RELLENAR PDF SIN CRASHEAR
+// 3. HELPERS PARA RELLENAR PDF "INDESTRUCTIBLES"
 // =========================================================
 const fillText = (form, fieldName, value) => {
     try {
@@ -56,11 +55,23 @@ const fillText = (form, fieldName, value) => {
 };
 
 const fillCheck = (form, fieldName, isChecked) => {
+    if (!isChecked) return; // Si no está marcado en la web, no hacemos nada
+    
     try {
+        // Intento 1: Es un CheckBox normal
         const field = form.getCheckBox(fieldName);
-        if (field && isChecked) field.check();
-    } catch (e) {
-        console.warn(`[PDF-LIB] Checkbox '${fieldName}' no encontrado.`);
+        field.check();
+    } catch (e1) {
+        try {
+            // Intento 2: Es un RadioGroup (Muy típico en los PDFs oficiales)
+            const field = form.getRadioGroup(fieldName);
+            const opciones = field.getOptions();
+            if (opciones.length > 0) {
+                field.select(opciones[0]); // Seleccionamos la única opción que tiene
+            }
+        } catch (e2) {
+            console.warn(`[PDF-LIB] No se pudo marcar la casilla '${fieldName}'.`);
+        }
     }
 };
 
@@ -96,7 +107,7 @@ document.getElementById('consent-form').addEventListener('submit', async functio
         const fechaStr = ahora.toLocaleDateString('es-ES');
         const horaStr = ahora.toLocaleTimeString('es-ES', {hour: '2-digit', minute:'2-digit'});
 
-        // C. MAPEO CASILLA A CASILLA (Centro y Tatuador)
+        // C. MAPEO (Centro y Tatuador)
         fillText(form, 'centro_nombre', document.getElementById('centro_nombre').value);
         fillText(form, 'centro_nif', document.getElementById('centro_nif').value);
         fillText(form, 'centro_tipo_via', document.getElementById('centro_tipo_via').value);
@@ -121,8 +132,10 @@ document.getElementById('consent-form').addEventListener('submit', async functio
         
         fillText(form, 'cliente_nombre', clienteNombre);
         fillText(form, 'cliente_nacimiento', document.getElementById('cliente_nacimiento').value);
+        
         fillCheck(form, 'cliente_sexo_h', document.getElementById('cliente_sexo_h').checked);
         fillCheck(form, 'cliente_sexo_m', document.getElementById('cliente_sexo_m').checked);
+        
         fillText(form, 'cliente_dni', clienteDni);
         fillText(form, 'cliente_tipo_via', document.getElementById('cliente_tipo_via').value);
         fillText(form, 'cliente_nombre_via', document.getElementById('cliente_nombre_via').value);
@@ -153,10 +166,11 @@ document.getElementById('consent-form').addEventListener('submit', async functio
             fillText(form, 'rep_telefono', document.getElementById('rep_telefono').value);
         }
 
-        // F. MAPEO (Técnica y Cuestionario)
+        // F. MAPEO (Técnica y Cuestionario - CASILLAS PROBLEMÁTICAS SOLUCIONADAS)
         fillCheck(form, 'check_tatuaje', document.getElementById('check_tatuaje').checked);
         fillCheck(form, 'check_micro', document.getElementById('check_micro').checked);
         fillCheck(form, 'check_piercing', document.getElementById('check_piercing').checked);
+        
         fillText(form, 'zona_anatomica', document.getElementById('zona_anatomica').value);
 
         fillCheck(form, 'permanente_si', document.getElementById('permanente_si').checked);
@@ -177,7 +191,6 @@ document.getElementById('consent-form').addEventListener('submit', async functio
         fillText(form, 'presupuesto', document.getElementById('presupuesto').value);
 
         // H. CIERRE DEL PDF (Nombres finales y fechas)
-        // El firmante final es el Rep si es menor, o el cliente si es mayor
         const firmanteNombre = esMenorBoolean ? repNombre : clienteNombre;
         const firmanteDni = esMenorBoolean ? repDni : clienteDni;
 
@@ -199,8 +212,11 @@ document.getElementById('consent-form').addEventListener('submit', async functio
         fillText(form, 'firma_cliente_texto', strFirmaCliente);
         fillText(form, 'firma_tatuador_texto', strFirmaTatuador);
 
-        // J. APLANAR FORMULARIO
-        form.flatten();
+        // J. BLOQUEAR FORMULARIO (En lugar de "flatten()", usamos "ReadOnly" para que NO desaparezcan las cruces de los Checkboxes)
+        const camposDelPdf = form.getFields();
+        camposDelPdf.forEach(campo => {
+            campo.enableReadOnly();
+        });
 
         // K. GENERAR BLOB
         const pdfModificadoBytes = await pdfDoc.save();
@@ -247,7 +263,7 @@ document.getElementById('consent-form').addEventListener('submit', async functio
 
         alert("✅ Documento BOJA generado y archivado legalmente.");
         document.getElementById('consent-form').reset();
-        document.getElementById('bloque_representante').classList.add('hidden'); // Resetear bloque menor
+        document.getElementById('bloque_representante').classList.add('hidden');
 
     } catch (error) {
         console.error("Error completo:", error);
