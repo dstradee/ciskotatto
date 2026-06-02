@@ -7,16 +7,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600&family=Montserrat:wght@400;600;700;900&display=swap" rel="stylesheet">
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
-        tailwind.config = {
-            theme: {
-                extend: {
-                    colors: {
-                        'brand-dark': '#282828', 'brand-accent': '#A0A0A0', 'brand-light': '#F5F5F5', 'brand-border': '#E0E0E0'
-                    },
-                    fontFamily: { 'heading': ['Montserrat', 'sans-serif'], 'body': ['Inter', 'sans-serif'] }
-                }
-            }
-        }
+        tailwind.config = { theme: { extend: { colors: { 'brand-dark': '#282828', 'brand-accent': '#A0A0A0', 'brand-light': '#F5F5F5', 'brand-border': '#E0E0E0' }, fontFamily: { 'heading': ['Montserrat', 'sans-serif'], 'body': ['Inter', 'sans-serif'] } } } }
     </script>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="https://unpkg.com/pdf-lib/dist/pdf-lib.min.js"></script>
@@ -38,46 +29,41 @@
 
     <main class="max-w-3xl mx-auto px-4">
         
-        <!-- PANTALLA DE CARGA / ERROR -->
         <div id="loading-screen" class="text-center py-20">
             <h2 class="text-xl font-heading font-bold text-brand-dark">Conectando con el estudio...</h2>
             <p class="text-brand-accent mt-2 text-sm">Cargando los detalles de tu sesión.</p>
         </div>
 
-        <!-- FORMULARIO DEL CLIENTE -->
         <form id="consent-form" class="hidden bg-white p-6 md:p-10 border border-brand-border shadow-sm">
-            
             <div class="bg-brand-dark text-white p-4 mb-6 text-sm text-center font-semibold">
                 Sesión asignada a: <span id="ui-tat-nombre" class="text-brand-accent"></span>
             </div>
 
-            <!-- DATOS DEL CLIENTE -->
             <h2 class="section-title mt-0">1. Tus Datos Personales</h2>
             <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div class="md:col-span-2"><label>Nombre y Apellidos</label><input type="text" id="cliente_nombre" required></div>
-                <div><label>Fecha de Nacimiento</label><input type="date" id="cliente_nacimiento" required></div>
+                <div><label>Fecha Nacimiento</label><input type="date" id="cliente_nacimiento" required></div>
                 <div><label>DNI / NIE / Pasaporte</label><input type="text" id="cliente_dni" required class="uppercase"></div>
-                <div class="md:col-span-2">
-                    <label>Sexo</label>
+                <div class="md:col-span-2"><label>Sexo</label>
                     <div class="flex gap-4">
                         <label class="flex items-center gap-2 cursor-pointer text-sm font-bold"><input type="radio" name="c_sexo" id="cliente_sexo_h" class="accent-brand-dark" required> Hombre</label>
                         <label class="flex items-center gap-2 cursor-pointer text-sm font-bold"><input type="radio" name="c_sexo" id="cliente_sexo_m" class="accent-brand-dark"> Mujer</label>
                     </div>
                 </div>
-                <div><label>Tipo Vía (Ej: Calle)</label><input type="text" id="cliente_tipo_via" required></div>
-                <div><label>Nombre de la Vía</label><input type="text" id="cliente_nombre_via" required></div>
+                <div><label>Tipo Vía</label><input type="text" id="cliente_tipo_via" required></div>
+                <div><label>Nombre Vía</label><input type="text" id="cliente_nombre_via" required></div>
                 <div><label>Número/Piso</label><input type="text" id="cliente_numero" required></div>
                 <div><label>Población</label><input type="text" id="cliente_poblacion" required></div>
                 <div><label>Provincia</label><input type="text" id="cliente_provincia" required></div>
-                <div><label>Código Postal</label><input type="text" id="cliente_cp" required></div>
+                <div><label>CP</label><input type="text" id="cliente_cp" required></div>
                 <div><label>Teléfono</label><input type="tel" id="cliente_telefono" required></div>
             </div>
 
-            <!-- REPRESENTANTE LEGAL -->
+            <!-- REPRESENTANTE -->
             <div id="bloque_representante" class="hidden bg-gray-50 p-4 border border-brand-border mt-6">
-                <h2 class="text-brand-red font-bold text-sm uppercase mb-4 tracking-widest">⚠️ Autorización Menor de Edad (Representante Legal)</h2>
+                <h2 class="text-brand-red font-bold text-sm uppercase mb-4 tracking-widest">⚠️ Autorización Menor (Representante Legal)</h2>
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <div class="md:col-span-2"><label>Nombre y Apellidos (Tutor)</label><input type="text" id="rep_nombre"></div>
+                    <div class="md:col-span-2"><label>Nombre Tutor</label><input type="text" id="rep_nombre"></div>
                     <div><label>DNI / NIE</label><input type="text" id="rep_dni" class="uppercase"></div>
                     <div class="md:col-span-2">
                         <label>Sexo Tutor</label>
@@ -92,30 +78,25 @@
                     <div><label>Población</label><input type="text" id="rep_poblacion"></div>
                     <div><label>Provincia</label><input type="text" id="rep_provincia"></div>
                     <div><label>CP</label><input type="text" id="rep_cp"></div>
-                    <div><label>Teléfono Tutor</label><input type="tel" id="rep_telefono"></div>
+                    <div><label>Teléfono</label><input type="tel" id="rep_telefono"></div>
                 </div>
             </div>
 
-            <!-- CUESTIONARIO SALUD -->
             <h2 class="section-title">2. Cuestionario y Conformidad</h2>
             <div class="grid grid-cols-1 md:grid-cols-2 gap-4 bg-brand-light p-4 border border-brand-border">
-                <div class="mb-2"><label>¿Entiende que es permanente?</label><select id="permanente"><option value="SI">SÍ</option><option value="NO">NO</option></select></div>
+                <div class="mb-2"><label>¿Es permanente?</label><select id="permanente"><option value="SI">SÍ</option><option value="NO">NO</option></select></div>
                 <div class="mb-2"><label>¿Es para toda la vida?</label><select id="toda_vida"><option value="SI">SÍ</option><option value="NO">NO</option></select></div>
-                <div class="mb-2"><label>¿Asume posible decoloración?</label><select id="alteracion"><option value="SI">SÍ</option><option value="NO">NO</option></select></div>
-                <div class="mb-2"><label>¿Entiende que puede requerir retoques?</label><select id="retoques"><option value="SI">SÍ</option><option value="NO">NO</option></select></div>
+                <div class="mb-2"><label>¿Posible decoloración?</label><select id="alteracion"><option value="SI">SÍ</option><option value="NO">NO</option></select></div>
+                <div class="mb-2"><label>¿Requiere retoques?</label><select id="retoques"><option value="SI">SÍ</option><option value="NO">NO</option></select></div>
             </div>
 
-            <!-- FIRMA DIGITAL -->
             <h2 class="section-title">3. Firma Electrónica</h2>
             <div class="space-y-4">
                 <div><label>Localidad actual (Ej: Sevilla)</label><input type="text" id="fecha_ciudad" required></div>
-                
                 <div class="bg-brand-light p-5 border border-brand-dark mt-4">
                     <label class="flex items-start gap-4 cursor-pointer normal-case text-brand-dark font-normal">
                         <input type="checkbox" id="check_firma_digital" required class="mt-1 w-6 h-6 accent-brand-dark flex-shrink-0">
-                        <span class="text-sm font-semibold leading-relaxed">
-                            Declaro la veracidad de mis datos. <b>Firmo electrónicamente</b> este consentimiento, dando validez legal a mi DNI y a la marca de tiempo exacta del servidor.
-                        </span>
+                        <span class="text-sm font-semibold leading-relaxed">Declaro la veracidad de mis datos. <b>Firmo electrónicamente</b> este consentimiento, dando validez legal a mi DNI y a la marca de tiempo exacta del servidor.</span>
                     </label>
                 </div>
             </div>
@@ -123,10 +104,97 @@
             <button type="submit" id="btn-submit" class="w-full bg-brand-dark text-white border border-brand-dark font-heading font-bold text-lg py-5 mt-8 uppercase transition-all tracking-widest hover:bg-white hover:text-brand-dark">
                 Aceptar y Finalizar
             </button>
-            
         </form>
     </main>
 
-    <script src="app.js"></script>
+    <!-- EL CÓDIGO JAVASCRIPT DIRECTAMENTE AQUÍ -->
+    <script>
+        const SUPABASE_URL = 'https://fqydtjwqkmdatfsauomh.supabase.co'; 
+        const SUPABASE_ANON_KEY = 'sb_publishable_-FdijJSiBiKFSY4I4F-LJw_fB89m4Cj';
+        const supabaseBoja = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+        let borradorActual = null; let tatuadorActual = null; let estudioActual = null; let esMenorBoolean = false;
+
+        document.addEventListener('DOMContentLoaded', async () => {
+            const urlParams = new URLSearchParams(window.location.search);
+            const draftId = urlParams.get('draft_id');
+
+            if (!draftId) { document.getElementById('loading-screen').innerHTML = `<h2 class="text-xl font-heading text-red-600 font-bold">Enlace Inválido</h2><p class="text-sm mt-2">Falta el identificador de la sesión.</p>`; return; }
+
+            try {
+                const { data: draft, error } = await supabaseBoja.from('borradores_boja').select('*, tatuadores(*)').eq('id', draftId).single();
+                if (error || !draft) throw new Error("Borrador no encontrado.");
+                if (draft.estado === 'Completado') throw new Error("Este consentimiento ya fue firmado.");
+
+                const { data: est } = await supabaseBoja.from('configuracion_estudio').select('*').eq('id', 1).single();
+
+                borradorActual = draft; tatuadorActual = draft.tatuadores; estudioActual = est || {};
+                document.getElementById('ui-tat-nombre').innerText = tatuadorActual.nombre.toUpperCase();
+                document.getElementById('loading-screen').classList.add('hidden'); document.getElementById('consent-form').classList.remove('hidden');
+            } catch (err) { document.getElementById('loading-screen').innerHTML = `<h2 class="text-xl font-heading text-red-600 font-bold">Error</h2><p class="text-sm mt-2">${err.message}</p>`; }
+        });
+
+        function calcularEdad(f) { const h = new Date(); const n = new Date(f); let e = h.getFullYear() - n.getFullYear(); const m = h.getMonth() - n.getMonth(); if (m < 0 || (m === 0 && h.getDate() < n.getDate())) e--; return e; }
+
+        document.getElementById('cliente_nacimiento').addEventListener('change', function(e) {
+            if (!e.target.value) return;
+            const ed = calcularEdad(e.target.value); const bR = document.getElementById('bloque_representante'); const rq = ['rep_nombre', 'rep_dni', 'rep_tipo_via', 'rep_nombre_via', 'rep_numero', 'rep_poblacion', 'rep_provincia', 'rep_cp', 'rep_telefono'];
+            if (ed < 18) { esMenorBoolean = true; bR.classList.remove('hidden'); rq.forEach(id => document.getElementById(id).required = true); } else { esMenorBoolean = false; bR.classList.add('hidden'); rq.forEach(id => document.getElementById(id).required = false); }
+        });
+
+        const fillText = (form, fN, v) => { try { const f = form.getTextField(fN); if (f && v) f.setText(v.toString()); } catch (e) {} };
+        const fillMark = (form, fN, chk) => { if (!chk) return; try { const f = form.getTextField(fN); if (f) f.setText('X'); } catch (e) { try { form.getCheckBox(fN).check(); } catch (e2) {} } };
+
+        document.getElementById('consent-form').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            if (!document.getElementById('check_firma_digital').checked) return alert("⚠️ Debes marcar la casilla de firma.");
+            
+            const btn = document.getElementById('btn-submit'); const tb = btn.innerText; btn.innerText = "⏳ Generando documento..."; btn.disabled = true;
+
+            try {
+                const pB = await fetch('plantilla_boja.pdf').then(res => { if(!res.ok) throw new Error("Falta plantilla_boja.pdf"); return res.arrayBuffer(); });
+                const { PDFDocument } = PDFLib; const pdfDoc = await PDFDocument.load(pB); const form = pdfDoc.getForm();
+
+                const ah = new Date(); const fS = ah.toLocaleDateString('es-ES'); const hS = ah.toLocaleTimeString('es-ES', {hour: '2-digit', minute:'2-digit'});
+
+                fillText(form, 'centro_nombre', estudioActual.nombre || ''); fillText(form, 'centro_nif', estudioActual.nif || ''); fillText(form, 'centro_tipo_via', estudioActual.tipo_via || ''); fillText(form, 'centro_nombre_via', estudioActual.nombre_via || ''); fillText(form, 'centro_numero', estudioActual.numero || ''); fillText(form, 'centro_poblacion', estudioActual.poblacion || ''); fillText(form, 'centro_provincia', estudioActual.provincia || ''); fillText(form, 'centro_cp', estudioActual.cp || '');
+                fillText(form, 'tatuador_nombre', tatuadorActual.nombre); fillText(form, 'tatuador_dni', tatuadorActual.boja_dni); fillText(form, 'tatuador_titulo', tatuadorActual.boja_titulo); fillText(form, 'tatuador_numero', tatuadorActual.boja_categoria); fillText(form, 'tatuador_poblacion', tatuadorActual.boja_poblacion); fillText(form, 'tatuador_provincia', tatuadorActual.boja_provincia); fillText(form, 'tatuador_cp', tatuadorActual.boja_cp); fillText(form, 'tatuador_telefono', tatuadorActual.boja_telefono);
+
+                fillText(form, 'zona_anatomica', borradorActual.zona_anatomica); fillText(form, 'materiales', borradorActual.materiales);
+                fillMark(form, 'check_tatuaje', borradorActual.tecnica === 'TATUAJE'); fillMark(form, 'check_micro', borradorActual.tecnica === 'MICRO'); fillMark(form, 'check_piercing', borradorActual.tecnica === 'PIERCING');
+                fillText(form, 'como_se_realiza', "Procedimiento higiénico-sanitario estándar."); fillText(form, 'efectos', "Enrojecimiento e inflamación temporal."); fillText(form, 'riesgos', "Alergias o infección por falta de cuidados."); fillText(form, 'medidas', "Lavar con jabón neutro, secar con papel, aplicar crema."); fillText(form, 'presupuesto', "Según lo acordado.");
+
+                const cNom = document.getElementById('cliente_nombre').value.toUpperCase(); const cDni = document.getElementById('cliente_dni').value.toUpperCase();
+                fillText(form, 'cliente_nombre', cNom); fillText(form, 'cliente_nacimiento', document.getElementById('cliente_nacimiento').value); fillText(form, 'cliente_dni', cDni); fillText(form, 'cliente_tipo_via', document.getElementById('cliente_tipo_via').value); fillText(form, 'cliente_nombre_via', document.getElementById('cliente_nombre_via').value); fillText(form, 'cliente_numero', document.getElementById('cliente_numero').value); fillText(form, 'cliente_poblacion', document.getElementById('cliente_poblacion').value); fillText(form, 'cliente_provincia', document.getElementById('cliente_provincia').value); fillText(form, 'cliente_cp', document.getElementById('cliente_cp').value); fillText(form, 'cliente_telefono', document.getElementById('cliente_telefono').value);
+                fillMark(form, 'cliente_sexo_h', document.getElementById('cliente_sexo_h').checked); fillMark(form, 'cliente_sexo_m', document.getElementById('cliente_sexo_m').checked);
+
+                let rNom = ''; let rDni = '';
+                if (esMenorBoolean) { rNom = document.getElementById('rep_nombre').value.toUpperCase(); rDni = document.getElementById('rep_dni').value.toUpperCase(); fillText(form, 'rep_nombre', rNom); fillText(form, 'rep_dni', rDni); fillText(form, 'rep_tipo_via', document.getElementById('rep_tipo_via').value); fillText(form, 'rep_nombre_via', document.getElementById('rep_nombre_via').value); fillText(form, 'rep_numero', document.getElementById('rep_numero').value); fillText(form, 'rep_poblacion', document.getElementById('rep_poblacion').value); fillText(form, 'rep_provincia', document.getElementById('rep_provincia').value); fillText(form, 'rep_cp', document.getElementById('rep_cp').value); fillText(form, 'rep_telefono', document.getElementById('rep_telefono').value); fillMark(form, 'rep_sexo_h', document.getElementById('rep_sexo_h').checked); fillMark(form, 'rep_sexo_m', document.getElementById('rep_sexo_m').checked); }
+
+                const pm = document.getElementById('permanente').value; fillMark(form, 'permanente_si', pm === 'SI'); fillMark(form, 'permanente_no', pm === 'NO');
+                const tv = document.getElementById('toda_vida').value; fillMark(form, 'toda_vida_si', tv === 'SI'); fillMark(form, 'toda_vida_no', tv === 'NO');
+                const al = document.getElementById('alteracion').value; fillMark(form, 'alteracion_si', al === 'SI'); fillMark(form, 'alteracion_no', al === 'NO');
+                const rt = document.getElementById('retoques').value; fillMark(form, 'retoques_si', rt === 'SI'); fillMark(form, 'retoques_no', rt === 'NO');
+
+                const fNom = esMenorBoolean ? rNom : cNom; const fDni = esMenorBoolean ? rDni : cDni;
+                fillText(form, 'nombre_final', fNom); fillText(form, 'tecnica_final', borradorActual.tecnica); fillText(form, 'fecha_ciudad', document.getElementById('fecha_ciudad').value); fillText(form, 'fecha_dia', ah.getDate().toString()); fillText(form, 'fecha_mes', (ah.getMonth()+1).toString()); fillText(form, 'fecha_anio', ah.getFullYear().toString());
+                fillText(form, 'firma_cliente_texto', `Firmado electrónicamente por ${fNom} con DNI ${fDni} el ${fS} a las ${hS}.`); fillText(form, 'firma_tatuador_texto', `Firmado electrónicamente por ${tatuadorActual.nombre} con DNI ${tatuadorActual.boja_dni} el ${fS} a las ${hS}.`);
+
+                form.getFields().forEach(c => c.enableReadOnly()); form.updateFieldAppearances();
+
+                const pMB = await pdfDoc.save(); const pBl = new Blob([pMB], { type: 'application/pdf' }); const nAr = `${fDni}_${borradorActual.id.substring(0,8)}.pdf`;
+                btn.innerText = "☁️ Subiendo...";
+                const { error: upErr } = await supabaseBoja.storage.from('consentimientos').upload(nAr, pBl, { contentType: 'application/pdf', cacheControl: '3600' });
+                if (upErr) throw new Error("Error subiendo PDF");
+                const { data: pUrl } = supabaseBoja.storage.from('consentimientos').getPublicUrl(nAr);
+
+                await Promise.all([ supabaseBoja.from('clientes_tatuaje').insert([{ dni: cDni, nombre: cNom, telefono: document.getElementById('cliente_telefono').value, es_menor: esMenorBoolean, dni_representante: esMenorBoolean ? rDni : null, pdf_url: pUrl.publicUrl }]), supabaseBoja.from('borradores_boja').update({ estado: 'Completado' }).eq('id', borradorActual.id) ]);
+
+                const oUrl = URL.createObjectURL(pBl); const a = document.createElement('a'); a.href = oUrl; a.download = nAr; document.body.appendChild(a); a.click(); a.remove(); URL.revokeObjectURL(oUrl);
+
+                document.getElementById('consent-form').innerHTML = `<div class="text-center py-10"><div class="text-5xl mb-4">✅</div><h2 class="text-2xl font-bold">Proceso Completado</h2><p class="mt-2 text-sm text-brand-accent">Documento archivado y descargado.</p></div>`;
+            } catch (e) { alert("❌ " + e.message); } finally { btn.disabled = false; btn.innerText = tb; }
+        });
+    </script>
 </body>
 </html>
