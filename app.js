@@ -1,10 +1,16 @@
 // =========================================================
-// 1. CONFIGURACIÓN SUPABASE
+// 1. CONFIGURACIÓN CONSTANTE (Coordenadas de la firma)
 // =========================================================
+const FIRMA_CONFIG = {
+    paginaIndex: 2,  // 0 = Pág 1, 1 = Pág 2, 2 = Pág 3 del BOJA
+    x: 80,           // Mueve el sello a izquierda o derecha
+    y: 130           // Mueve el sello arriba o abajo
+};
+
 const SUPABASE_URL = 'https://fqydtjwqkmdatfsauomh.supabase.co'; 
 const SUPABASE_ANON_KEY = 'sb_publishable_-FdijJSiBiKFSY4I4F-LJw_fB89m4Cj';
 
-// Usamos supabaseBoja para evitar conflictos con otras páginas
+// Instancia única de Supabase
 const supabaseBoja = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
 // =========================================================
@@ -43,34 +49,31 @@ document.getElementById('cliente_nacimiento').addEventListener('change', functio
 });
 
 // =========================================================
-// 3. HELPERS PARA RELLENAR PDF "INDESTRUCTIBLES"
+// 3. HELPERS TODOTERRENO PARA RELLENAR PDF
 // =========================================================
 const fillText = (form, fieldName, value) => {
     try {
         const field = form.getTextField(fieldName);
         if (field && value) field.setText(value.toString());
     } catch (e) {
-        console.warn(`[PDF-LIB] Campo texto '${fieldName}' no encontrado.`);
+        console.warn(`[Aviso] Campo de texto '${fieldName}' no encontrado.`);
     }
 };
 
-const fillCheck = (form, fieldName, isChecked) => {
-    if (!isChecked) return; // Si no está marcado en la web, no hacemos nada
+// NUEVO HELPER ESPECIAL PARA LA "X" EN CAMPOS DE TEXTO
+const fillMark = (form, fieldName, isChecked) => {
+    if (!isChecked) return; // Si no está marcado en la web, se queda en blanco
     
     try {
-        // Intento 1: Es un CheckBox normal
-        const field = form.getCheckBox(fieldName);
-        field.check();
-    } catch (e1) {
+        // Intenta escribir una "X" en el campo de texto que has creado en el PDF
+        const field = form.getTextField(fieldName);
+        if (field) field.setText('X');
+    } catch (e) {
+        // Fallback por si alguno se te olvidó cambiarlo y sigue siendo checkbox
         try {
-            // Intento 2: Es un RadioGroup (Muy típico en los PDFs oficiales)
-            const field = form.getRadioGroup(fieldName);
-            const opciones = field.getOptions();
-            if (opciones.length > 0) {
-                field.select(opciones[0]); // Seleccionamos la única opción que tiene
-            }
+            form.getCheckBox(fieldName).check();
         } catch (e2) {
-            console.warn(`[PDF-LIB] No se pudo marcar la casilla '${fieldName}'.`);
+            console.warn(`[Aviso] Campo para la marca '${fieldName}' no encontrado.`);
         }
     }
 };
@@ -87,7 +90,7 @@ document.getElementById('consent-form').addEventListener('submit', async functio
 
     const btn = document.getElementById('btn-submit');
     const textoBtnOriginal = btn.innerText;
-    btn.innerText = "⏳ Generando y asegurando documento...";
+    btn.innerText = "⏳ Generando documento seguro...";
     btn.disabled = true;
 
     try {
@@ -102,12 +105,11 @@ document.getElementById('consent-form').addEventListener('submit', async functio
         const pdfDoc = await PDFDocument.load(plantillaBytes);
         const form = pdfDoc.getForm();
 
-        // B. Extraer fecha/hora actual
         const ahora = new Date();
         const fechaStr = ahora.toLocaleDateString('es-ES');
         const horaStr = ahora.toLocaleTimeString('es-ES', {hour: '2-digit', minute:'2-digit'});
 
-        // C. MAPEO (Centro y Tatuador)
+        // B. MAPEO: Centro y Tatuador
         fillText(form, 'centro_nombre', document.getElementById('centro_nombre').value);
         fillText(form, 'centro_nif', document.getElementById('centro_nif').value);
         fillText(form, 'centro_tipo_via', document.getElementById('centro_tipo_via').value);
@@ -126,16 +128,12 @@ document.getElementById('consent-form').addEventListener('submit', async functio
         fillText(form, 'tatuador_cp', document.getElementById('tatuador_cp').value);
         fillText(form, 'tatuador_telefono', document.getElementById('tatuador_telefono').value);
 
-        // D. MAPEO (Cliente)
+        // C. MAPEO: Cliente
         const clienteNombre = document.getElementById('cliente_nombre').value.toUpperCase();
         const clienteDni = document.getElementById('cliente_dni').value.toUpperCase();
         
         fillText(form, 'cliente_nombre', clienteNombre);
         fillText(form, 'cliente_nacimiento', document.getElementById('cliente_nacimiento').value);
-        
-        fillCheck(form, 'cliente_sexo_h', document.getElementById('cliente_sexo_h').checked);
-        fillCheck(form, 'cliente_sexo_m', document.getElementById('cliente_sexo_m').checked);
-        
         fillText(form, 'cliente_dni', clienteDni);
         fillText(form, 'cliente_tipo_via', document.getElementById('cliente_tipo_via').value);
         fillText(form, 'cliente_nombre_via', document.getElementById('cliente_nombre_via').value);
@@ -145,18 +143,21 @@ document.getElementById('consent-form').addEventListener('submit', async functio
         fillText(form, 'cliente_cp', document.getElementById('cliente_cp').value);
         fillText(form, 'cliente_telefono', document.getElementById('cliente_telefono').value);
 
-        // E. MAPEO (Representante Legal, si es menor)
+        // D. MAPEO: Casillas de Verificación (Con la nueva función "X")
+        fillMark(form, 'cliente_sexo_h', document.getElementById('cliente_sexo_h').checked);
+        fillMark(form, 'cliente_sexo_m', document.getElementById('cliente_sexo_m').checked);
+
+        // Representante (si procede)
         let repNombre = '';
         let repDni = '';
-        
         if (esMenorBoolean) {
             repNombre = document.getElementById('rep_nombre').value.toUpperCase();
             repDni = document.getElementById('rep_dni').value.toUpperCase();
 
             fillText(form, 'rep_nombre', repNombre);
-            fillCheck(form, 'rep_sexo_h', document.getElementById('rep_sexo_h').checked);
-            fillCheck(form, 'rep_sexo_m', document.getElementById('rep_sexo_m').checked);
             fillText(form, 'rep_dni', repDni);
+            fillMark(form, 'rep_sexo_h', document.getElementById('rep_sexo_h').checked);
+            fillMark(form, 'rep_sexo_m', document.getElementById('rep_sexo_m').checked);
             fillText(form, 'rep_tipo_via', document.getElementById('rep_tipo_via').value);
             fillText(form, 'rep_nombre_via', document.getElementById('rep_nombre_via').value);
             fillText(form, 'rep_numero', document.getElementById('rep_numero').value);
@@ -166,23 +167,30 @@ document.getElementById('consent-form').addEventListener('submit', async functio
             fillText(form, 'rep_telefono', document.getElementById('rep_telefono').value);
         }
 
-        // F. MAPEO (Técnica y Cuestionario - CASILLAS PROBLEMÁTICAS SOLUCIONADAS)
-        fillCheck(form, 'check_tatuaje', document.getElementById('check_tatuaje').checked);
-        fillCheck(form, 'check_micro', document.getElementById('check_micro').checked);
-        fillCheck(form, 'check_piercing', document.getElementById('check_piercing').checked);
-        
+        // Técnica
+        fillMark(form, 'check_tatuaje', document.getElementById('check_tatuaje').checked);
+        fillMark(form, 'check_micro', document.getElementById('check_micro').checked);
+        fillMark(form, 'check_piercing', document.getElementById('check_piercing').checked);
         fillText(form, 'zona_anatomica', document.getElementById('zona_anatomica').value);
 
-        fillCheck(form, 'permanente_si', document.getElementById('permanente_si').checked);
-        fillCheck(form, 'permanente_no', document.getElementById('permanente_no').checked);
-        fillCheck(form, 'toda_vida_si', document.getElementById('toda_vida_si').checked);
-        fillCheck(form, 'toda_vida_no', document.getElementById('toda_vida_no').checked);
-        fillCheck(form, 'alteracion_si', document.getElementById('alteracion_si').checked);
-        fillCheck(form, 'alteracion_no', document.getElementById('alteracion_no').checked);
-        fillCheck(form, 'retoques_si', document.getElementById('retoques_si').checked);
-        fillCheck(form, 'retoques_no', document.getElementById('retoques_no').checked);
+        // Cuestionario de Salud (SI/NO usando los <select> del HTML)
+        const perm = document.getElementById('permanente').value;
+        fillMark(form, 'permanente_si', perm === 'SI');
+        fillMark(form, 'permanente_no', perm === 'NO');
 
-        // G. MAPEO (Textareas)
+        const todaVida = document.getElementById('toda_vida').value;
+        fillMark(form, 'toda_vida_si', todaVida === 'SI');
+        fillMark(form, 'toda_vida_no', todaVida === 'NO');
+
+        const alt = document.getElementById('alteracion').value;
+        fillMark(form, 'alteracion_si', alt === 'SI');
+        fillMark(form, 'alteracion_no', alt === 'NO');
+
+        const ret = document.getElementById('retoques').value;
+        fillMark(form, 'retoques_si', ret === 'SI');
+        fillMark(form, 'retoques_no', ret === 'NO');
+
+        // Textareas
         fillText(form, 'como_se_realiza', document.getElementById('como_se_realiza').value);
         fillText(form, 'materiales', document.getElementById('materiales').value);
         fillText(form, 'efectos', document.getElementById('efectos').value);
@@ -190,7 +198,7 @@ document.getElementById('consent-form').addEventListener('submit', async functio
         fillText(form, 'medidas', document.getElementById('medidas').value);
         fillText(form, 'presupuesto', document.getElementById('presupuesto').value);
 
-        // H. CIERRE DEL PDF (Nombres finales y fechas)
+        // Nombres finales y fechas
         const firmanteNombre = esMenorBoolean ? repNombre : clienteNombre;
         const firmanteDni = esMenorBoolean ? repDni : clienteDni;
 
@@ -205,25 +213,28 @@ document.getElementById('consent-form').addEventListener('submit', async functio
         fillText(form, 'fecha_mes', (ahora.getMonth() + 1).toString());
         fillText(form, 'fecha_anio', ahora.getFullYear().toString());
 
-        // I. INYECCIÓN DEL TEXTO DE FIRMA ELECTRÓNICA
+        // E. SELLO DE FIRMA DIGITAL
         const strFirmaCliente = `Firmado electrónicamente por ${firmanteNombre} con DNI ${firmanteDni} el ${fechaStr} a las ${horaStr}.`;
         const strFirmaTatuador = `Firmado electrónicamente por ${document.getElementById('tatuador_nombre').value} con DNI ${document.getElementById('tatuador_dni').value} el ${fechaStr} a las ${horaStr}.`;
 
         fillText(form, 'firma_cliente_texto', strFirmaCliente);
         fillText(form, 'firma_tatuador_texto', strFirmaTatuador);
 
-        // J. BLOQUEAR FORMULARIO (En lugar de "flatten()", usamos "ReadOnly" para que NO desaparezcan las cruces de los Checkboxes)
+        // F. BLOQUEAR CAMPOS Y FORZAR DIBUJADO DE LAS "X"
         const camposDelPdf = form.getFields();
         camposDelPdf.forEach(campo => {
             campo.enableReadOnly();
         });
+        
+        // Imprescindible para que las "X" se peguen a la hoja visualmente
+        form.updateFieldAppearances();
 
-        // K. GENERAR BLOB
+        // G. GENERAR BLOB
         const pdfModificadoBytes = await pdfDoc.save();
         const pdfBlob = new Blob([pdfModificadoBytes], { type: 'application/pdf' });
         const nombreArchivoPdf = `${firmanteDni}_${Date.now()}.pdf`;
 
-        // L. SUBIR A SUPABASE STORAGE
+        // H. SUBIR A SUPABASE
         btn.innerText = "☁️ Subiendo a la base de datos...";
         
         const { error: uploadError } = await supabaseBoja.storage
@@ -239,7 +250,7 @@ document.getElementById('consent-form').addEventListener('submit', async functio
         const { data: publicUrlData } = supabaseBoja.storage.from('consentimientos').getPublicUrl(nombreArchivoPdf);
         const pdfUrl = publicUrlData.publicUrl;
 
-        // M. INSERTAR EN LA TABLA
+        // I. GUARDAR EN TABLA
         const { error: dbError } = await supabaseBoja.from('clientes_tatuaje').insert([{
             dni: clienteDni,
             nombre: clienteNombre,
@@ -249,9 +260,9 @@ document.getElementById('consent-form').addEventListener('submit', async functio
             pdf_url: pdfUrl
         }]);
 
-        if (dbError) throw new Error("Error guardando datos en tabla: " + dbError.message);
+        if (dbError) throw new Error("Error en tabla: " + dbError.message);
 
-        // N. DESCARGA FORZADA
+        // J. DESCARGAR
         const objectUrl = URL.createObjectURL(pdfBlob);
         const a = document.createElement('a');
         a.href = objectUrl;
@@ -266,7 +277,7 @@ document.getElementById('consent-form').addEventListener('submit', async functio
         document.getElementById('bloque_representante').classList.add('hidden');
 
     } catch (error) {
-        console.error("Error completo:", error);
+        console.error("Error:", error);
         alert("❌ Ocurrió un error: " + error.message);
     } finally {
         btn.disabled = false;
