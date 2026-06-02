@@ -5,7 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Manager - Ciskotattoo</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600&family=Montserrat:wght@400;600;700;900&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
@@ -291,20 +290,47 @@
         /* --- ESTUDIO Y BOJAS --- */
         async function cargarDatosEstudio() {
             try {
-                const sp = getSupabase(); const { data } = await sp.from('configuracion_estudio').select('*').eq('id', 1).single();
+                const sp = getSupabase(); 
+                const { data, error } = await sp.from('configuracion_estudio').select('*').eq('id', 1).single();
                 if (data) {
-                    ['nombre','nif','tipo_via','nombre_via','numero','poblacion','provincia','cp'].forEach(f => { document.getElementById(`est_${f==='nombre_via'?'nvia':f==='tipo_via'?'tvia':f==='poblacion'?'pob':f==='provincia'?'prov':f==='numero'?'num':f}`).value = data[f] || ''; });
+                    document.getElementById('est_nombre').value = data.nombre || '';
+                    document.getElementById('est_nif').value = data.nif || '';
+                    document.getElementById('est_tvia').value = data.tipo_via || '';
+                    document.getElementById('est_nvia').value = data.nombre_via || '';
+                    document.getElementById('est_num').value = data.numero || '';
+                    document.getElementById('est_pob').value = data.poblacion || '';
+                    document.getElementById('est_prov').value = data.provincia || '';
+                    document.getElementById('est_cp').value = data.cp || '';
                 }
-            } catch (e) {}
+            } catch (e) {
+                console.error("No se pudo cargar el estudio", e);
+            }
         }
+
         async function guardarDatosEstudio() {
-            const btn = document.getElementById('btn-save-estudio'); btn.innerText = "⏳...";
+            const btn = document.getElementById('btn-save-estudio'); 
+            const originalText = btn.innerText;
+            btn.innerText = "⏳ Guardando...";
             try {
                 const sp = getSupabase();
-                await sp.from('configuracion_estudio').update({ nombre: document.getElementById('est_nombre').value, nif: document.getElementById('est_nif').value, tipo_via: document.getElementById('est_tvia').value, nombre_via: document.getElementById('est_nvia').value, numero: document.getElementById('est_num').value, poblacion: document.getElementById('est_pob').value, provincia: document.getElementById('est_prov').value, cp: document.getElementById('est_cp').value }).eq('id', 1);
-                alert("✅ Datos del estudio guardados correctamente.");
-            } catch (e) { alert("❌ Error."); }
-            btn.innerText = "Guardar Datos del Estudio";
+                // Usamos UPSERT para obligar a que se guarde existiera antes la fila o no.
+                const { error } = await sp.from('configuracion_estudio').upsert({ 
+                    id: 1,
+                    nombre: document.getElementById('est_nombre').value, 
+                    nif: document.getElementById('est_nif').value, 
+                    tipo_via: document.getElementById('est_tvia').value, 
+                    nombre_via: document.getElementById('est_nvia').value, 
+                    numero: document.getElementById('est_num').value, 
+                    poblacion: document.getElementById('est_pob').value, 
+                    provincia: document.getElementById('est_prov').value, 
+                    cp: document.getElementById('est_cp').value 
+                });
+                if (error) throw error;
+                alert("✅ Datos del estudio guardados permanentemente.");
+            } catch (e) { 
+                alert("❌ Error al guardar datos del estudio: " + e.message); 
+            }
+            btn.innerText = originalText;
         }
 
         function refrescarSelectBoja() {
