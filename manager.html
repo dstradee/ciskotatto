@@ -4,953 +4,429 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Manager - Ciskotattoo</title>
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600&family=Montserrat:wght@400;600;700;900&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script>
-        tailwind.config = {
-            theme: {
-                extend: {
-                    colors: {
-                        'brand-bg': '#FFFFFF',
-                        'brand-text': '#000000',
-                        'brand-dark': '#282828', 
-                        'brand-accent': '#A0A0A0',
-                        'brand-light': '#F5F5F5',
-                        'brand-border': '#E0E0E0',
-                        'brand-red': '#A12727'
-                    },
-                    fontFamily: {
-                        'heading': ['Montserrat', 'sans-serif'],
-                        'body': ['Inter', 'sans-serif']
-                    },
-                    boxShadow: {
-                        'minimal': '0 2px 5px rgba(0, 0, 0, 0.05)',
-                        'hover': '0 4px 12px rgba(0, 0, 0, 0.1)'
-                    }
-                }
-            }
-        }
+        tailwind.config = { theme: { extend: { colors: { 'brand-bg': '#FFFFFF', 'brand-text': '#000000', 'brand-dark': '#282828', 'brand-accent': '#A0A0A0', 'brand-light': '#F5F5F5', 'brand-border': '#E0E0E0', 'brand-red': '#A12727' }, fontFamily: { 'heading': ['Montserrat', 'sans-serif'], 'body': ['Inter', 'sans-serif'] } } } }
     </script>
     <style>
         body { margin: 0; padding: 0; background-color: #FFFFFF; color: #000000; }
         ::-webkit-scrollbar { width: 6px; }
         ::-webkit-scrollbar-track { background: #F5F5F5; }
         ::-webkit-scrollbar-thumb { background: #282828; border-radius: 0px; }
-        .fade-in { animation: fadeIn 0.5s ease-in-out; }
-        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
         * { border-radius: 2px !important; }
         input[type="time"]::-webkit-calendar-picker-indicator, input[type="date"]::-webkit-calendar-picker-indicator { cursor: pointer; }
-        select option:disabled { color: #A0A0A0; font-style: italic; }
     </style>
 </head>
 <body class="bg-brand-bg text-brand-text font-body pb-10">
 
     <!-- LOGIN -->
     <div id="pantalla-login" class="min-h-screen flex items-center justify-center bg-brand-bg px-4 fixed inset-0 z-[100]">
-        <div class="bg-white p-8 md:p-12 border border-brand-border shadow-minimal w-full max-w-md text-center relative overflow-hidden">
-            <h1 class="text-4xl font-heading uppercase text-brand-text tracking-widest mb-2 relative z-10 font-bold">Ciskotattoo</h1>
-            <p class="text-brand-accent font-body font-semibold mb-10 uppercase tracking-[0.2em] text-xs relative z-10">Manager Access</p>
-            
-            <div class="space-y-6 relative z-10">
-                <input type="email" id="login-user" placeholder="Correo Electrónico" class="w-full bg-brand-light border border-brand-border p-4 text-brand-text focus:outline-none focus:border-brand-dark focus:ring-1 focus:ring-brand-dark transition-colors text-center font-body">
-                <input type="password" id="login-pass" placeholder="Contraseña" class="w-full bg-brand-light border border-brand-border p-4 text-brand-text focus:outline-none focus:border-brand-dark focus:ring-1 focus:ring-brand-dark transition-colors text-center tracking-[0.3em] font-body">
-                <button onclick="intentarLogin()" id="btn-login" class="w-full bg-brand-dark text-white border border-brand-dark font-heading font-bold text-lg py-5 mt-4 shadow-minimal active:scale-[0.98] hover:bg-white hover:text-brand-dark transition-all uppercase tracking-[0.15em]">
-                    Entrar al Panel
-                </button>
+        <div class="bg-white p-8 md:p-12 border border-brand-border shadow-md w-full max-w-md text-center">
+            <h1 class="text-4xl font-heading uppercase tracking-widest mb-2 font-bold">Ciskotattoo</h1>
+            <p class="text-brand-accent font-body font-semibold mb-10 uppercase tracking-[0.2em] text-xs">Manager Access</p>
+            <div class="space-y-6">
+                <input type="email" id="login-user" placeholder="Correo Electrónico" class="w-full bg-brand-light border border-brand-border p-4 text-center focus:outline-none focus:border-brand-dark">
+                <input type="password" id="login-pass" placeholder="Contraseña" class="w-full bg-brand-light border border-brand-border p-4 text-center tracking-[0.3em] focus:outline-none focus:border-brand-dark">
+                <button onclick="intentarLogin()" id="btn-login" class="w-full bg-brand-dark text-white font-heading font-bold text-lg py-5 uppercase hover:bg-brand-light hover:text-brand-dark border border-brand-dark transition-all">Entrar al Panel</button>
             </div>
         </div>
     </div>
 
     <!-- PANEL PRINCIPAL -->
-    <div id="pantalla-dashboard" class="hidden fade-in">
-        <header class="bg-white py-6 px-6 border-b border-brand-border sticky top-0 z-50 shadow-minimal flex flex-col md:flex-row justify-between md:items-center gap-6">
+    <div id="pantalla-dashboard" class="hidden">
+        <header class="bg-white py-6 px-6 border-b border-brand-border sticky top-0 z-50 flex flex-col md:flex-row justify-between md:items-center gap-6">
             <div>
-                <h1 class="text-3xl font-heading uppercase text-brand-text tracking-widest font-bold">Ciskotattoo</h1>
-                <p class="text-brand-accent text-xs font-body font-semibold uppercase tracking-[0.2em] mt-2">Panel de Dirección</p>
+                <h1 class="text-3xl font-heading uppercase tracking-widest font-bold">Ciskotattoo</h1>
+                <p class="text-brand-accent text-xs font-semibold uppercase tracking-[0.2em] mt-2">Panel de Dirección</p>
             </div>
-            
             <div class="flex gap-3 overflow-x-auto pb-2 md:pb-0 w-full md:w-auto">
-                <button onclick="cambiarPestaña('analitica')" id="tab-analitica" class="bg-brand-dark text-white border border-brand-dark px-5 py-3 font-heading uppercase text-sm font-semibold whitespace-nowrap tracking-widest transition-colors shadow-minimal">📊 Analítica</button>
-                <button onclick="cambiarPestaña('boja')" id="tab-boja" class="bg-white text-brand-accent hover:text-brand-dark px-5 py-3 font-heading uppercase text-sm border border-brand-border whitespace-nowrap tracking-widest transition-colors">📝 BOJA</button>
-                <button onclick="cambiarPestaña('tatuadores')" id="tab-tatuadores" class="bg-white text-brand-accent hover:text-brand-dark px-5 py-3 font-heading uppercase text-sm border border-brand-border whitespace-nowrap tracking-widest transition-colors">💉 Tatuadores</button>
-                <button onclick="cambiarPestaña('menu')" id="tab-menu" class="bg-white text-brand-accent hover:text-brand-dark px-5 py-3 font-heading uppercase text-sm border border-brand-border whitespace-nowrap tracking-widest transition-colors">📖 Estilos</button>
-                <button onclick="cambiarPestaña('horarios')" id="tab-horarios" class="bg-white text-brand-accent hover:text-brand-dark px-5 py-3 font-heading uppercase text-sm border border-brand-border whitespace-nowrap tracking-widest transition-colors">⏰ Horarios Base</button>
-                <button onclick="cambiarPestaña('bloqueos')" id="tab-bloqueos" class="bg-white text-brand-accent hover:text-brand-dark px-5 py-3 font-heading uppercase text-sm border border-brand-border whitespace-nowrap tracking-widest transition-colors">🔒 Bloqueos</button>
-                <button onclick="cambiarPestaña('exportar')" id="tab-exportar" class="bg-white text-brand-accent hover:text-brand-dark px-5 py-3 font-heading uppercase text-sm border border-brand-border whitespace-nowrap tracking-widest transition-colors">📁 Exportar</button>
+                <button onclick="cambiarPestaña('analitica')" id="tab-analitica" class="bg-brand-dark text-white border border-brand-dark px-5 py-3 font-heading uppercase text-sm font-bold transition-colors">📊 Analítica</button>
+                <button onclick="cambiarPestaña('boja')" id="tab-boja" class="bg-white text-brand-accent hover:text-brand-dark px-5 py-3 font-heading uppercase text-sm font-bold border border-brand-border transition-colors">📝 BOJA</button>
+                <button onclick="cambiarPestaña('tatuadores')" id="tab-tatuadores" class="bg-white text-brand-accent hover:text-brand-dark px-5 py-3 font-heading uppercase text-sm font-bold border border-brand-border transition-colors">💉 Tatuadores</button>
+                <button onclick="cambiarPestaña('menu')" id="tab-menu" class="bg-white text-brand-accent hover:text-brand-dark px-5 py-3 font-heading uppercase text-sm font-bold border border-brand-border transition-colors">📖 Estilos</button>
+                <button onclick="cambiarPestaña('horarios')" id="tab-horarios" class="bg-white text-brand-accent hover:text-brand-dark px-5 py-3 font-heading uppercase text-sm font-bold border border-brand-border transition-colors">⏰ Horarios Base</button>
+                <button onclick="cambiarPestaña('bloqueos')" id="tab-bloqueos" class="bg-white text-brand-accent hover:text-brand-dark px-5 py-3 font-heading uppercase text-sm font-bold border border-brand-border transition-colors">🔒 Bloqueos</button>
             </div>
         </header>
 
         <main class="max-w-6xl mx-auto p-4 mt-6">
 
-            <!-- PESTAÑA ANALÍTICA -->
+            <!-- VISTA ANALÍTICA -->
             <div id="vista-analitica" class="space-y-6 block">
                 <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-                    <div class="bg-brand-light p-8 border border-brand-border shadow-minimal text-center md:text-left">
-                        <h3 class="text-brand-accent font-body font-semibold uppercase text-xs tracking-[0.15em] mb-3">Total Citas</h3>
-                        <div class="text-6xl font-heading font-bold text-brand-dark" id="kpi-reservas">--</div>
-                    </div>
-                    <div class="bg-brand-light p-8 border border-brand-border shadow-minimal text-center md:text-left">
-                        <h3 class="text-brand-accent font-body font-semibold uppercase text-xs tracking-[0.15em] mb-3">Tatuador Más Activo</h3>
-                        <div class="text-3xl font-heading font-bold text-brand-text uppercase mt-2 tracking-widest" id="kpi-zona">--</div>
-                    </div>
-                    <div class="bg-brand-light p-8 border border-brand-border shadow-minimal text-center md:text-left">
-                        <h3 class="text-brand-accent font-body font-semibold uppercase text-xs tracking-[0.15em] mb-3">Ratio de Cancelación</h3>
-                        <div class="text-6xl font-heading font-bold text-brand-dark">4.2<span class="text-2xl text-brand-accent font-body">%</span></div>
-                    </div>
+                    <div class="bg-brand-light p-8 border border-brand-border"><h3 class="text-brand-accent font-semibold uppercase text-xs tracking-widest mb-3">Total Citas</h3><div class="text-6xl font-heading font-bold" id="kpi-reservas">--</div></div>
+                    <div class="bg-brand-light p-8 border border-brand-border"><h3 class="text-brand-accent font-semibold uppercase text-xs tracking-widest mb-3">Tatuador Más Activo</h3><div class="text-3xl font-heading font-bold uppercase mt-2 tracking-widest" id="kpi-zona">--</div></div>
+                    <div class="bg-brand-light p-8 border border-brand-border"><h3 class="text-brand-accent font-semibold uppercase text-xs tracking-widest mb-3">Total Consentimientos</h3><div class="text-6xl font-heading font-bold" id="kpi-bojas">--</div></div>
                 </div>
-                <div class="bg-brand-light p-8 border border-brand-border shadow-minimal">
-                    <h3 class="text-xl font-heading font-bold uppercase mb-6 border-b border-brand-border pb-4 text-brand-text tracking-widest">Flujo de Citas por Hora</h3>
-                    <div class="relative h-64 w-full">
-                        <canvas id="graficaReservas"></canvas>
-                    </div>
-                </div>
+                <div class="bg-brand-light p-8 border border-brand-border"><h3 class="text-xl font-heading font-bold uppercase mb-6 border-b border-brand-border pb-4">Flujo de Citas por Hora</h3><div class="relative h-64 w-full"><canvas id="graficaReservas"></canvas></div></div>
             </div>
 
-            <!-- PESTAÑA BOJA: GESTIÓN LEGAL Y GENERADOR DE ENLACES -->
+            <!-- VISTA BOJA -->
             <div id="vista-boja" class="hidden space-y-6">
-                <div class="bg-white border-l-4 border-brand-dark p-5 text-brand-dark font-body shadow-minimal mb-6 text-sm tracking-wide">
-                    ⚜️ Selecciona un tatuador para guardar sus datos legales permanentemente o generar un enlace de consentimiento para un cliente.
-                </div>
-
-                <!-- SELECTOR DE TATUADOR -->
-                <div class="bg-brand-light p-8 border border-brand-border shadow-minimal">
-                    <label class="block mb-2 font-body font-semibold text-brand-accent text-xs uppercase tracking-[0.15em]">Selecciona al Tatuador</label>
-                    <select id="boja-select-tat" onchange="cargarDatosLegalesTatuador()" class="w-full bg-white border border-brand-border p-4 text-brand-text font-heading text-lg font-bold uppercase focus:outline-none focus:border-brand-dark transition-colors mb-4">
-                        <option value="">Cargando equipo...</option>
-                    </select>
+                <!-- Config Estudio -->
+                <div class="bg-white border border-brand-dark p-8 shadow-sm">
+                    <h3 class="text-xl font-heading font-bold text-brand-dark uppercase mb-4 tracking-widest border-b border-brand-border pb-2">🏢 Datos Legales del Estudio</h3>
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4 text-sm font-body">
+                        <div><label class="font-bold text-xs text-brand-accent uppercase mb-1">Nombre Entidad</label><input type="text" id="est_nombre" class="w-full p-3 border border-brand-border focus:border-brand-dark outline-none"></div>
+                        <div><label class="font-bold text-xs text-brand-accent uppercase mb-1">NIF / CIF</label><input type="text" id="est_nif" class="w-full p-3 border border-brand-border focus:border-brand-dark outline-none"></div>
+                        <div><label class="font-bold text-xs text-brand-accent uppercase mb-1">Tipo Vía</label><input type="text" id="est_tvia" class="w-full p-3 border border-brand-border focus:border-brand-dark outline-none"></div>
+                        <div class="md:col-span-2"><label class="font-bold text-xs text-brand-accent uppercase mb-1">Nombre Vía</label><input type="text" id="est_nvia" class="w-full p-3 border border-brand-border focus:border-brand-dark outline-none"></div>
+                        <div><label class="font-bold text-xs text-brand-accent uppercase mb-1">Número/Piso</label><input type="text" id="est_num" class="w-full p-3 border border-brand-border focus:border-brand-dark outline-none"></div>
+                        <div><label class="font-bold text-xs text-brand-accent uppercase mb-1">Población</label><input type="text" id="est_pob" class="w-full p-3 border border-brand-border focus:border-brand-dark outline-none"></div>
+                        <div><label class="font-bold text-xs text-brand-accent uppercase mb-1">Provincia</label><input type="text" id="est_prov" class="w-full p-3 border border-brand-border focus:border-brand-dark outline-none"></div>
+                        <div><label class="font-bold text-xs text-brand-accent uppercase mb-1">CP</label><input type="text" id="est_cp" class="w-full p-3 border border-brand-border focus:border-brand-dark outline-none"></div>
+                        <div class="md:col-span-3"><button onclick="guardarDatosEstudio()" id="btn-save-estudio" class="w-full bg-brand-dark text-white font-bold py-4 uppercase tracking-widest border border-brand-dark hover:bg-white hover:text-brand-dark transition-all">Guardar Datos del Estudio</button></div>
+                    </div>
                 </div>
 
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    <!-- BLOQUE 1: DATOS LEGALES DEL TATUADOR -->
-                    <div class="bg-brand-light p-8 border border-brand-border shadow-minimal">
-                        <h3 class="text-xl font-heading font-bold text-brand-dark uppercase mb-4 tracking-widest border-b border-brand-border pb-2">Perfil Legal</h3>
+                    <!-- Config Legal Tatuador -->
+                    <div class="bg-brand-light p-8 border border-brand-border shadow-sm">
+                        <h3 class="text-xl font-heading font-bold text-brand-dark uppercase mb-4 tracking-widest border-b border-brand-border pb-2">Perfil Legal del Tatuador</h3>
+                        <select id="boja-select-tat" onchange="cargarDatosLegalesTatuador()" class="w-full bg-white border border-brand-border p-3 font-bold uppercase mb-4 outline-none"><option value="">-- Selecciona Tatuador --</option></select>
                         <div class="grid grid-cols-1 gap-4 text-sm font-body">
-                            <div><label class="font-bold text-xs text-brand-accent uppercase mb-1">DNI / NIE</label><input type="text" id="b_dni" class="w-full p-3 border border-brand-border focus:outline-none focus:border-brand-dark"></div>
-                            <div><label class="font-bold text-xs text-brand-accent uppercase mb-1">Titulación / Curso</label><input type="text" id="b_titulo" class="w-full p-3 border border-brand-border focus:outline-none focus:border-brand-dark"></div>
-                            <div><label class="font-bold text-xs text-brand-accent uppercase mb-1">Categoría Profesional</label><input type="text" id="b_cat" class="w-full p-3 border border-brand-border focus:outline-none focus:border-brand-dark"></div>
-                            <div class="grid grid-cols-2 gap-2">
-                                <div><label class="font-bold text-xs text-brand-accent uppercase mb-1">Tipo Vía</label><input type="text" id="b_tvia" class="w-full p-3 border border-brand-border focus:outline-none focus:border-brand-dark" placeholder="Ej: Calle"></div>
-                                <div><label class="font-bold text-xs text-brand-accent uppercase mb-1">Nombre Vía</label><input type="text" id="b_nvia" class="w-full p-3 border border-brand-border focus:outline-none focus:border-brand-dark"></div>
-                            </div>
-                            <div class="grid grid-cols-2 gap-2">
-                                <div><label class="font-bold text-xs text-brand-accent uppercase mb-1">Número/Piso</label><input type="text" id="b_num" class="w-full p-3 border border-brand-border focus:outline-none focus:border-brand-dark"></div>
-                                <div><label class="font-bold text-xs text-brand-accent uppercase mb-1">CP</label><input type="text" id="b_cp" class="w-full p-3 border border-brand-border focus:outline-none focus:border-brand-dark"></div>
-                            </div>
-                            <div class="grid grid-cols-2 gap-2">
-                                <div><label class="font-bold text-xs text-brand-accent uppercase mb-1">Población</label><input type="text" id="b_pob" class="w-full p-3 border border-brand-border focus:outline-none focus:border-brand-dark"></div>
-                                <div><label class="font-bold text-xs text-brand-accent uppercase mb-1">Provincia</label><input type="text" id="b_prov" class="w-full p-3 border border-brand-border focus:outline-none focus:border-brand-dark"></div>
-                            </div>
-                            <div><label class="font-bold text-xs text-brand-accent uppercase mb-1">Teléfono Contacto</label><input type="text" id="b_tel" class="w-full p-3 border border-brand-border focus:outline-none focus:border-brand-dark"></div>
+                            <div><label class="font-bold text-xs text-brand-accent uppercase mb-1">DNI / NIE</label><input type="text" id="b_dni" class="w-full p-3 border border-brand-border outline-none"></div>
+                            <div><label class="font-bold text-xs text-brand-accent uppercase mb-1">Titulación</label><input type="text" id="b_titulo" class="w-full p-3 border border-brand-border outline-none"></div>
+                            <div><label class="font-bold text-xs text-brand-accent uppercase mb-1">Categoría</label><input type="text" id="b_cat" class="w-full p-3 border border-brand-border outline-none"></div>
+                            <div class="grid grid-cols-2 gap-2"><div><label class="font-bold text-xs text-brand-accent uppercase mb-1">Tipo Vía</label><input type="text" id="b_tvia" class="w-full p-3 border border-brand-border outline-none"></div><div><label class="font-bold text-xs text-brand-accent uppercase mb-1">Nombre Vía</label><input type="text" id="b_nvia" class="w-full p-3 border border-brand-border outline-none"></div></div>
+                            <div class="grid grid-cols-2 gap-2"><div><label class="font-bold text-xs text-brand-accent uppercase mb-1">Número</label><input type="text" id="b_num" class="w-full p-3 border border-brand-border outline-none"></div><div><label class="font-bold text-xs text-brand-accent uppercase mb-1">CP</label><input type="text" id="b_cp" class="w-full p-3 border border-brand-border outline-none"></div></div>
+                            <div class="grid grid-cols-2 gap-2"><div><label class="font-bold text-xs text-brand-accent uppercase mb-1">Población</label><input type="text" id="b_pob" class="w-full p-3 border border-brand-border outline-none"></div><div><label class="font-bold text-xs text-brand-accent uppercase mb-1">Provincia</label><input type="text" id="b_prov" class="w-full p-3 border border-brand-border outline-none"></div></div>
+                            <div><label class="font-bold text-xs text-brand-accent uppercase mb-1">Teléfono</label><input type="text" id="b_tel" class="w-full p-3 border border-brand-border outline-none"></div>
                         </div>
-                        <button onclick="guardarDatosLegalesTatuador()" id="btn-save-legal" class="mt-6 w-full bg-brand-dark text-white font-heading font-bold py-4 uppercase tracking-widest hover:bg-white hover:text-brand-dark border border-brand-dark transition-all">Guardar Perfil Legal</button>
+                        <button onclick="guardarDatosLegalesTatuador()" id="btn-save-legal" class="mt-6 w-full bg-brand-dark text-white font-bold py-4 uppercase tracking-widest hover:bg-white hover:text-brand-dark border border-brand-dark transition-all">Guardar Perfil</button>
                     </div>
 
-                    <!-- BLOQUE 2: GENERADOR DE ENLACE DE SESIÓN -->
-                    <div class="bg-brand-light p-8 border border-brand-border shadow-minimal">
-                        <h3 class="text-xl font-heading font-bold text-brand-dark uppercase mb-4 tracking-widest border-b border-brand-border pb-2">Generar Cita Nueva</h3>
-                        <p class="text-xs text-brand-accent mb-4">Rellena los detalles técnicos. Se generará un link para que el cliente firme en su móvil o tablet.</p>
+                    <!-- Generador Link -->
+                    <div class="bg-brand-light p-8 border border-brand-border shadow-sm">
+                        <h3 class="text-xl font-heading font-bold text-brand-dark uppercase mb-4 tracking-widest border-b border-brand-border pb-2">Generar BOJA</h3>
                         <div class="space-y-4 text-sm font-body">
-                            <div><label class="font-bold text-xs text-brand-accent uppercase mb-1">Zona Anatómica</label><input type="text" id="draft_zona" class="w-full p-3 border border-brand-border focus:outline-none focus:border-brand-dark" placeholder="Ej: Antebrazo derecho"></div>
+                            <div><label class="font-bold text-xs text-brand-accent uppercase mb-1">Zona Anatómica</label><input type="text" id="draft_zona" class="w-full p-3 border border-brand-border outline-none"></div>
                             <div><label class="font-bold text-xs text-brand-accent uppercase mb-1">Técnica</label>
-                                <select id="draft_tecnica" class="w-full p-3 border border-brand-border bg-white focus:outline-none focus:border-brand-dark">
-                                    <option value="TATUAJE">Tatuaje</option>
-                                    <option value="MICRO">Micropigmentación</option>
-                                    <option value="PIERCING">Piercing</option>
-                                </select>
+                                <select id="draft_tecnica" class="w-full p-3 border border-brand-border outline-none bg-white"><option value="TATUAJE">Tatuaje</option><option value="MICRO">Micropigmentación</option><option value="PIERCING">Piercing</option></select>
                             </div>
-                            <div><label class="font-bold text-xs text-brand-accent uppercase mb-1">Materiales (Tintas y Lotes)</label><textarea id="draft_materiales" rows="3" class="w-full p-3 border border-brand-border focus:outline-none focus:border-brand-dark" placeholder="Ej: Agujas Kwadron, Dynamic Black Lote #123"></textarea></div>
+                            <div><label class="font-bold text-xs text-brand-accent uppercase mb-1">Materiales</label><textarea id="draft_materiales" rows="3" class="w-full p-3 border border-brand-border outline-none"></textarea></div>
                         </div>
-                        <button onclick="generarEnlaceBoja()" id="btn-gen-link" class="mt-6 w-full bg-brand-dark text-white font-heading font-bold py-4 uppercase tracking-widest hover:bg-white hover:text-brand-dark border border-brand-dark transition-all">Crear Enlace Único</button>
-                        
+                        <button onclick="generarEnlaceBoja()" id="btn-gen-link" class="mt-6 w-full bg-brand-dark text-white font-bold py-4 uppercase tracking-widest hover:bg-white hover:text-brand-dark border border-brand-dark transition-all">Crear Enlace Único</button>
                         <div id="link-box" class="hidden mt-6 bg-white p-4 border border-brand-dark">
                             <label class="text-brand-dark font-bold text-xs uppercase mb-1">Enlace para el Cliente:</label>
-                            <input type="text" id="url-output" readonly class="w-full p-2 bg-brand-light text-xs mb-2 border border-brand-border focus:outline-none">
+                            <input type="text" id="url-output" readonly class="w-full p-2 bg-brand-light text-xs mb-2 border border-brand-border outline-none">
                             <button onclick="copiarEnlaceBoja()" class="w-full bg-[#E0E0E0] text-brand-dark py-3 text-xs font-bold uppercase hover:bg-brand-dark hover:text-white transition-colors">Copiar Enlace</button>
                         </div>
                     </div>
                 </div>
+
+                <!-- Historial -->
+                <div class="bg-brand-light p-8 border border-brand-border mt-6">
+                    <h3 class="text-xl font-heading font-bold text-brand-dark uppercase mb-4 tracking-widest border-b border-brand-border pb-2">🗄️ Historial de Consentimientos</h3>
+                    <div class="flex flex-col gap-3" id="lista-historial-boja"><p class="text-sm text-brand-accent">Cargando...</p></div>
+                </div>
             </div>
 
-            <!-- PESTAÑA 2: TATUADORES Y HORARIOS PERSONALIZADOS -->
+            <!-- VISTA TATUADORES -->
             <div id="vista-tatuadores" class="hidden space-y-6">
-                <div class="bg-white border-l-4 border-brand-dark p-5 text-brand-dark font-body shadow-minimal mb-6 text-sm tracking-wide">
-                    ⚜️ Configura a tu equipo, edita sus nombres o establéceles un horario personalizado (ej: solo trabajan de martes a jueves).
-                </div>
-                
-                <div class="bg-brand-light p-8 border border-brand-border shadow-minimal">
-                    <h3 class="text-xl font-heading font-bold uppercase mb-6 border-b border-brand-border pb-4 text-brand-dark tracking-widest">Añadir Nuevo Tatuador</h3>
+                <div class="bg-brand-light p-8 border border-brand-border">
+                    <h3 class="text-xl font-heading font-bold uppercase mb-6 tracking-widest">Añadir Nuevo Tatuador</h3>
                     <div class="flex flex-col md:flex-row gap-4 mb-8">
-                        <input type="text" id="nuevo-tatuador-nombre" placeholder="Nombre (Ej: Alejandra)" class="flex-1 bg-white border border-brand-border p-4 text-brand-text font-body focus:outline-none focus:border-brand-dark transition-colors">
-                        <button onclick="añadirTatuador()" id="btn-añadir-tat" class="bg-brand-dark text-white border border-brand-dark font-heading font-bold px-10 py-4 uppercase transition-all tracking-widest hover:bg-white hover:text-brand-dark">
-                            Registrar
-                        </button>
+                        <input type="text" id="nuevo-tatuador-nombre" placeholder="Nombre (Ej: Pablo)" class="flex-1 border border-brand-border p-4 outline-none focus:border-brand-dark">
+                        <button onclick="añadirTatuador()" id="btn-añadir-tat" class="bg-brand-dark text-white font-bold px-10 py-4 uppercase border border-brand-dark hover:bg-white hover:text-brand-dark transition-all">Registrar</button>
                     </div>
-
-                    <h3 class="text-xl font-heading font-bold uppercase mb-6 border-b border-brand-border pb-4 text-brand-text tracking-widest">Equipo Actual</h3>
-                    <div id="lista-tatuadores" class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                        <p class="text-brand-accent font-light col-span-2">Cargando equipo...</p>
-                    </div>
+                    <div id="lista-tatuadores" class="grid grid-cols-1 md:grid-cols-2 gap-4"></div>
                 </div>
             </div>
 
-            <!-- PESTAÑA: ESTILOS / MENÚ -->
+            <!-- VISTA ESTILOS -->
             <div id="vista-menu" class="hidden space-y-6">
-                <div class="bg-brand-light p-8 border border-brand-border shadow-minimal">
-                    <h3 class="text-xl font-heading font-bold uppercase mb-6 border-b border-brand-border pb-4 text-brand-dark tracking-widest">Añadir Estilo de Tatuaje</h3>
-                    
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                        <div>
-                            <label class="block mb-2 font-body font-semibold text-brand-accent text-xs uppercase tracking-[0.15em]">Nombre del Estilo</label>
-                            <input type="text" id="m-nombre" placeholder="Ej: Realismo Blanco y Negro" class="w-full bg-white border border-brand-border p-4 text-brand-text focus:outline-none focus:border-brand-dark">
-                        </div>
-                        <div>
-                            <label class="block mb-2 font-body font-semibold text-brand-accent text-xs uppercase tracking-[0.15em]">Icono Visual</label>
-                            <select id="m-icono" class="w-full bg-white border border-brand-border p-4 text-brand-text focus:outline-none focus:border-brand-dark">
-                                <option value="fa-solid fa-pen-nib">✒️ Aguja / Lineal</option>
-                                <option value="fa-solid fa-skull">💀 Calavera / Tradicional</option>
-                                <option value="fa-solid fa-droplet">💧 Tinta / Acuarela</option>
-                                <option value="fa-solid fa-gem">💎 Diamante / Geométrico</option>
-                                <option value="fa-solid fa-leaf">🌿 Hoja / Botánico</option>
-                            </select>
-                        </div>
-                        <div class="md:col-span-2">
-                            <label class="block mb-2 font-body font-semibold text-brand-accent text-xs uppercase tracking-[0.15em]">Etiquetas (Separadas por comas)</label>
-                            <input type="text" id="m-etiquetas" placeholder="Ej: Sombras, Realismo, Gran Formato" class="w-full bg-white border border-brand-border p-4 text-brand-text focus:outline-none focus:border-brand-dark">
-                        </div>
-                        <div class="md:col-span-2">
-                            <label class="block mb-2 font-body font-semibold text-brand-accent text-xs uppercase tracking-[0.15em]">Descripción Atractiva</label>
-                            <textarea id="m-desc" rows="2" placeholder="Describe el estilo..." class="w-full bg-white border border-brand-border p-4 text-brand-text focus:outline-none focus:border-brand-dark"></textarea>
-                        </div>
-                    </div>
-
-                    <div class="mt-6">
-                        <button onclick="crearSabor()" id="btn-crear-sabor" class="mt-8 w-full bg-brand-dark text-white border border-brand-dark font-heading font-bold text-lg py-5 shadow-minimal uppercase tracking-widest hover:bg-white hover:text-brand-dark transition-all">
-                            Añadir Estilo a la Lista
-                        </button>
+                <div class="bg-brand-light p-8 border border-brand-border">
+                    <h3 class="text-xl font-heading font-bold uppercase mb-6 tracking-widest">Añadir Estilo</h3>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <input type="text" id="m-nombre" placeholder="Nombre" class="p-3 border border-brand-border outline-none focus:border-brand-dark">
+                        <select id="m-icono" class="p-3 border border-brand-border outline-none focus:border-brand-dark bg-white"><option value="fa-solid fa-pen-nib">✒️ Aguja</option><option value="fa-solid fa-skull">💀 Tradicional</option></select>
+                        <input type="text" id="m-etiquetas" placeholder="Etiquetas (comas)" class="p-3 border border-brand-border outline-none focus:border-brand-dark md:col-span-2">
+                        <textarea id="m-desc" placeholder="Descripción" class="p-3 border border-brand-border outline-none focus:border-brand-dark md:col-span-2"></textarea>
+                        <button onclick="crearSabor()" class="md:col-span-2 bg-brand-dark text-white py-4 font-bold uppercase border border-brand-dark hover:bg-white hover:text-brand-dark transition-all">Añadir Estilo</button>
                     </div>
                 </div>
-
-                <div class="bg-brand-light p-8 border border-brand-border shadow-minimal">
-                    <h3 class="text-xl font-heading font-bold uppercase mb-6 border-b border-brand-border pb-4 text-brand-text tracking-widest">Control de Estilos Ofrecidos</h3>
-                    <div id="lista-menu" class="space-y-4">
-                        <p class="text-brand-accent font-light">Cargando estilos...</p>
-                    </div>
-                </div>
+                <div class="bg-brand-light p-8 border border-brand-border"><div id="lista-menu" class="space-y-3"></div></div>
             </div>
 
-            <!-- PESTAÑA 4: HORARIOS BASE DEL ESTUDIO -->
+            <!-- VISTA HORARIOS BASE -->
             <div id="vista-horarios" class="hidden space-y-6">
-                <div class="bg-white border-l-4 border-brand-accent p-5 text-brand-text font-body shadow-minimal mb-6 text-sm">
-                    ⏰ Configura tu horario base del estudio. Si un tatuador no tiene un horario personalizado, usará estas horas.
-                </div>
-
-                <div class="bg-brand-light p-8 border border-brand-border shadow-minimal">
-                    <label class="block mb-3 font-body font-semibold text-brand-accent text-xs uppercase tracking-[0.15em]">Elige el día que quieres editar:</label>
-                    <select id="sel-dia-horario" onchange="cargarHorarioDia()" class="w-full bg-white border border-brand-border p-4 text-brand-text font-heading text-lg font-bold tracking-widest uppercase focus:outline-none focus:border-brand-dark transition-colors mb-8">
-                        <option value="1" data-original="LUNES">LUNES</option>
-                        <option value="2" data-original="MARTES">MARTES</option>
-                        <option value="3" data-original="MIÉRCOLES">MIÉRCOLES</option>
-                        <option value="4" data-original="JUEVES">JUEVES</option>
-                        <option value="5" data-original="VIERNES">VIERNES</option>
-                        <option value="6" data-original="SÁBADO">SÁBADO</option>
-                        <option value="0" data-original="DOMINGO">DOMINGO</option>
+                <div class="bg-brand-light p-8 border border-brand-border">
+                    <label class="font-bold text-xs text-brand-accent uppercase">Día de la semana</label>
+                    <select id="sel-dia-horario" onchange="cargarHorarioDia()" class="w-full p-4 mb-6 font-bold uppercase border border-brand-border bg-white outline-none">
+                        <option value="1">Lunes</option><option value="2">Martes</option><option value="3">Miércoles</option><option value="4">Jueves</option><option value="5">Viernes</option><option value="6">Sábado</option><option value="0">Domingo</option>
                     </select>
-
-                    <div class="space-y-6">
-                        <div class="p-6 border border-brand-border bg-white shadow-sm">
-                            <h4 class="text-lg font-heading font-bold text-brand-dark uppercase tracking-widest mb-6">Turno Principal</h4>
-                            <div class="grid grid-cols-2 gap-6">
-                                <div>
-                                    <label class="block text-xs text-brand-accent font-body font-semibold uppercase tracking-[0.15em] mb-2">Apertura</label>
-                                    <input type="time" id="h-ap1" class="w-full bg-brand-light border border-brand-border p-4 text-brand-text font-body focus:outline-none focus:border-brand-dark transition-colors">
-                                </div>
-                                <div>
-                                    <label class="block text-xs text-brand-accent font-body font-semibold uppercase tracking-[0.15em] mb-2">Cierre</label>
-                                    <input type="time" id="h-ci1" class="w-full bg-brand-light border border-brand-border p-4 text-brand-text font-body focus:outline-none focus:border-brand-dark transition-colors">
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <button onclick="guardarHorarioDia()" id="btn-guardar-horario" class="mt-8 w-full bg-brand-dark text-white border border-brand-dark font-heading font-bold text-lg py-5 shadow-minimal uppercase active:scale-[0.98] transition-all tracking-widest hover:bg-white hover:text-brand-dark">
-                        Guardar Horario Base
-                    </button>
+                    <div class="grid grid-cols-2 gap-4"><input type="time" id="h-ap1" class="p-3 border border-brand-border outline-none"><input type="time" id="h-ci1" class="p-3 border border-brand-border outline-none"></div>
+                    <button onclick="guardarHorarioDia()" class="mt-6 w-full bg-brand-dark text-white border border-brand-dark py-4 font-bold uppercase hover:bg-white hover:text-brand-dark transition-all">Guardar Horario Base</button>
                 </div>
             </div>
 
-            <!-- PESTAÑA 5: BLOQUEOS -->
+            <!-- VISTA BLOQUEOS -->
             <div id="vista-bloqueos" class="hidden space-y-6">
-                
-                <div class="bg-brand-light p-8 border border-brand-border shadow-minimal">
-                    <h3 class="text-xl font-heading font-bold uppercase mb-6 border-b border-brand-border pb-4 text-brand-dark tracking-widest">Días de Descanso del Estudio</h3>
-                    <p class="text-brand-text font-light mb-6 text-sm">Selecciona los días que el estudio cierra de forma general.</p>
-                    
-                    <div class="flex flex-wrap gap-6 mb-8 font-body font-light text-sm text-[#555]">
-                        <label class="flex items-center gap-2 cursor-pointer hover:text-brand-dark transition-colors"><input type="checkbox" value="1" class="chk-dia w-4 h-4 accent-brand-dark"> Lunes</label>
-                        <label class="flex items-center gap-2 cursor-pointer hover:text-brand-dark transition-colors"><input type="checkbox" value="2" class="chk-dia w-4 h-4 accent-brand-dark"> Martes</label>
-                        <label class="flex items-center gap-2 cursor-pointer hover:text-brand-dark transition-colors"><input type="checkbox" value="3" class="chk-dia w-4 h-4 accent-brand-dark"> Miércoles</label>
-                        <label class="flex items-center gap-2 cursor-pointer hover:text-brand-dark transition-colors"><input type="checkbox" value="4" class="chk-dia w-4 h-4 accent-brand-dark"> Jueves</label>
-                        <label class="flex items-center gap-2 cursor-pointer text-brand-dark font-semibold"><input type="checkbox" value="5" class="chk-dia w-4 h-4 accent-brand-dark"> Viernes</label>
-                        <label class="flex items-center gap-2 cursor-pointer text-brand-dark font-semibold"><input type="checkbox" value="6" class="chk-dia w-4 h-4 accent-brand-dark"> Sábado</label>
-                        <label class="flex items-center gap-2 cursor-pointer hover:text-brand-dark transition-colors"><input type="checkbox" value="0" class="chk-dia w-4 h-4 accent-brand-dark"> Domingo</label>
+                <div class="bg-brand-light p-8 border border-brand-border">
+                    <h3 class="text-xl font-bold uppercase mb-4">Días de Descanso del Estudio</h3>
+                    <div class="flex flex-wrap gap-4 mb-6">
+                        <label><input type="checkbox" value="1" class="chk-dia"> Lunes</label>
+                        <label><input type="checkbox" value="2" class="chk-dia"> Martes</label>
+                        <label><input type="checkbox" value="3" class="chk-dia"> Miércoles</label>
+                        <label><input type="checkbox" value="4" class="chk-dia"> Jueves</label>
+                        <label><input type="checkbox" value="5" class="chk-dia"> Viernes</label>
+                        <label><input type="checkbox" value="6" class="chk-dia"> Sábado</label>
+                        <label><input type="checkbox" value="0" class="chk-dia"> Domingo</label>
                     </div>
-                    
-                    <button onclick="guardarDiasCerrados()" id="btn-dias" class="w-full md:w-auto bg-brand-dark text-white border border-brand-dark font-heading font-bold text-sm py-4 px-8 uppercase tracking-widest transition-all hover:bg-white hover:text-brand-dark">
-                        Guardar Descansos
-                    </button>
+                    <button onclick="guardarDiasCerrados()" class="bg-brand-dark text-white px-6 py-3 font-bold uppercase text-sm border border-brand-dark hover:bg-white hover:text-brand-dark transition-all">Guardar Descansos</button>
                 </div>
-
-                <div class="bg-brand-light p-8 border border-brand-border shadow-minimal">
-                    <h3 class="text-xl font-heading font-bold text-brand-text uppercase mb-4 tracking-widest">Bloquear Día Completo (Eventos)</h3>
-                    <p class="text-brand-accent font-body font-semibold mb-6 text-xs uppercase tracking-[0.15em]">Festivos puntuales, viajes, etc.</p>
-                    <div class="grid grid-cols-1 md:grid-cols-3 gap-6 items-end">
-                        <div>
-                            <label class="block mb-2 font-body font-semibold text-brand-accent text-xs uppercase tracking-[0.15em]">Fecha a bloquear</label>
-                            <input type="date" id="bloqueo-fecha" class="w-full bg-white border border-brand-border p-4 text-brand-text font-body focus:outline-none focus:border-brand-dark transition-colors">
-                        </div>
-                        <div>
-                            <label class="block mb-2 font-body font-semibold text-brand-accent text-xs uppercase tracking-[0.15em]">¿Quién?</label>
-                            <select id="bloqueo-zona" class="w-full bg-white border border-brand-border p-4 text-brand-text font-body focus:outline-none focus:border-brand-dark uppercase text-sm transition-colors">
-                                <option value="Ambas">Todo el Estudio</option>
-                            </select>
-                        </div>
-                        <button id="btn-crear-bloqueo" onclick="crearBloqueo()" class="w-full bg-white border border-brand-dark text-brand-dark font-heading font-bold text-sm py-4 uppercase transition-all tracking-widest hover:bg-brand-dark hover:text-white">
-                            Bloquear Día
-                        </button>
-                    </div>
+                <div class="bg-brand-light p-8 border border-brand-border">
+                    <h3 class="text-xl font-bold uppercase mb-4">Bloquear Fecha Concreta</h3>
+                    <div class="flex gap-4 mb-4"><input type="date" id="bloqueo-fecha" class="border p-3 w-full outline-none"><select id="bloqueo-zona" class="border p-3 w-full bg-white outline-none"><option value="Ambas">Todo el Estudio</option></select></div>
+                    <button onclick="crearBloqueo()" class="bg-brand-dark text-white border border-brand-dark px-6 py-3 font-bold uppercase text-sm w-full hover:bg-white hover:text-brand-dark transition-all">Bloquear Fecha</button>
                 </div>
-
-                <div class="bg-brand-light p-8 border border-brand-border shadow-minimal">
-                    <h3 class="text-xl font-heading font-bold text-brand-text uppercase mb-6 border-b border-brand-border pb-4 tracking-widest">Bloqueos Activos</h3>
-                    <div id="lista-bloqueos" class="space-y-4 mb-10 font-body"><p class="text-brand-accent font-light">Cargando...</p></div>
-                </div>
-            </div>
-
-            <!-- PESTAÑA 6: EXPORTACIÓN -->
-            <div id="vista-exportar" class="hidden space-y-6 text-center">
-                <div class="bg-brand-light p-12 border border-brand-border shadow-minimal max-w-2xl mx-auto mt-10">
-                    <h2 class="text-3xl font-heading font-bold text-brand-text uppercase mb-4 tracking-widest">Base de Datos</h2>
-                    <p class="text-brand-accent font-body font-semibold mb-10 text-sm">Descarga el histórico completo de citas en CSV.</p>
-                    <button onclick="exportarExcel()" class="bg-brand-dark text-white border border-brand-dark text-lg font-heading font-bold py-5 px-10 hover:bg-white hover:text-brand-dark active:scale-[0.98] transition-all uppercase w-full tracking-[0.15em]">
-                        Descargar Excel
-                    </button>
-                </div>
+                <div class="bg-brand-light p-8 border border-brand-border"><h3 class="font-bold uppercase mb-4">Bloqueos Activos</h3><div id="lista-bloqueos" class="space-y-3"></div></div>
             </div>
 
         </main>
     </div>
 
-    <!-- MODAL PARA HORARIO PERSONALIZADO DEL TATUADOR -->
-    <div id="modal-horario-tat" class="hidden fixed inset-0 bg-[#FFFFFF]/95 flex items-center justify-center p-4 z-50 backdrop-blur-sm overflow-y-auto">
-        <div class="bg-brand-light border border-brand-dark p-6 md:p-8 max-w-lg w-full shadow-hover relative mt-10 md:mt-0">
-            <button onclick="cerrarModalHorario()" class="absolute top-4 right-4 text-brand-accent hover:text-brand-dark text-2xl font-bold">&times;</button>
-            <h3 class="text-xl font-heading font-bold text-brand-dark uppercase mb-2 tracking-widest">Horario de <span id="modal-tat-nombre" class="text-brand-accent"></span></h3>
-            <p class="text-brand-text font-body text-xs mb-6 tracking-wide leading-relaxed">Configura qué días y a qué horas trabaja exactamente esta persona. Si un día no se configura aquí, trabajará en el horario base del estudio.</p>
-
-            <label class="block mb-2 font-body font-semibold text-brand-accent text-xs uppercase tracking-[0.15em]">Selecciona el Día</label>
-            <select id="sel-dia-tat" onchange="cargarHorarioDiaTat()" class="w-full bg-white border border-brand-border p-3 text-brand-text font-heading text-sm font-bold tracking-widest uppercase focus:outline-none focus:border-brand-dark transition-colors mb-6">
-                <option value="1">LUNES</option>
-                <option value="2">MARTES</option>
-                <option value="3">MIÉRCOLES</option>
-                <option value="4">JUEVES</option>
-                <option value="5">VIERNES</option>
-                <option value="6">SÁBADO</option>
-                <option value="0">DOMINGO</option>
-            </select>
-
-            <div class="grid grid-cols-2 gap-4 mb-4">
-                <div>
-                    <label class="block text-xs text-brand-accent font-body font-semibold uppercase tracking-[0.15em] mb-2">Apertura</label>
-                    <input type="time" id="tat-ap1" class="w-full bg-white border border-brand-border p-3 text-brand-text font-body focus:outline-none focus:border-brand-dark">
-                </div>
-                <div>
-                    <label class="block text-xs text-brand-accent font-body font-semibold uppercase tracking-[0.15em] mb-2">Cierre</label>
-                    <input type="time" id="tat-ci1" class="w-full bg-white border border-brand-border p-3 text-brand-text font-body focus:outline-none focus:border-brand-dark">
-                </div>
-            </div>
-
-            <div class="flex flex-col gap-3 mt-8">
-                <button onclick="guardarHorarioDiaTat()" id="btn-guardar-htat" class="w-full bg-brand-dark text-white font-heading font-bold py-4 uppercase tracking-widest hover:bg-white hover:text-brand-dark border border-brand-dark transition-all">Guardar Día</button>
-                <button onclick="borrarHorarioDiaTat()" id="btn-borrar-htat" class="w-full bg-white text-brand-red font-heading font-bold py-4 uppercase tracking-widest hover:bg-brand-red hover:text-white border border-brand-red transition-all">Este Tatuador NO Trabaja Este Día</button>
-            </div>
+    <!-- MODAL HORARIOS TATUADOR -->
+    <div id="modal-horario-tat" class="hidden fixed inset-0 bg-[#FFFFFF]/95 flex items-center justify-center p-4 z-50">
+        <div class="bg-brand-light border border-brand-dark p-6 max-w-lg w-full relative">
+            <button onclick="cerrarModalHorario()" class="absolute top-4 right-4 text-2xl font-bold text-brand-accent hover:text-brand-dark">&times;</button>
+            <h3 class="text-xl font-bold uppercase mb-4">Horario de <span id="modal-tat-nombre"></span></h3>
+            <select id="sel-dia-tat" onchange="cargarHorarioDiaTat()" class="w-full p-3 mb-4 font-bold uppercase border bg-white outline-none"><option value="1">LUNES</option><option value="2">MARTES</option><option value="3">MIÉRCOLES</option><option value="4">JUEVES</option><option value="5">VIERNES</option><option value="6">SÁBADO</option><option value="0">DOMINGO</option></select>
+            <div class="grid grid-cols-2 gap-4 mb-6"><input type="time" id="tat-ap1" class="p-3 border outline-none"><input type="time" id="tat-ci1" class="p-3 border outline-none"></div>
+            <button onclick="guardarHorarioDiaTat()" class="w-full bg-brand-dark text-white border border-brand-dark py-4 font-bold uppercase mb-2 hover:bg-white hover:text-brand-dark transition-all">Guardar</button>
+            <button onclick="borrarHorarioDiaTat()" class="w-full bg-white text-brand-red border border-brand-red py-4 font-bold uppercase hover:bg-brand-red hover:text-white transition-all">No trabaja este día</button>
         </div>
     </div>
 
-    <!-- SCRIPT -->
+    <!-- SCRIPT MANAGER -->
     <script>
         const SUPABASE_URL = 'https://fqydtjwqkmdatfsauomh.supabase.co'; 
         const SUPABASE_ANON_KEY = 'sb_publishable_-FdijJSiBiKFSY4I4F-LJw_fB89m4Cj';
-        let chartInstancia = null;
         let listaTatuadoresGlobal = [];
         let idTatuadorActivoParaHorario = null;
 
-        function getSupabase() {
-            if(!window.supabase) throw new Error("Librería de red no lista.");
-            return window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-        }
+        function getSupabase() { return window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY); }
 
         async function intentarLogin() {
-            const u = document.getElementById('login-user').value.trim();
-            const p = document.getElementById('login-pass').value.trim();
-            const btn = document.getElementById('btn-login');
-
-            if(!u || !p) return alert("⚠️ Rellena tu correo y contraseña.");
-
-            if (u === 'pablomaster' && p === 'master1234') {
-                sessionStorage.setItem('manager_logged_in', 'true');
-                desbloquearPanel();
-                return;
-            }
-
-            btn.innerText = "⏳ Comprobando...";
-            try {
-                const sp = getSupabase();
-                const { data, error } = await sp.auth.signInWithPassword({ email: u, password: p });
-                if (error) {
-                    alert("❌ Correo o Contraseña incorrectos.");
-                    btn.innerText = "ENTRAR AL PANEL";
-                } else if (data.session) {
-                    sessionStorage.setItem('manager_logged_in', 'true');
-                    desbloquearPanel();
-                }
-            } catch (err) {
-                alert("❌ Fallo conectando a Supabase.");
-                btn.innerText = "ENTRAR AL PANEL";
-            }
+            const u = document.getElementById('login-user').value.trim(); const p = document.getElementById('login-pass').value.trim();
+            if (u === 'pablomaster' && p === 'master1234') { sessionStorage.setItem('manager_logged_in', 'true'); desbloquearPanel(); return; }
+            try { const sp = getSupabase(); const { data } = await sp.auth.signInWithPassword({ email: u, password: p }); if (data.session) { sessionStorage.setItem('manager_logged_in', 'true'); desbloquearPanel(); } } catch (err) { alert("Error al entrar."); }
         }
-
-        if (sessionStorage.getItem('manager_logged_in') === 'true') {
-            desbloquearPanel();
-        }
+        if (sessionStorage.getItem('manager_logged_in') === 'true') desbloquearPanel();
 
         function desbloquearPanel() {
-            document.getElementById('pantalla-login').classList.add('hidden');
-            document.getElementById('pantalla-dashboard').classList.remove('hidden');
-            setTimeout(() => {
-                cargarAnalitica();
-                cargarDiasCerrados(); 
-                cargarHorarioDia(); 
-                cargarTatuadores(); 
-            }, 200); 
+            document.getElementById('pantalla-login').classList.add('hidden'); document.getElementById('pantalla-dashboard').classList.remove('hidden');
+            setTimeout(() => { cargarAnalitica(); cargarTatuadores(); cargarDatosEstudio(); cargarHistorialBoja(); }, 200); 
         }
 
         function cambiarPestaña(cual) {
-            ['analitica', 'boja', 'tatuadores', 'menu', 'horarios', 'bloqueos', 'exportar'].forEach(p => {
-                const el = document.getElementById(`vista-${p}`);
-                if(el) el.classList.add('hidden');
-                const tb = document.getElementById(`tab-${p}`);
-                if(tb) tb.className = "bg-white text-brand-accent hover:text-brand-dark px-5 py-3 font-heading uppercase text-sm border border-brand-border whitespace-nowrap tracking-widest transition-colors";
+            ['analitica', 'boja', 'tatuadores', 'menu', 'horarios', 'bloqueos'].forEach(p => {
+                const el = document.getElementById(`vista-${p}`); if(el) el.classList.add('hidden');
+                const tb = document.getElementById(`tab-${p}`); if(tb) tb.className = "bg-white text-brand-accent hover:text-brand-dark px-5 py-3 font-heading uppercase text-sm font-bold border border-brand-border transition-colors";
             });
-
             document.getElementById(`vista-${cual}`).classList.remove('hidden');
-            document.getElementById(`tab-${cual}`).className = "bg-brand-dark text-white border border-brand-dark px-5 py-3 font-heading uppercase text-sm font-semibold whitespace-nowrap tracking-widest transition-colors shadow-minimal";
-
-            try {
-                if(cual === 'analitica') cargarAnalitica();
-                if(cual === 'boja') refrescarSelectBoja(); // Refresca el desplegable de BOJA
-                if(cual === 'tatuadores') cargarTatuadores();
-                if(cual === 'menu') cargarMenu();
-                if(cual === 'horarios') cargarHorarioDia();
-                if(cual === 'bloqueos') { cargarTatuadoresParaBloqueo(); cargarBloqueos(); cargarDiasCerrados(); }
-            } catch (e) {}
+            document.getElementById(`tab-${cual}`).className = "bg-brand-dark text-white border border-brand-dark px-5 py-3 font-heading uppercase text-sm font-bold transition-colors shadow-minimal";
+            if(cual === 'boja') { cargarDatosEstudio(); refrescarSelectBoja(); cargarHistorialBoja(); }
+            if(cual === 'tatuadores') cargarTatuadores();
+            if(cual === 'menu') cargarMenu();
+            if(cual === 'horarios') cargarHorarioDia();
+            if(cual === 'bloqueos') { cargarTatuadoresParaBloqueo(); cargarBloqueos(); cargarDiasCerrados(); }
         }
 
-        // ==========================================
-        // GESTIÓN BOJA (NUEVO)
-        // ==========================================
+        /* --- ESTUDIO Y BOJAS --- */
+        async function cargarDatosEstudio() {
+            try {
+                const sp = getSupabase(); const { data } = await sp.from('configuracion_estudio').select('*').eq('id', 1).single();
+                if (data) {
+                    ['nombre','nif','tipo_via','nombre_via','numero','poblacion','provincia','cp'].forEach(f => { document.getElementById(`est_${f==='nombre_via'?'nvia':f==='tipo_via'?'tvia':f==='poblacion'?'pob':f==='provincia'?'prov':f==='numero'?'num':f}`).value = data[f] || ''; });
+                }
+            } catch (e) {}
+        }
+        async function guardarDatosEstudio() {
+            const btn = document.getElementById('btn-save-estudio'); btn.innerText = "⏳...";
+            try {
+                const sp = getSupabase();
+                await sp.from('configuracion_estudio').update({ nombre: document.getElementById('est_nombre').value, nif: document.getElementById('est_nif').value, tipo_via: document.getElementById('est_tvia').value, nombre_via: document.getElementById('est_nvia').value, numero: document.getElementById('est_num').value, poblacion: document.getElementById('est_pob').value, provincia: document.getElementById('est_prov').value, cp: document.getElementById('est_cp').value }).eq('id', 1);
+                alert("✅ Guardado.");
+            } catch (e) { alert("❌ Error."); }
+            btn.innerText = "Guardar Datos del Estudio";
+        }
+
         function refrescarSelectBoja() {
-            const sel = document.getElementById('boja-select-tat');
-            if(!sel) return;
+            const sel = document.getElementById('boja-select-tat'); if(!sel) return;
             sel.innerHTML = '<option value="">-- Selecciona Tatuador --</option>';
-            listaTatuadoresGlobal.forEach(t => {
-                sel.innerHTML += `<option value="${t.id}">${t.nombre}</option>`;
-            });
+            listaTatuadoresGlobal.forEach(t => { sel.innerHTML += `<option value="${t.id}">${t.nombre}</option>`; });
         }
 
         function cargarDatosLegalesTatuador() {
-            const id = document.getElementById('boja-select-tat').value;
-            const tat = listaTatuadoresGlobal.find(t => t.id === id);
-            if (!tat) {
-                // Limpiar si no hay nadie seleccionado
-                ['b_dni','b_titulo','b_cat','b_tvia','b_nvia','b_num','b_pob','b_prov','b_cp','b_tel'].forEach(id => document.getElementById(id).value = '');
-                return;
-            }
-            
-            document.getElementById('b_dni').value = tat.boja_dni || '';
-            document.getElementById('b_titulo').value = tat.boja_titulo || '';
-            document.getElementById('b_cat').value = tat.boja_categoria || '';
-            document.getElementById('b_tvia').value = tat.boja_tipo_via || '';
-            document.getElementById('b_nvia').value = tat.boja_nombre_via || '';
-            document.getElementById('b_num').value = tat.boja_numero || '';
-            document.getElementById('b_pob').value = tat.boja_poblacion || '';
-            document.getElementById('b_prov').value = tat.boja_provincia || '';
-            document.getElementById('b_cp').value = tat.boja_cp || '';
-            document.getElementById('b_tel').value = tat.boja_telefono || '';
+            const id = document.getElementById('boja-select-tat').value; const tat = listaTatuadoresGlobal.find(t => t.id === id);
+            if (!tat) { ['b_dni','b_titulo','b_cat','b_tvia','b_nvia','b_num','b_pob','b_prov','b_cp','b_tel'].forEach(id => document.getElementById(id).value = ''); return; }
+            document.getElementById('b_dni').value = tat.boja_dni || ''; document.getElementById('b_titulo').value = tat.boja_titulo || ''; document.getElementById('b_cat').value = tat.boja_categoria || ''; document.getElementById('b_tvia').value = tat.boja_tipo_via || ''; document.getElementById('b_nvia').value = tat.boja_nombre_via || ''; document.getElementById('b_num').value = tat.boja_numero || ''; document.getElementById('b_pob').value = tat.boja_poblacion || ''; document.getElementById('b_prov').value = tat.boja_provincia || ''; document.getElementById('b_cp').value = tat.boja_cp || ''; document.getElementById('b_tel').value = tat.boja_telefono || '';
         }
 
         async function guardarDatosLegalesTatuador() {
-            const id = document.getElementById('boja-select-tat').value;
-            if (!id) return alert("Selecciona un tatuador primero.");
-            
-            const btn = document.getElementById('btn-save-legal');
-            btn.innerText = "⏳ Guardando...";
+            const id = document.getElementById('boja-select-tat').value; if (!id) return alert("Selecciona un tatuador.");
+            const btn = document.getElementById('btn-save-legal'); btn.innerText = "⏳...";
             try {
-                const sp = getSupabase();
-                const payload = {
-                    boja_dni: document.getElementById('b_dni').value,
-                    boja_titulo: document.getElementById('b_titulo').value,
-                    boja_categoria: document.getElementById('b_cat').value,
-                    boja_tipo_via: document.getElementById('b_tvia').value,
-                    boja_nombre_via: document.getElementById('b_nvia').value,
-                    boja_numero: document.getElementById('b_num').value,
-                    boja_poblacion: document.getElementById('b_pob').value,
-                    boja_provincia: document.getElementById('b_prov').value,
-                    boja_cp: document.getElementById('b_cp').value,
-                    boja_telefono: document.getElementById('b_tel').value
-                };
-                const { error } = await sp.from('tatuadores').update(payload).eq('id', id);
-                if (error) throw error;
-                
-                // Actualizar memoria
-                Object.assign(listaTatuadoresGlobal.find(t => t.id === id), payload);
-                alert("✅ Datos legales guardados de forma permanente.");
-            } catch (e) {
-                alert("❌ Error: " + e.message);
-            }
+                const payload = { boja_dni: document.getElementById('b_dni').value, boja_titulo: document.getElementById('b_titulo').value, boja_categoria: document.getElementById('b_cat').value, boja_tipo_via: document.getElementById('b_tvia').value, boja_nombre_via: document.getElementById('b_nvia').value, boja_numero: document.getElementById('b_num').value, boja_poblacion: document.getElementById('b_pob').value, boja_provincia: document.getElementById('b_prov').value, boja_cp: document.getElementById('b_cp').value, boja_telefono: document.getElementById('b_tel').value };
+                await getSupabase().from('tatuadores').update(payload).eq('id', id);
+                Object.assign(listaTatuadoresGlobal.find(t => t.id === id), payload); alert("✅ Guardado.");
+            } catch (e) { alert("❌ Error."); }
             btn.innerText = "Guardar Perfil Legal";
         }
 
         async function generarEnlaceBoja() {
-            const idTat = document.getElementById('boja-select-tat').value;
-            const zona = document.getElementById('draft_zona').value;
-            const tec = document.getElementById('draft_tecnica').value;
-            const mat = document.getElementById('draft_materiales').value;
-
-            if (!idTat || !zona || !mat) return alert("Rellena la zona y los materiales.");
-            
-            const btn = document.getElementById('btn-gen-link');
-            btn.innerText = "⏳ Creando...";
+            const idTat = document.getElementById('boja-select-tat').value; const zona = document.getElementById('draft_zona').value; const tec = document.getElementById('draft_tecnica').value; const mat = document.getElementById('draft_materiales').value;
+            if (!idTat || !zona || !mat) return alert("Rellena la zona y materiales.");
+            const btn = document.getElementById('btn-gen-link'); btn.innerText = "⏳...";
             try {
-                const sp = getSupabase();
-                const { data, error } = await sp.from('borradores_boja').insert([{
-                    id_tatuador: idTat,
-                    zona_anatomica: zona,
-                    tecnica: tec,
-                    materiales: mat
-                }]).select('id').single();
-                
+                const { data, error } = await getSupabase().from('borradores_boja').insert([{ id_tatuador: idTat, zona_anatomica: zona, tecnica: tec, materiales: mat }]).select('id').single();
                 if (error) throw error;
-
-                // Construir URL base actual
                 const baseUrl = window.location.origin + window.location.pathname.replace('manager.html', '');
-                const enlaceFinal = `${baseUrl}boja.html?draft_id=${data.id}`;
-                
-                document.getElementById('url-output').value = enlaceFinal;
+                document.getElementById('url-output').value = `${baseUrl}boja.html?draft_id=${data.id}`;
                 document.getElementById('link-box').classList.remove('hidden');
-                
-                document.getElementById('draft_zona').value = "";
-                document.getElementById('draft_materiales').value = "";
-            } catch (e) {
-                alert("❌ Error al generar enlace: " + e.message);
-            }
+                document.getElementById('draft_zona').value = ""; document.getElementById('draft_materiales').value = "";
+            } catch (e) { alert("❌ Error."); }
             btn.innerText = "Crear Enlace Único";
         }
 
         function copiarEnlaceBoja() {
-            const url = document.getElementById('url-output');
-            url.select();
-            document.execCommand('copy');
-            alert("🔗 Enlace copiado. ¡Mándaselo al cliente por WhatsApp o ábrelo en la tablet!");
+            const url = document.getElementById('url-output'); url.select(); document.execCommand('copy'); alert("🔗 Enlace copiado.");
         }
 
-        // ==========================================
-        // GESTIÓN DE TATUADORES 
-        // ==========================================
-        async function cargarTatuadores() {
-            const lista = document.getElementById('lista-tatuadores');
+        async function cargarHistorialBoja() {
+            const cont = document.getElementById('lista-historial-boja');
             try {
-                const sp = getSupabase();
-                const { data, error } = await sp.from('tatuadores').select('*').order('nombre');
-                
-                if (error) throw error;
-                listaTatuadoresGlobal = data || [];
-                refrescarSelectBoja(); // Refrescamos el select de BOJA en segundo plano
-                
-                if (listaTatuadoresGlobal.length === 0) { 
-                    lista.innerHTML = '<p class="text-brand-accent font-light col-span-2">No hay tatuadores registrados aún.</p>'; 
-                    return; 
-                }
-                
+                const { data, error } = await getSupabase().from('clientes_tatuaje').select('*').order('created_at', { ascending: false });
+                if (error) throw error; document.getElementById('kpi-bojas').innerText = data ? data.length : 0;
+                if (!data || data.length === 0) { cont.innerHTML = '<p class="text-sm">No hay documentos guardados.</p>'; return; }
+                let html = "";
+                data.forEach(c => {
+                    const f = new Date(c.created_at).toLocaleDateString('es-ES', { day:'2-digit', month:'2-digit', year:'numeric', hour:'2-digit', minute:'2-digit'});
+                    html += `<div class="flex justify-between items-center bg-white p-4 border"><div class="flex-1"><p class="font-bold">${c.nombre}</p><p class="text-xs text-brand-accent">DNI: ${c.dni} | ${f}</p></div><div class="flex gap-2"><a href="${c.pdf_url}" target="_blank" class="px-3 py-2 border bg-brand-light text-xs font-bold hover:bg-brand-dark hover:text-white">📄 Ver</a><button onclick="borrarRegistroBoja('${c.id}')" class="px-3 py-2 border border-brand-red text-brand-red text-xs font-bold hover:bg-brand-red hover:text-white">🗑️</button></div></div>`;
+                });
+                cont.innerHTML = html;
+            } catch (e) { cont.innerHTML = '<p class="text-brand-red">Error al cargar historial.</p>'; }
+        }
+
+        async function borrarRegistroBoja(id) {
+            if (!confirm("⚠️ ¿Seguro que quieres borrar este registro?")) return;
+            try { await getSupabase().from('clientes_tatuaje').delete().eq('id', id); cargarHistorialBoja(); } catch (e) { alert("Error."); }
+        }
+
+        /* --- TATUADORES, MENU, HORARIOS, BLOQUEOS --- */
+        async function cargarTatuadores() {
+            try {
+                const { data } = await getSupabase().from('tatuadores').select('*').order('nombre'); listaTatuadoresGlobal = data || []; refrescarSelectBoja();
+                const lista = document.getElementById('lista-tatuadores');
+                if (listaTatuadoresGlobal.length === 0) { lista.innerHTML = '<p>No hay tatuadores.</p>'; return; }
                 let html = "";
                 listaTatuadoresGlobal.forEach(t => {
-                    html += `
-                    <div class="bg-white p-5 border border-brand-border shadow-sm flex flex-col gap-4">
-                        <div class="flex items-center gap-3">
-                            <span class="text-2xl opacity-60">💉</span>
-                            <input type="text" id="edit-tat-${t.id}" value="${t.nombre}" class="font-heading font-bold text-brand-dark uppercase tracking-wide border-b border-transparent focus:border-brand-dark focus:outline-none w-full bg-transparent">
-                        </div>
-                        <div class="flex flex-wrap md:flex-nowrap gap-2 text-xs">
-                            <button onclick="editarTatuador('${t.id}')" class="flex-1 bg-brand-light text-brand-dark border border-brand-border py-3 uppercase font-bold hover:border-brand-dark transition-colors">✏️ Guardar</button>
-                            <button onclick="abrirModalHorario('${t.id}', '${t.nombre}')" class="flex-1 bg-brand-dark text-white border border-brand-dark py-3 uppercase font-bold hover:bg-white hover:text-brand-dark transition-colors">⏰ Horario</button>
-                            <button onclick="borrarTatuador('${t.id}', this)" class="flex-1 bg-white text-brand-red border border-brand-red py-3 uppercase font-bold hover:bg-brand-red hover:text-white transition-colors">🗑️ Borrar</button>
-                        </div>
-                    </div>`;
+                    html += `<div class="bg-white p-5 border shadow-sm"><div class="flex items-center gap-3"><span class="text-2xl">💉</span><input type="text" id="edit-tat-${t.id}" value="${t.nombre}" class="font-bold w-full outline-none"></div><div class="flex gap-2 text-xs mt-3"><button onclick="editarTatuador('${t.id}')" class="flex-1 border py-2 bg-brand-light font-bold">Guardar</button><button onclick="abrirModalHorario('${t.id}', '${t.nombre}')" class="flex-1 border bg-brand-dark text-white py-2 font-bold">Horario</button><button onclick="borrarTatuador('${t.id}')" class="flex-1 border border-brand-red text-brand-red py-2 font-bold hover:bg-brand-red hover:text-white">Borrar</button></div></div>`;
                 });
                 lista.innerHTML = html;
-            } catch (e) {
-                lista.innerHTML = `<p class="text-brand-red col-span-2">❌ Error al cargar: ${e.message || 'Sin permisos'}</p>`;
-            }
+            } catch (e) {}
         }
 
         async function añadirTatuador() {
-            const input = document.getElementById('nuevo-tatuador-nombre');
-            const nombre = input.value.trim();
-            if (!nombre) return alert("⚠️ Escribe un nombre.");
-            
-            const btn = document.getElementById('btn-añadir-tat');
-            btn.innerText = "⏳...";
-            try {
-                const sp = getSupabase();
-                const { error } = await sp.from('tatuadores').insert([{ nombre: nombre, estado_actual: 'libre' }]);
-                if (error) { alert("❌ Error en BD: " + error.message); btn.innerText = "Registrar"; return; }
-                input.value = "";
-                await cargarTatuadores();
-            } catch (e) { alert("❌ Error de red."); }
-            btn.innerText = "Registrar";
+            const n = document.getElementById('nuevo-tatuador-nombre').value.trim(); if (!n) return;
+            try { await getSupabase().from('tatuadores').insert([{ nombre: n }]); document.getElementById('nuevo-tatuador-nombre').value = ""; cargarTatuadores(); } catch (e) { alert("Error."); }
         }
-
         async function editarTatuador(id) {
-            const nuevoNombre = document.getElementById(`edit-tat-${id}`).value.trim();
-            if(!nuevoNombre) return alert("El nombre no puede estar vacío.");
-            try {
-                const sp = getSupabase();
-                const { error } = await sp.from('tatuadores').update({ nombre: nuevoNombre }).eq('id', id);
-                if (error) throw error;
-                alert("✅ Nombre guardado con éxito.");
-                cargarTatuadores();
-            } catch (e) { alert("❌ Error al actualizar: " + e.message); }
+            const n = document.getElementById(`edit-tat-${id}`).value.trim(); if(!n) return;
+            try { await getSupabase().from('tatuadores').update({ nombre: n }).eq('id', id); alert("Guardado"); cargarTatuadores(); } catch (e) { alert("Error."); }
+        }
+        async function borrarTatuador(id) {
+            if (!confirm("⚠️ ¿Borrar tatuador?")) return;
+            try { await getSupabase().from('tatuadores').delete().eq('id', id); cargarTatuadores(); } catch (e) { alert("Error."); }
         }
 
-        async function borrarTatuador(id, btn) {
-            if (!confirm("⚠️ ¿Seguro que quieres borrar a este tatuador? Se borrarán sus horarios y el BOJA.")) return;
-            btn.innerText = "⏳";
-            try {
-                const sp = getSupabase();
-                const { error } = await sp.from('tatuadores').delete().eq('id', id);
-                if (error) throw error;
-                await cargarTatuadores();
-            } catch (e) { alert("❌ No se pudo borrar: " + e.message); btn.innerText = "🗑️ Borrar"; }
-        }
-
-        // ==========================================
-        // HORARIOS PERSONALIZADOS
-        // ==========================================
-        function abrirModalHorario(id, nombre) {
-            idTatuadorActivoParaHorario = id;
-            document.getElementById('modal-tat-nombre').innerText = nombre;
-            document.getElementById('modal-horario-tat').classList.remove('hidden');
-            document.getElementById('sel-dia-tat').value = "1";
-            cargarHorarioDiaTat();
-        }
-
-        function cerrarModalHorario() {
-            document.getElementById('modal-horario-tat').classList.add('hidden');
-            idTatuadorActivoParaHorario = null;
-        }
+        function abrirModalHorario(id, nombre) { idTatuadorActivoParaHorario = id; document.getElementById('modal-tat-nombre').innerText = nombre; document.getElementById('modal-horario-tat').classList.remove('hidden'); cargarHorarioDiaTat(); }
+        function cerrarModalHorario() { document.getElementById('modal-horario-tat').classList.add('hidden'); }
 
         async function cargarHorarioDiaTat() {
-            const dia = document.getElementById('sel-dia-tat').value;
-            ['tat-ap1', 'tat-ci1'].forEach(id => document.getElementById(id).value = "");
-
+            const dia = document.getElementById('sel-dia-tat').value; ['tat-ap1', 'tat-ci1'].forEach(id => document.getElementById(id).value = "");
             try {
-                const sp = getSupabase();
-                const { data, error } = await sp.from('horarios_tatuadores').select('*')
-                                        .eq('tatuador_id', idTatuadorActivoParaHorario)
-                                        .eq('dia_semana', dia).single();
-                if (data) {
-                    if(data.apertura_1) document.getElementById('tat-ap1').value = data.apertura_1.substring(0,5);
-                    if(data.cierre_1) document.getElementById('tat-ci1').value = data.cierre_1.substring(0,5);
-                }
-            } catch (e) { /* Normal si no existe */ }
+                const { data } = await getSupabase().from('horarios_tatuadores').select('*').eq('tatuador_id', idTatuadorActivoParaHorario).eq('dia_semana', dia).single();
+                if (data) { if(data.apertura_1) document.getElementById('tat-ap1').value = data.apertura_1.substring(0,5); if(data.cierre_1) document.getElementById('tat-ci1').value = data.cierre_1.substring(0,5); }
+            } catch (e) {}
         }
-
         async function guardarHorarioDiaTat() {
-            const dia = document.getElementById('sel-dia-tat').value;
-            const a1 = document.getElementById('tat-ap1').value || null;
-            const c1 = document.getElementById('tat-ci1').value || null;
-            
-            const btn = document.getElementById('btn-guardar-htat');
-            btn.innerText = "⏳...";
-
+            const dia = document.getElementById('sel-dia-tat').value; const a1 = document.getElementById('tat-ap1').value || null; const c1 = document.getElementById('tat-ci1').value || null;
             try {
-                const sp = getSupabase();
-                const { data: existe } = await sp.from('horarios_tatuadores').select('id').eq('tatuador_id', idTatuadorActivoParaHorario).eq('dia_semana', dia).single();
-                
-                if (existe) {
-                    const { error } = await sp.from('horarios_tatuadores').update({ apertura_1: a1, cierre_1: c1 }).eq('id', existe.id);
-                    if (error) throw error;
-                } else {
-                    const { error } = await sp.from('horarios_tatuadores').insert([{ tatuador_id: idTatuadorActivoParaHorario, dia_semana: dia, apertura_1: a1, cierre_1: c1 }]);
-                    if (error) throw error;
-                }
-                alert("✅ Horario asignado.");
-            } catch (e) { alert("❌ Fallo al guardar: " + e.message); }
-            btn.innerText = "Guardar Día";
+                const sp = getSupabase(); const { data: existe } = await sp.from('horarios_tatuadores').select('id').eq('tatuador_id', idTatuadorActivoParaHorario).eq('dia_semana', dia).single();
+                if (existe) { await sp.from('horarios_tatuadores').update({ apertura_1: a1, cierre_1: c1 }).eq('id', existe.id); } else { await sp.from('horarios_tatuadores').insert([{ tatuador_id: idTatuadorActivoParaHorario, dia_semana: dia, apertura_1: a1, cierre_1: c1 }]); }
+                alert("Guardado.");
+            } catch (e) {}
         }
-
         async function borrarHorarioDiaTat() {
-            const dia = document.getElementById('sel-dia-tat').value;
-            if(!confirm("¿Confirmas que el tatuador NO trabajará este día?")) return;
-            
-            const btn = document.getElementById('btn-borrar-htat');
-            btn.innerText = "⏳...";
+            const dia = document.getElementById('sel-dia-tat').value; if(!confirm("¿No trabaja este día?")) return;
             try {
-                const sp = getSupabase();
-                const { data: existe } = await sp.from('horarios_tatuadores').select('id').eq('tatuador_id', idTatuadorActivoParaHorario).eq('dia_semana', dia).single();
-                
-                if (existe) {
-                    await sp.from('horarios_tatuadores').update({ apertura_1: null, cierre_1: null }).eq('id', existe.id);
-                } else {
-                    await sp.from('horarios_tatuadores').insert([{ tatuador_id: idTatuadorActivoParaHorario, dia_semana: dia }]);
-                }
-                
-                ['tat-ap1', 'tat-ci1'].forEach(id => document.getElementById(id).value = "");
-                alert("✅ Día marcado como Descanso para este tatuador.");
-            } catch (e) { alert("❌ Error: " + e.message); }
-            btn.innerText = "Este Tatuador NO Trabaja Este Día";
+                const sp = getSupabase(); const { data: ex } = await sp.from('horarios_tatuadores').select('id').eq('tatuador_id', idTatuadorActivoParaHorario).eq('dia_semana', dia).single();
+                if (ex) { await sp.from('horarios_tatuadores').update({ apertura_1: null, cierre_1: null }).eq('id', ex.id); } else { await sp.from('horarios_tatuadores').insert([{ tatuador_id: idTatuadorActivoParaHorario, dia_semana: dia }]); }
+                ['tat-ap1', 'tat-ci1'].forEach(id => document.getElementById(id).value = ""); alert("Guardado.");
+            } catch (e) {}
         }
 
-        // ==========================================
-        // CARTA ESTILOS
-        // ==========================================
         async function cargarMenu() {
             const lista = document.getElementById('lista-menu');
             try {
-                const sp = getSupabase();
-                const { data, error } = await sp.from('menu_shishas').select('*').order('name', { ascending: true });
-                if(error) throw error;
-                if(data.length === 0) { lista.innerHTML = '<p class="text-brand-accent font-light">La carta está vacía.</p>'; return; }
-                
+                const { data } = await getSupabase().from('menu_shishas').select('*').order('name', { ascending: true });
+                if(!data || data.length === 0) { lista.innerHTML = '<p>Vacío.</p>'; return; }
                 let html = "";
-                data.forEach(s => {
-                    const colorDispo = s.disponible ? "text-brand-dark border-brand-dark hover:bg-brand-dark hover:text-white" : "text-brand-red border-brand-red hover:bg-brand-red hover:text-white";
-                    const txtDispo = s.disponible ? "🟢 DISPONIBLE" : "🔴 NO DISPONIBLE";
-                    html += `
-                    <div class="flex flex-col md:flex-row justify-between items-center bg-white p-5 border border-brand-border mb-3 gap-4 shadow-sm">
-                        <div class="flex items-center gap-4 w-full">
-                            <i class="${s.icon} text-3xl text-brand-dark"></i>
-                            <div>
-                                <span class="text-lg font-heading font-bold text-brand-text block tracking-widest">${s.name}</span>
-                                <span class="text-xs font-semibold text-brand-accent uppercase tracking-[0.2em]">${s.etiquetas}</span>
-                            </div>
-                        </div>
-                        <div class="flex gap-2 w-full md:w-auto">
-                            <button onclick="toggleStock('${s.id}', ${s.disponible})" class="flex-1 md:flex-none whitespace-nowrap border ${colorDispo} bg-white px-4 py-2 font-body text-xs font-bold uppercase transition-all">
-                                ${txtDispo}
-                            </button>
-                            <button onclick="borrarSabor('${s.id}', this)" class="bg-white text-brand-text border border-brand-border px-4 py-2 hover:border-brand-red hover:text-brand-red font-body text-xs uppercase transition-all">
-                                🗑️
-                            </button>
-                        </div>
-                    </div>`;
-                });
+                data.forEach(s => { html += `<div class="bg-white p-4 border flex justify-between items-center"><div class="flex items-center gap-3"><i class="${s.icon} text-xl"></i><div><p class="font-bold">${s.name}</p><p class="text-xs text-brand-accent">${s.etiquetas}</p></div></div><button onclick="borrarSabor('${s.id}')" class="text-brand-red text-xs font-bold border border-brand-red px-3 py-1">Borrar</button></div>`; });
                 lista.innerHTML = html;
-            } catch (e) { lista.innerHTML = '<p class="text-brand-red">Error al cargar carta.</p>'; }
+            } catch (e) {}
         }
-
         async function crearSabor() {
-            const btn = document.getElementById('btn-crear-sabor');
-            const data = {
-                name: document.getElementById('m-nombre').value,
-                icon: document.getElementById('m-icono').value,
-                etiquetas: document.getElementById('m-etiquetas').value,
-                descripcion: document.getElementById('m-desc').value,
-                intensity: parseInt(document.getElementById('m-int').value),
-                freshness: parseInt(document.getElementById('m-fre').value),
-                smoke: parseInt(document.getElementById('m-hum').value),
-                ingredients: document.getElementById('m-ing').value,
-                disponible: true
-            }; 
-            if(!data.name || !data.etiquetas) return alert("El Nombre y las Etiquetas son obligatorios.");
-            btn.innerText = "⏳ Guardando...";
-            try {
-                const sp = getSupabase();
-                await sp.from('menu_shishas').insert([data]);
-                ['m-nombre','m-etiquetas','m-desc','m-ing'].forEach(id => document.getElementById(id).value = '');
-                await cargarMenu();
-            } catch(e) {}
-            btn.innerText = "Añadir Estilo a la Lista";
+            const n = document.getElementById('m-nombre').value; const e = document.getElementById('m-etiquetas').value;
+            if(!n || !e) return alert("Rellena nombre y etiquetas.");
+            try { await getSupabase().from('menu_shishas').insert([{ name: n, icon: document.getElementById('m-icono').value, etiquetas: e, descripcion: document.getElementById('m-desc').value, disponible: true }]); ['m-nombre','m-etiquetas','m-desc'].forEach(id => document.getElementById(id).value = ''); cargarMenu(); } catch(err) {}
         }
-
-        async function toggleStock(id, estadoActual) {
-            try { await getSupabase().from('menu_shishas').update({ disponible: !estadoActual }).eq('id', id); cargarMenu(); } catch(e) {}
-        }
-
-        async function borrarSabor(id, btnElemento) {
-            if(!confirm("¿Seguro que quieres eliminar este estilo de forma permanente?")) return;
-            btnElemento.innerText = "⏳";
-            try { await getSupabase().from('menu_shishas').delete().eq('id', id); cargarMenu(); } catch(e) {}
-        }
+        async function borrarSabor(id) { if(!confirm("¿Borrar estilo?")) return; try { await getSupabase().from('menu_shishas').delete().eq('id', id); cargarMenu(); } catch(e){} }
 
         async function cargarHorarioDia() {
-            const diaSel = document.getElementById('sel-dia-horario').value;
-            document.getElementById('h-ap1').value = ""; document.getElementById('h-ci1').value = "";
-            
-            try {
-                const sp = getSupabase();
-                const { data } = await sp.from('horarios_semana').select('*').eq('dia_semana', diaSel).single();
-                if (data) {
-                    if(data.apertura_1) document.getElementById('h-ap1').value = data.apertura_1.substring(0,5);
-                    if(data.cierre_1) document.getElementById('h-ci1').value = data.cierre_1.substring(0,5);
-                }
-            } catch (error) {}
+            const diaSel = document.getElementById('sel-dia-horario').value; ['h-ap1', 'h-ci1'].forEach(id => document.getElementById(id).value = "");
+            try { const { data } = await getSupabase().from('horarios_semana').select('*').eq('dia_semana', diaSel).single(); if (data) { if(data.apertura_1) document.getElementById('h-ap1').value = data.apertura_1.substring(0,5); if(data.cierre_1) document.getElementById('h-ci1').value = data.cierre_1.substring(0,5); } } catch (e) {}
         }
-
         async function guardarHorarioDia() {
             const diaSel = document.getElementById('sel-dia-horario').value;
-            const btn = document.getElementById('btn-guardar-horario');
-            btn.innerText = "⏳ Guardando...";
-            try {
-                const sp = getSupabase();
-                await sp.from('horarios_semana').upsert({
-                    dia_semana: diaSel,
-                    apertura_1: document.getElementById('h-ap1').value || null,
-                    cierre_1: document.getElementById('h-ci1').value || null
-                });
-                alert("✅ Horario Base guardado.");
-            } catch(e) { alert("❌ Fallo al guardar."); }
-            btn.innerText = "Guardar Horario Base";
-        }
-
-        function actualizarDesplegableHorarios(diasCerradosArray) {
-            const select = document.getElementById('sel-dia-horario');
-            Array.from(select.options).forEach(opt => {
-                const n = opt.getAttribute('data-original');
-                if (diasCerradosArray.includes(opt.value)) { opt.disabled = true; opt.text = n + " (ESTUDIO CERRADO)"; } 
-                else { opt.disabled = false; opt.text = n; }
-            });
-            if (diasCerradosArray.includes(select.value)) {
-                const p = Array.from(select.options).find(o => !o.disabled);
-                if (p) { select.value = p.value; cargarHorarioDia(); }
-            }
+            try { await getSupabase().from('horarios_semana').upsert({ dia_semana: diaSel, apertura_1: document.getElementById('h-ap1').value || null, cierre_1: document.getElementById('h-ci1').value || null }); alert("Guardado."); } catch(e) {}
         }
 
         async function cargarDiasCerrados() {
-            try {
-                const sp = getSupabase();
-                const { data } = await sp.from('dias_cerrados').select('dias').eq('id', 1).single();
-                if(data && data.dias) {
-                    const diasArr = data.dias.split(',');
-                    document.querySelectorAll('.chk-dia').forEach(chk => { chk.checked = diasArr.includes(chk.value); });
-                    actualizarDesplegableHorarios(diasArr);
-                }
-            } catch(e) {}
+            try { const { data } = await getSupabase().from('dias_cerrados').select('dias').eq('id', 1).single(); if(data && data.dias) { const diasArr = data.dias.split(','); document.querySelectorAll('.chk-dia').forEach(chk => { chk.checked = diasArr.includes(chk.value); }); } } catch(e) {}
         }
-
         async function guardarDiasCerrados() {
-            const btn = document.getElementById('btn-dias'); btn.innerText = "⏳ Guardando...";
             let sel = []; document.querySelectorAll('.chk-dia:checked').forEach(chk => sel.push(chk.value));
-            try {
-                const sp = getSupabase();
-                await sp.from('dias_cerrados').update({ dias: sel.join(',') }).eq('id', 1);
-                actualizarDesplegableHorarios(sel);
-                alert("✅ Descansos del Estudio guardados.");
-            } catch(e) { alert("❌ Error."); }
-            btn.innerText = "Guardar Descansos";
+            try { await getSupabase().from('dias_cerrados').update({ dias: sel.join(',') }).eq('id', 1); alert("Guardado."); } catch(e) {}
         }
 
         async function cargarTatuadoresParaBloqueo() {
-            const select = document.getElementById('bloqueo-zona');
-            let html = '<option value="Ambas">Todo el Estudio</option>';
-            if (listaTatuadoresGlobal.length === 0) {
-                const sp = getSupabase();
-                const { data } = await sp.from('tatuadores').select('nombre');
-                if (data) listaTatuadoresGlobal = data;
-            }
-            listaTatuadoresGlobal.forEach(t => {
-                html += `<option value="${t.nombre}">Solo a ${t.nombre}</option>`;
-            });
-            select.innerHTML = html;
+            const select = document.getElementById('bloqueo-zona'); let html = '<option value="Ambas">Todo el Estudio</option>';
+            if (listaTatuadoresGlobal.length === 0) { const { data } = await getSupabase().from('tatuadores').select('nombre'); if (data) listaTatuadoresGlobal = data; }
+            listaTatuadoresGlobal.forEach(t => { html += `<option value="${t.nombre}">Solo a ${t.nombre}</option>`; }); select.innerHTML = html;
         }
-
         async function cargarBloqueos() {
             const lista = document.getElementById('lista-bloqueos');
             try {
-                const sp = getSupabase();
-                const { data: bloqueos } = await sp.from('bloqueos').select('*').order('fecha', { ascending: true });
-                if(!bloqueos || bloqueos.length === 0) { lista.innerHTML = '<p class="text-brand-accent font-light">No hay días bloqueados.</p>'; return; }
-                let html = "";
-                bloqueos.forEach(b => {
-                    let nombreTxt = b.zona === 'Ambas' ? 'TODO EL ESTUDIO' : b.zona; 
-                    html += `<div class="flex justify-between items-center bg-white p-5 border border-brand-border mb-3 shadow-sm"><div><span class="text-lg font-heading font-bold text-brand-text block tracking-widest mb-1">${b.fecha}</span><span class="text-xs font-semibold text-brand-accent uppercase tracking-widest">Para: ${nombreTxt}</span></div><button onclick="borrarBloqueo('${b.id}', this)" class="bg-white text-brand-text border border-brand-border px-4 py-2 font-heading font-bold text-xs uppercase hover:border-red-500 hover:text-red-500 transition-all tracking-widest">Desbloquear</button></div>`;
-                });
-                lista.innerHTML = html;
-            } catch (error) {}
+                const { data: bloqueos } = await getSupabase().from('bloqueos').select('*').order('fecha', { ascending: true });
+                if(!bloqueos || bloqueos.length === 0) { lista.innerHTML = '<p>No hay bloqueos.</p>'; return; }
+                let html = ""; bloqueos.forEach(b => { html += `<div class="bg-white p-4 border flex justify-between items-center"><div><p class="font-bold">${b.fecha}</p><p class="text-xs text-brand-accent">${b.zona}</p></div><button onclick="borrarBloqueo('${b.id}')" class="text-brand-red text-xs font-bold">Desbloquear</button></div>`; }); lista.innerHTML = html;
+            } catch (e) {}
         }
-
         async function crearBloqueo() {
-            const f = document.getElementById('bloqueo-fecha').value; 
-            const z = document.getElementById('bloqueo-zona').value; 
-            if(!f) return alert("⚠️ Elige fecha.");
-            const btn = document.getElementById('btn-crear-bloqueo'); btn.innerText = "⏳ Guardando...";
-            try { const sp = getSupabase(); await sp.from('bloqueos').insert([{ fecha: f, zona: z }]); document.getElementById('bloqueo-fecha').value = ""; await cargarBloqueos(); } 
-            catch(e) {} btn.innerText = "Bloquear Día";
+            const f = document.getElementById('bloqueo-fecha').value; const z = document.getElementById('bloqueo-zona').value; if(!f) return;
+            try { await getSupabase().from('bloqueos').insert([{ fecha: f, zona: z }]); document.getElementById('bloqueo-fecha').value = ""; cargarBloqueos(); } catch(e) {}
         }
-
-        async function borrarBloqueo(id, btnElemento) {
-            btnElemento.innerText = "⏳...";
-            try { const sp = getSupabase(); await sp.from('bloqueos').delete().eq('id', id); await cargarBloqueos(); } 
-            catch(e) { btnElemento.innerText = "Desbloquear"; }
-        }
+        async function borrarBloqueo(id) { try { await getSupabase().from('bloqueos').delete().eq('id', id); cargarBloqueos(); } catch(e) {} }
 
         async function cargarAnalitica() {
-            try {
-                const sp = getSupabase();
-                const { data: reservas } = await sp.from('reservas').select('hora_inicio, tatuador_id, tatuadores(nombre), fecha');
-                const datos = reservas || []; 
-                document.getElementById('kpi-reservas').innerText = datos.length;
-                
-                let horasContador = {};
-                let countsTatuadores = {};
-                
-                datos.forEach(r => {
-                    let nomTat = r.tatuadores ? r.tatuadores.nombre : 'Sin Asignar';
-                    countsTatuadores[nomTat] = (countsTatuadores[nomTat] || 0) + 1;
-                    let hora = r.hora_inicio.substring(0,2) + ":00"; 
-                    horasContador[hora] = (horasContador[hora] || 0) + 1;
-                });
-                
-                let maxTat = '--'; let maxVal = 0;
-                for (const [key, value] of Object.entries(countsTatuadores)) {
-                    if (value > maxVal && key !== 'Sin Asignar') { maxVal = value; maxTat = key; }
-                }
-                document.getElementById('kpi-zona').innerText = maxTat;
-                
-                let etiquetas = Object.keys(horasContador).sort(); 
-                let nums = etiquetas.map(e => horasContador[e]);
-                
-                const ctx = document.getElementById('graficaReservas').getContext('2d');
-                if(chartInstancia) chartInstancia.destroy();
-                chartInstancia = new Chart(ctx, { type: 'bar', data: { labels: etiquetas.length > 0 ? etiquetas : ['10:00','12:00','16:00','18:00','20:00'], datasets: [{ label: 'Volumen Citas', data: nums.length > 0 ? nums : [0,0,0,0,0], backgroundColor: '#282828', borderRadius: 0 }] }, options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { x: { grid: { color: '#E0E0E0' }, ticks: { color: '#A0A0A0' } }, y: { grid: { color: '#E0E0E0' }, ticks: { color: '#A0A0A0' } } } } });
-            } catch (error) { document.getElementById('kpi-reservas').innerText = "❌"; }
-        }
-
-        async function exportarExcel() {
-            try {
-                const sp = getSupabase();
-                const { data: reservas } = await sp.from('reservas').select('fecha, hora_inicio, nombre_cliente, telefono_cliente, tatuadores(nombre)');
-                if(!reservas || reservas.length === 0) return alert("No hay citas guardadas.");
-                let csvContent = "\uFEFFFECHA,HORA,NOMBRE,TELEFONO,TATUADOR\n";
-                reservas.forEach(r => { let tat = r.tatuadores ? r.tatuadores.nombre : 'Sin Asignar'; csvContent += `${r.fecha},${r.hora_inicio},"${r.nombre_cliente}","${r.telefono_cliente}",${tat}\n`; });
-                const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
-                const link = document.createElement("a"); link.setAttribute("href", URL.createObjectURL(blob));
-                link.setAttribute("download", "Citas_Ciskotattoo.csv"); document.body.appendChild(link); link.click(); document.body.removeChild(link);
-            } catch (error) { alert("Error al exportar."); }
+            try { const { data: reservas } = await getSupabase().from('reservas').select('hora_inicio, tatuador_id, tatuadores(nombre), fecha'); document.getElementById('kpi-reservas').innerText = (reservas || []).length; } catch (e) {}
         }
     </script>
 </body>
